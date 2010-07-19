@@ -1,0 +1,49 @@
+# - set variable MLIFILES so that it can be used in custom targets to
+#   build documentation and dependencies for .mli files
+# - remove useless ' -I . .../plugins/ ' lines so that we can read something in the compilation log
+# - rename the rule for Makefile auto-regeneration, and replace it with an appropriate command
+# - patch the rule for cleaning doc
+# - include the .depend custom target, to take .mli dependencies into account
+
+(
+${COQBIN}coq_makefile -no-install -opt MLIFILES = '$(MLFILES:.ml=.mli)' $(cat files.txt) -f magic.txt \
+    | sed 's|.*/plugins/.*||g;s|Makefile:|\.dummy:|g;s|rm -f doc|rm -rf doc|g'
+cat <<EOF
+
+# sanity checks
+tests: Tests.vo
+
+# override inadequate coq_makefile auto-regeneration
+Makefile: make_makefile magic.txt files.txt
+	. make_makefile
+
+# We want to keep the proofs only in the Tutorial
+tutorial: Tutorial.vo Tutorial.glob
+	\$(COQDOC) --no-index --no-externals -html \$(COQDOCLIBS) -d html Tutorial.v
+
+world: \$(VOFILES) doc gallinahtml tutorial
+
+# additional dependencies for AAC (since aac_tactics.cmxs/cma are not
+# around the first time we run make, coqdep issues a warning and
+# ignores this dependency)
+# (one can safely select one of theses dependencies according to 
+#  coq' compilation mode--bytecode or native)
+AAC.vo: aac_tactics.cmxs aac_tactics.cma
+
+
+# .depend contains dependencies for .mli files
+-include .depend
+.SECONDARY: .depend
+
+EOF
+) > Makefile
+
+
+
+# TOTHINK: coq_makefile est bête, [make all] compile systématiquement
+# les .cmxs associés à chaque module, alors que ça ne sert à rien,
+# seul aac_rewrite.cmxs compte
+
+# problemes lorsqu'un module porte un meme nom qu'un module predefini
+# (matching par exemple), prendre garde si ce probleme s'etend a la
+# confusion module/nom de librairie
