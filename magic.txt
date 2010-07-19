@@ -1,0 +1,4 @@
+-custom "mkdir -p doc; $(CAMLBIN)ocamldoc -html -rectypes -d doc -m A $(ZDEBUG) $(ZFLAGS) $^ && touch doc" "$(MLIFILES)" doc
+-custom "$(CAMLOPTLINK) $(ZDEBUG) $(ZFLAGS) -shared -linkall -o aac_tactics.cmxs $(CMXFILES)" "$(CMXFILES)" aac_tactics.cmxs 
+-custom "$(CAMLLINK) -g -a -o aac_tactics.cma $(CMOFILES)" "$(CMOFILES)" aac_tactics.cma
+-custom "$(CAMLBIN)ocamldep -slash $(OCAMLLIBS) $^ > .depend" "$(MLIFILES)" .depend
