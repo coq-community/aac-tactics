@@ -97,7 +97,7 @@ end
     
 module Pos = struct
     
-    let path = ["Coq" ; "NArith"; "BinPos"]
+    let path = ["Coq" ; "PArith"; "BinPos"]
     let typ = lazy (init_constant path "positive")
     let xI =      lazy (init_constant path "xI")
     let xO =      lazy (init_constant path "xO")
