@@ -29,7 +29,7 @@ let init_constant dir s = find_constant contrib_name dir s
    in the goal *)
 let nowhere = 
   { Tacexpr.onhyps = Some []; 
-    Tacexpr.concl_occs = Rawterm.no_occurrences_expr 
+    Tacexpr.concl_occs = Glob_term.no_occurrences_expr 
   }
 
 
