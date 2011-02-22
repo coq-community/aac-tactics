@@ -15,26 +15,35 @@ FOREWORD
 This plugin provides tactics for rewriting universally quantified
 equations, modulo associativity and commutativity of some operators.
 
-INSTALL
-=======
+INSTALLATION
+============
+
+This plugin should work with Coq v8.3, as released on the 14th of
+October 2010.
 
 - run [./make_makefile] in the top-level directory to generate a Makefile
 - run [make world] to build the plugin and the documentation
 
-This should work with Coq v8.3 `beta' : -r 13027, -r 13060 and hopefully the
-following ones.
+Option 1
+--------
+To install the plugin in Coq's directory, as, e.g., omega or ring.
 
-To be able to import the plugin from anywhere, add the following to
-your ~/.coqrc
+- run [sudo make install CMXSFILES='aac_tactics.cmxs aac_tactics.cma']
+  to copy the relevant files of the plugin
 
-Add Rec LoadPath "path_to_aac_tactics".
-Add ML Path "path_to_aac_tactics".
+Option 2
+--------
 
+If you chose not to use the previous option, you will need to add the
+following lines to (all) your .v files to be able to use the plugin:
+
+Add Rec LoadPath "absolute_path_to_aac_tactics".
+Add ML Path "absolute_path_to_aac_tactics".
 
 DOCUMENTATION
 =============
 
-Please refer to Tutorial.v for a succint introduction on how to use
+Please refer to Tutorial.v for a succinct introduction on how to use
 this plugin.
 
 To understand the inner-working of the tactic, please refer to the
@@ -48,6 +57,8 @@ we have instances for:
 
 - Peano naturals	(Import Instances.Peano)
 - Z binary numbers	(Import Instances.Z)
+- N binary numbers	(Import Instances.N)
+- P binary numbers	(Import Instances.P)
 - Rationnal numbers	(Import Instances.Q)
 - Prop			(Import Instances.Prop_ops)
 - Booleans		(Import Instances.Bool)

@@ -1,0 +1,28 @@
+AAC_tactics 0.2-pl2 :
+-----------------
+
+- Improved the handling of nullifiable patterns.
+
+AAC_tactics 0.2.1 :
+-----------------
+
+- backport of some debian patches (thanks to S. Glondu)
+
+AAC_tactics 0.2 :
+-----------------
+
+- Several operators can share a given unit (like max and plus sharing zero)
+- Added some support to rewrite in inequations (using inequations)
+- Better priting functions for aac_instances
+- Overhauled inference of morphisms and operators :
+  * Lift the previous requirement to have at leat one AC and one A operator
+  * Binary operations are infered before morphisms (hence List.assoc can be recognized as being Associative)
+- Should now be able to handle goal with evars (but this is not unification modulo AC)
+- Added several new instances of Associative and Commutative operators
+- The old syntax to declare AC and A operators is no longer supported
+- The tactics do not abstract the proof they built (was troublesome if evars appeared)
+
+AAC_tactics 0.1 :
+-----------------
+Initial release
+
