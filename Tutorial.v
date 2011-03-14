@@ -311,7 +311,7 @@ Section Peano.
      can specify which equivalence relation to use by declaring
      instances of the [AAC_lift] type class: *)
 
-  Instance lift_le_eq : AAC_lift le eq.
+  Instance lift_le_eq : AAC_lift le eq := {}.
   (** (This instance is automatically inferred because [eq] is always a
      valid candidate, here for [le].) *)
 

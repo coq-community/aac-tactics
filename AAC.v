@@ -82,7 +82,7 @@ Proof.
 Qed.
 
 Instance aac_lift_proper {X} {R : relation X} {E} {HE: Equivalence E}
-  {HR: Proper (E==>E==>iff) R}: AAC_lift  R E | 4.
+  {HR: Proper (E==>E==>iff) R}: AAC_lift  R E | 4 := {}.
 
 
 
