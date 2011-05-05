@@ -107,7 +107,7 @@ Module N.
 End N.
 
 Module P.
-  Require Import NArith Pminmax.
+  Require Import NArith.
   Open Scope positive_scope.
   Instance aac_Pplus_Assoc : Associative eq Pplus :=  Pplus_assoc.
   Instance aac_Pplus_Comm : Commutative eq Pplus :=  Pplus_comm.
@@ -115,18 +115,18 @@ Module P.
   Instance aac_Pmult_Comm : Commutative eq Pmult :=  Pmult_comm.
   Instance aac_Pmult_Assoc : Associative eq Pmult :=  Pmult_assoc.
  
-  Instance aac_Pmin_Comm : Commutative eq Pmin :=  P.min_comm.
-  Instance aac_Pmin_Assoc : Associative eq Pmin :=  P.min_assoc.
+  Instance aac_Pmin_Comm : Commutative eq Pmin :=  Pos.min_comm.
+  Instance aac_Pmin_Assoc : Associative eq Pmin :=  Pos.min_assoc.
 
-  Instance aac_Pmax_Comm : Commutative eq Pmax :=  P.max_comm.
-  Instance aac_Pmax_Assoc : Associative eq Pmax :=  P.max_assoc.
+  Instance aac_Pmax_Comm : Commutative eq Pmax :=  Pos.max_comm.
+  Instance aac_Pmax_Assoc : Associative eq Pmax :=  Pos.max_assoc.
  
   Instance aac_one  : Unit eq Pmult 1 := Build_Unit eq Pmult 1 _ Pmult_1_r. 
   intros; reflexivity. Qed.          (*  TODO : add this lemma in the stdlib *)
-  Instance aac_one_max  :  Unit eq Pmax 1 := Build_Unit eq Pmax 1 P.max_1_l P.max_1_r. 
+  Instance aac_one_max  :  Unit eq Pmax 1 := Build_Unit eq Pmax 1 Pos.max_1_l Pos.max_1_r. 
 
   (* We also provide liftings from le to eq *)
-  Instance preorder_le : PreOrder Ple := Build_PreOrder _ Ple P.T.le_refl P.T.le_trans.
+  Instance preorder_le : PreOrder Ple := Build_PreOrder _ Ple Pos.le_refl Pos.le_trans.
   Instance lift_le_eq : AAC_lift Ple eq := Build_AAC_lift eq_equivalence _.
 End P.
 
