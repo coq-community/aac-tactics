@@ -577,6 +577,7 @@ let rewrite ?(abort=false)hypinfo subst k =
 	  Equality.general_rewrite_bindings
 	    hypinfo.l2r
 	    Termops.all_occurrences
+	    true (* tell if existing evars must be frozen for instantiation *)
 	    false
 	    (rew,Glob_term.NoBindings)
 	    true
