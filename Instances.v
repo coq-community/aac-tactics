@@ -101,7 +101,7 @@ Module N.
   Instance aac_zero_max  :  Unit eq Nmax 0 := Build_Unit eq Nmax 0 N.max_0_l N.max_0_r. 
    
   (* We also provide liftings from le to eq *)
-  Instance preorder_le : PreOrder Nle := Build_PreOrder _ Nle N.T.le_refl N.T.le_trans.
+  Instance preorder_le : PreOrder Nle := Build_PreOrder _ Nle N.le_refl N.le_trans.
   Instance lift_le_eq : AAC_lift Nle eq := Build_AAC_lift eq_equivalence _.
 
 End N.
@@ -148,7 +148,7 @@ Module Q.
   Instance aac_zero_Qplus  : Unit Qeq Qplus 0 := Build_Unit Qeq Qplus 0 Qplus_0_l Qplus_0_r.
 
   (* We also provide liftings from le to eq *)
-  Instance preorder_le : PreOrder Qle := Build_PreOrder _ Qle Q.T.le_refl Q.T.le_trans.
+  Instance preorder_le : PreOrder Qle := Build_PreOrder _ Qle Qle_refl Qle_trans.
   Instance lift_le_eq : AAC_lift Qle Qeq := Build_AAC_lift QOrderedType.QOrder.TO.eq_equiv _.
 
 End Q.
