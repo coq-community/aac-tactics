@@ -20,7 +20,7 @@ module Control = struct
   let time = false
 end
 
-module Debug = AAC_helper.Debug (Control)
+module Debug = Helper.Debug (Control)
 open Debug
 
 (** {1 HMap :     Specialized Hashtables based on constr} *)
@@ -42,54 +42,54 @@ module Stubs = struct
   let path = ac_theory_path@["Internal"]
 
   (** The constants from the inductive type *)
-  let _Tty = lazy (AAC_coq.init_constant path "T")
-  let vTty = lazy (AAC_coq.init_constant path "vT")
+  let _Tty = lazy (Coq.init_constant path "T")
+  let vTty = lazy (Coq.init_constant path "vT")
  
-  let rsum = lazy (AAC_coq.init_constant path "sum")
-  let rprd = lazy (AAC_coq.init_constant path "prd")
-  let rsym = lazy (AAC_coq.init_constant path "sym")
-  let runit = lazy (AAC_coq.init_constant path "unit")
+  let rsum = lazy (Coq.init_constant path "sum")
+  let rprd = lazy (Coq.init_constant path "prd")
+  let rsym = lazy (Coq.init_constant path "sym")
+  let runit = lazy (Coq.init_constant path "unit")
 
-  let vnil = lazy (AAC_coq.init_constant path "vnil")
-  let vcons = lazy (AAC_coq.init_constant path "vcons")
-  let eval = lazy (AAC_coq.init_constant path "eval")
+  let vnil = lazy (Coq.init_constant path "vnil")
+  let vcons = lazy (Coq.init_constant path "vcons")
+  let eval = lazy (Coq.init_constant path "eval")
 
 
-  let decide_thm = lazy (AAC_coq.init_constant path "decide")
-  let lift_normalise_thm = lazy (AAC_coq.init_constant path "lift_normalise")
+  let decide_thm = lazy (Coq.init_constant path "decide")
+  let lift_normalise_thm = lazy (Coq.init_constant path "lift_normalise")
 
   let lift = 
-    lazy (AAC_coq.init_constant ac_theory_path "AAC_lift")
+    lazy (Coq.init_constant ac_theory_path "AAC_lift")
   let lift_proj_equivalence= 
-    lazy (AAC_coq.init_constant ac_theory_path "aac_lift_equivalence")
+    lazy (Coq.init_constant ac_theory_path "aac_lift_equivalence")
   let lift_transitivity_left =
-    lazy(AAC_coq.init_constant ac_theory_path "lift_transitivity_left")
+    lazy(Coq.init_constant ac_theory_path "lift_transitivity_left")
   let lift_transitivity_right =
-    lazy(AAC_coq.init_constant ac_theory_path "lift_transitivity_right")
+    lazy(Coq.init_constant ac_theory_path "lift_transitivity_right")
   let lift_reflexivity =
-    lazy(AAC_coq.init_constant ac_theory_path "lift_reflexivity")
+    lazy(Coq.init_constant ac_theory_path "lift_reflexivity")
 end
 
 module Classes = struct 
   module Associative = struct
     let path = ac_theory_path
-    let typ = lazy (AAC_coq.init_constant path "Associative")
-    let ty (rlt : AAC_coq.Relation.t) (value : Term.constr) =
-      mkApp (Lazy.force typ, [| rlt.AAC_coq.Relation.carrier;
-				rlt.AAC_coq.Relation.r;
+    let typ = lazy (Coq.init_constant path "Associative")
+    let ty (rlt : Coq.Relation.t) (value : Term.constr) =
+      mkApp (Lazy.force typ, [| rlt.Coq.Relation.carrier;
+				rlt.Coq.Relation.r;
 				value
 			     |] )
     let infer goal  rlt value =
       let ty = ty rlt value in
-	AAC_coq.resolve_one_typeclass  goal ty
+	Coq.resolve_one_typeclass  goal ty
   end
    
   module Commutative = struct
     let path = ac_theory_path
-    let typ = lazy (AAC_coq.init_constant path "Commutative")
-    let ty (rlt : AAC_coq.Relation.t) (value : Term.constr) =
-      mkApp (Lazy.force typ, [| rlt.AAC_coq.Relation.carrier;
-				rlt.AAC_coq.Relation.r;
+    let typ = lazy (Coq.init_constant path "Commutative")
+    let ty (rlt : Coq.Relation.t) (value : Term.constr) =
+      mkApp (Lazy.force typ, [| rlt.Coq.Relation.carrier;
+				rlt.Coq.Relation.r;
 				value
 			     |] )
 	
@@ -97,30 +97,30 @@ module Classes = struct
    
   module Proper = struct
     let path = ac_theory_path @ ["Internal";"Sym"]
-    let typeof = lazy (AAC_coq.init_constant path "type_of")
-    let relof = lazy (AAC_coq.init_constant path "rel_of")
-    let mk_typeof :  AAC_coq.Relation.t -> int -> constr = fun rlt n ->
-      let x = rlt.AAC_coq.Relation.carrier in
-	mkApp (Lazy.force typeof, [| x ; AAC_coq.Nat.of_int n |])
-    let mk_relof :  AAC_coq.Relation.t -> int -> constr = fun rlt n ->
-      let (x,r) = AAC_coq.Relation.split rlt in      
-      mkApp (Lazy.force relof, [| x;r ; AAC_coq.Nat.of_int n |])
+    let typeof = lazy (Coq.init_constant path "type_of")
+    let relof = lazy (Coq.init_constant path "rel_of")
+    let mk_typeof :  Coq.Relation.t -> int -> constr = fun rlt n ->
+      let x = rlt.Coq.Relation.carrier in
+	mkApp (Lazy.force typeof, [| x ; Coq.Nat.of_int n |])
+    let mk_relof :  Coq.Relation.t -> int -> constr = fun rlt n ->
+      let (x,r) = Coq.Relation.split rlt in      
+      mkApp (Lazy.force relof, [| x;r ; Coq.Nat.of_int n |])
 
     let ty rlt op ar  =
       let typeof = mk_typeof rlt ar in
       let relof = mk_relof rlt ar in
-	AAC_coq.Classes.mk_morphism  typeof relof op
+	Coq.Classes.mk_morphism  typeof relof op
     let infer goal rlt op ar =
       let ty = ty rlt op ar in
-	AAC_coq.resolve_one_typeclass goal ty
+	Coq.resolve_one_typeclass goal ty
   end
     
   module Unit = struct
     let path = ac_theory_path
-    let typ = lazy (AAC_coq.init_constant path "Unit")
-    let ty (rlt : AAC_coq.Relation.t) (value : Term.constr) (unit : Term.constr)=
-      mkApp (Lazy.force typ, [| rlt.AAC_coq.Relation.carrier;
- 				rlt.AAC_coq.Relation.r;
+    let typ = lazy (Coq.init_constant path "Unit")
+    let ty (rlt : Coq.Relation.t) (value : Term.constr) (unit : Term.constr)=
+      mkApp (Lazy.force typ, [| rlt.Coq.Relation.carrier;
+ 				rlt.Coq.Relation.r;
  				value;
  				unit
  			     |] )
@@ -131,9 +131,9 @@ end
 (* Non empty lists *)
 module NEList = struct
   let path = ac_theory_path @ ["Internal"]
-  let typ = lazy (AAC_coq.init_constant path "list")
-  let nil = lazy (AAC_coq.init_constant path "nil")
-  let cons = lazy (AAC_coq.init_constant path "cons")
+  let typ = lazy (Coq.init_constant path "list")
+  let nil = lazy (Coq.init_constant path "nil")
+  let cons = lazy (Coq.init_constant path "cons")
   let cons ty h t =
     mkApp (Lazy.force cons, [|  ty; h ; t |])
   let nil ty x =
@@ -149,11 +149,11 @@ end
 
 (** a [mset] is a ('a * pos) list *)
 let mk_mset ty (l : (constr * int) list) =
-  let pos = Lazy.force AAC_coq.Pos.typ in
+  let pos = Lazy.force Coq.Pos.typ in
   let pair (x : constr) (ar : int) =
-    AAC_coq.Pair.of_pair ty pos (x, AAC_coq.Pos.of_int ar)
+    Coq.Pair.of_pair ty pos (x, Coq.Pos.of_int ar)
   in
-  let pair_ty = AAC_coq.lapp AAC_coq.Pair.typ [| ty ; pos|] in
+  let pair_ty = Coq.lapp Coq.Pair.typ [| ty ; pos|] in
   let rec aux = function
     | [ ] -> assert false
     | [x,ar] -> NEList.nil pair_ty (pair x ar)
@@ -162,10 +162,10 @@ let mk_mset ty (l : (constr * int) list) =
     aux l
 
 module Sigma = struct
-  let sigma = lazy (AAC_coq.init_constant ac_theory_path "sigma")
-  let sigma_empty = lazy (AAC_coq.init_constant ac_theory_path "sigma_empty")
-  let sigma_add = lazy (AAC_coq.init_constant ac_theory_path "sigma_add")
-  let sigma_get = lazy (AAC_coq.init_constant ac_theory_path "sigma_get")
+  let sigma = lazy (Coq.init_constant ac_theory_path "sigma")
+  let sigma_empty = lazy (Coq.init_constant ac_theory_path "sigma_empty")
+  let sigma_add = lazy (Coq.init_constant ac_theory_path "sigma_add")
+  let sigma_get = lazy (Coq.init_constant ac_theory_path "sigma_get")
    
   let add ty n x map =
     mkApp (Lazy.force sigma_add,[|ty; n; x ;  map|])
@@ -184,7 +184,7 @@ module Sigma = struct
 	    List.fold_left
 	      (fun acc (i,t) ->
 		 assert (i > 0);
-		 add ty (AAC_coq.Pos.of_int i) ( t) acc)
+		 add ty (Coq.Pos.of_int i) ( t) acc)
 	      (empty ty)
 	      q
 	  in to_fun ty (t) map
@@ -197,20 +197,20 @@ end
 module Sym = struct
   type pack = {ar: Term.constr; value: Term.constr ; morph: Term.constr}
   let path = ac_theory_path @ ["Internal";"Sym"]
-  let typ = lazy (AAC_coq.init_constant path "pack")
-  let mkPack = lazy (AAC_coq.init_constant path "mkPack")
-  let value = lazy (AAC_coq.init_constant path "value")
-  let null = lazy (AAC_coq.init_constant path "null")
-  let mk_pack (rlt: AAC_coq.Relation.t) s =
-    let (x,r) = AAC_coq.Relation.split rlt in
+  let typ = lazy (Coq.init_constant path "pack")
+  let mkPack = lazy (Coq.init_constant path "mkPack")
+  let value = lazy (Coq.init_constant path "value")
+  let null = lazy (Coq.init_constant path "null")
+  let mk_pack (rlt: Coq.Relation.t) s =
+    let (x,r) = Coq.Relation.split rlt in
       mkApp (Lazy.force mkPack, [|x;r; s.ar;s.value;s.morph|])
   let null  rlt =
-    let x = rlt.AAC_coq.Relation.carrier in
-    let r = rlt.AAC_coq.Relation.r in
+    let x = rlt.Coq.Relation.carrier in
+    let r = rlt.Coq.Relation.r in
       mkApp (Lazy.force null, [| x;r;|])
 
-  let mk_ty : AAC_coq.Relation.t -> constr = fun rlt ->
-    let (x,r) = AAC_coq.Relation.split rlt in
+  let mk_ty : Coq.Relation.t -> constr = fun rlt ->
+    let (x,r) = Coq.Relation.split rlt in
       mkApp (Lazy.force typ, [| x; r|] )
 end
 
@@ -222,29 +222,29 @@ module Bin =struct
 	      }
 
   let path = ac_theory_path @ ["Internal";"Bin"]
-  let typ = lazy (AAC_coq.init_constant path "pack")
-  let mkPack = lazy (AAC_coq.init_constant path "mk_pack")
+  let typ = lazy (Coq.init_constant path "pack")
+  let mkPack = lazy (Coq.init_constant path "mk_pack")
    
-  let mk_pack: AAC_coq.Relation.t -> pack -> Term.constr = fun (rlt) s ->
-    let (x,r) = AAC_coq.Relation.split rlt in
+  let mk_pack: Coq.Relation.t -> pack -> Term.constr = fun (rlt) s ->
+    let (x,r) = Coq.Relation.split rlt in
     let comm_ty = Classes.Commutative.ty rlt s.value in
     mkApp (Lazy.force mkPack , [| x ; r;
 				  s.value;
 				  s.compat ;
 				  s.assoc;
-				  AAC_coq.Option.of_option comm_ty s.comm
+				  Coq.Option.of_option comm_ty s.comm
 			       |])
-  let mk_ty : AAC_coq.Relation.t -> constr = fun rlt ->
-   let (x,r) = AAC_coq.Relation.split rlt in
+  let mk_ty : Coq.Relation.t -> constr = fun rlt ->
+   let (x,r) = Coq.Relation.split rlt in
       mkApp (Lazy.force typ, [| x; r|] )
 end
  
 module Unit = struct
   let path = ac_theory_path @ ["Internal"]
-  let unit_of_ty = lazy (AAC_coq.init_constant path "unit_of")
-  let unit_pack_ty = lazy (AAC_coq.init_constant path "unit_pack")
-  let mk_unit_of = lazy (AAC_coq.init_constant path "mk_unit_for")
-  let mk_unit_pack = lazy (AAC_coq.init_constant path "mk_unit_pack")
+  let unit_of_ty = lazy (Coq.init_constant path "unit_of")
+  let unit_pack_ty = lazy (Coq.init_constant path "unit_pack")
+  let mk_unit_of = lazy (Coq.init_constant path "mk_unit_for")
+  let mk_unit_pack = lazy (Coq.init_constant path "mk_unit_pack")
  
   type unit_of =
       {
@@ -259,15 +259,15 @@ module Unit = struct
   }
 
   let ty_unit_of rlt  e_bin u =
-    let (x,r) = AAC_coq.Relation.split rlt in
+    let (x,r) = Coq.Relation.split rlt in
       mkApp ( Lazy.force unit_of_ty, [| x; r; e_bin; u |])
 	
   let ty_unit_pack rlt e_bin =
-    let (x,r) = AAC_coq.Relation.split rlt in
+    let (x,r) = Coq.Relation.split rlt in
       mkApp (Lazy.force unit_pack_ty, [| x; r; e_bin |])
    
   let mk_unit_of rlt e_bin u unit_of =
-    let (x,r) = AAC_coq.Relation.split rlt in  
+    let (x,r) = Coq.Relation.split rlt in  
     mkApp (Lazy.force mk_unit_of , [| x;
 				      r;
 				      e_bin ;
@@ -277,10 +277,10 @@ module Unit = struct
 				   |])
    
   let mk_pack rlt e_bin pack : Term.constr =
-    let (x,r) = AAC_coq.Relation.split rlt in
+    let (x,r) = Coq.Relation.split rlt in
     let ty = ty_unit_of rlt e_bin pack.u_value in
     let mk_unit_of = mk_unit_of rlt e_bin pack.u_value in
-    let u_desc =AAC_coq.List.of_list ( ty ) (List.map mk_unit_of pack.u_desc) in
+    let u_desc =Coq.List.of_list ( ty ) (List.map mk_unit_of pack.u_desc) in
       mkApp (Lazy.force mk_unit_pack, [|x;r;
 			       e_bin ;
 			       pack.u_value;
@@ -386,7 +386,7 @@ module Trans = struct
       units. Otherwise, we do not have the ability to rewrite [0 = a +
       a] in [a = ...]*)
   module Gather : sig
-    val gather : AAC_coq.goal_sigma -> AAC_coq.Relation.t -> envs -> Term.constr -> AAC_coq.goal_sigma
+    val gather : Coq.goal_sigma -> Coq.Relation.t -> envs -> Term.constr -> Coq.goal_sigma
   end
     = struct   
 
@@ -404,37 +404,37 @@ module Trans = struct
 	end
 
 
-      let get_unit (rlt : AAC_coq.Relation.t) op goal :
-	  (AAC_coq.goal_sigma * constr * constr ) option=
-	let x = (rlt.AAC_coq.Relation.carrier)  in
-	let unit, goal = AAC_coq.evar_unit goal x  in
+      let get_unit (rlt : Coq.Relation.t) op goal :
+	  (Coq.goal_sigma * constr * constr ) option=
+	let x = (rlt.Coq.Relation.carrier)  in
+	let unit, goal = Coq.evar_unit goal x  in
 	let ty =Classes.Unit.ty rlt  op  unit in
 	let result =
 	  try
-	    let t,goal = AAC_coq.resolve_one_typeclass goal ty in
+	    let t,goal = Coq.resolve_one_typeclass goal ty in
 	    Some (goal,t,unit)
 	  with Not_found -> None
 	in
 	match result with
 	  | None -> None
 	  | Some (goal,s,unit) ->
-	    let unit = AAC_coq.nf_evar goal unit  in
+	    let unit = Coq.nf_evar goal unit  in
 	    Some (goal, unit, s)
 		
 
 
       (** gives back the class and the operator *)
-      let is_bin  (rlt: AAC_coq.Relation.t) (op: constr) ( goal: AAC_coq.goal_sigma)
-	  : (AAC_coq.goal_sigma * Bin.pack) option =
+      let is_bin  (rlt: Coq.Relation.t) (op: constr) ( goal: Coq.goal_sigma)
+	  : (Coq.goal_sigma * Bin.pack) option =
 	let assoc_ty = Classes.Associative.ty rlt op in
 	let comm_ty = Classes.Commutative.ty rlt op in
 	let proper_ty  = Classes.Proper.ty rlt op 2 in
 	try
-	  let proper , goal = AAC_coq.resolve_one_typeclass goal proper_ty in
-	  let assoc, goal = AAC_coq.resolve_one_typeclass goal assoc_ty in
+	  let proper , goal = Coq.resolve_one_typeclass goal proper_ty in
+	  let assoc, goal = Coq.resolve_one_typeclass goal assoc_ty in
 	  let comm , goal =
 	    try
-	      let comm, goal = AAC_coq.resolve_one_typeclass goal comm_ty in
+	      let comm, goal = Coq.resolve_one_typeclass goal comm_ty in
 	      Some comm, goal
 	    with Not_found ->
 	      None, goal
@@ -448,7 +448,7 @@ module Trans = struct
 	  Some (goal,bin)
 	with |Not_found -> None
 	 
-      let is_bin (rlt : AAC_coq.Relation.t) (op : constr) (goal : AAC_coq.goal_sigma)=
+      let is_bin (rlt : Coq.Relation.t) (op : constr) (goal : Coq.goal_sigma)=
 	match is_bin rlt op goal with
 	  | None -> None
 	  | Some (goal, bin_pack) ->
@@ -469,13 +469,13 @@ module Trans = struct
 
     (** {is_morphism} try to infer the kind of operator we are
 	dealing with *)
-    let is_morphism goal (rlt : AAC_coq.Relation.t) (papp : Term.constr) (ar : int) : (AAC_coq.goal_sigma * pack ) option      =
+    let is_morphism goal (rlt : Coq.Relation.t) (papp : Term.constr) (ar : int) : (Coq.goal_sigma * pack ) option      =
       let typeof = Classes.Proper.mk_typeof rlt ar in
       let relof = Classes.Proper.mk_relof rlt ar in
-      let m = AAC_coq.Classes.mk_morphism  typeof relof  papp in
+      let m = Coq.Classes.mk_morphism  typeof relof  papp in
 	try
-	  let m,goal = AAC_coq.resolve_one_typeclass goal m in
-	  let pack = {Sym.ar = (AAC_coq.Nat.of_int ar); Sym.value= papp; Sym.morph= m} in
+	  let m,goal = Coq.resolve_one_typeclass goal m in
+	  let pack = {Sym.ar = (Coq.Nat.of_int ar); Sym.value= papp; Sym.morph= m} in
 	    Some (goal, Sym pack)
 	with
 	  | Not_found -> None
@@ -493,7 +493,7 @@ module Trans = struct
 	  let args = Array.sub ca (n-2) 2 in
 	  Some (papp, args )
 	     
-    let fold goal (rlt : AAC_coq.Relation.t) envs t ca cont =
+    let fold goal (rlt : Coq.Relation.t) envs t ca cont =
       let fold_morphism t ca  =
 	let nb_params = Array.length ca in
 	let rec aux n =
@@ -526,9 +526,9 @@ module Trans = struct
 	  	
     (* update in place the envs of known stuff, using memoization. We
        have to memoize failures, here. *)
-    let gather goal (rlt : AAC_coq.Relation.t ) envs t : AAC_coq.goal_sigma =
+    let gather goal (rlt : Coq.Relation.t ) envs t : Coq.goal_sigma =
       let rec aux goal x = 
-	match AAC_coq.decomp_term x  with
+	match Coq.decomp_term x  with
 	  | App (t,ca) ->
 	      fold goal rlt envs t ca (aux )
 	  | _ ->  goal
@@ -541,7 +541,7 @@ module Trans = struct
       constants).  *)
   module Parse :
   sig
-    val  t_of_constr : AAC_coq.goal_sigma -> AAC_coq.Relation.t -> envs  -> constr -> AAC_matcher.Terms.t * AAC_coq.goal_sigma
+    val  t_of_constr : Coq.goal_sigma -> Coq.Relation.t -> envs  -> constr -> Matcher.Terms.t * Coq.goal_sigma
   end
     = struct
      
@@ -562,21 +562,21 @@ module Trans = struct
 	  This functions is prevented to go through [ar < 0] by the fact
 	  that a constant is a morphism. But not an eva. *)
 
-      let is_morphism goal (rlt : AAC_coq.Relation.t) (papp : Term.constr) (ar : int) : (AAC_coq.goal_sigma * pack ) option      =
+      let is_morphism goal (rlt : Coq.Relation.t) (papp : Term.constr) (ar : int) : (Coq.goal_sigma * pack ) option      =
 	let typeof = Classes.Proper.mk_typeof rlt ar in
 	let relof = Classes.Proper.mk_relof rlt ar in
-	let m = AAC_coq.Classes.mk_morphism  typeof relof  papp in
+	let m = Coq.Classes.mk_morphism  typeof relof  papp in
 	try
-	  let m,goal = AAC_coq.resolve_one_typeclass goal m in
-	  let pack = {Sym.ar = (AAC_coq.Nat.of_int ar); Sym.value= papp; Sym.morph= m} in
+	  let m,goal = Coq.resolve_one_typeclass goal m in
+	  let pack = {Sym.ar = (Coq.Nat.of_int ar); Sym.value= papp; Sym.morph= m} in
 	  Some (goal, Sym pack)
 	with
 	  | e ->  None
 	
       exception NotReflexive	
-      let discriminate goal envs (rlt : AAC_coq.Relation.t) t ca : AAC_coq.goal_sigma * pack * constr * constr array =  
+      let discriminate goal envs (rlt : Coq.Relation.t) t ca : Coq.goal_sigma * pack * constr * constr array =  
 	let nb_params = Array.length ca in
-	let rec fold goal ar :AAC_coq.goal_sigma  * pack * constr * constr array =
+	let rec fold goal ar :Coq.goal_sigma  * pack * constr * constr array =
 	  begin
 	    assert (0 <= ar && ar <= nb_params);
 	    let p_app = mkApp (t, Array.sub ca 0 (nb_params - ar)) in
@@ -618,7 +618,7 @@ module Trans = struct
 	 
       let discriminate goal envs rlt  x =
 	try
-	  match AAC_coq.decomp_term x with
+	  match Coq.decomp_term x with
 	    | App (t,ca) ->
 	      discriminate goal envs rlt   t ca
 	    | _ -> discriminate goal envs rlt x [| |]
@@ -633,11 +633,11 @@ module Trans = struct
 	  of the term [cstr]. Doing so, it modifies the environment of
 	  known stuff [envs], and eventually creates fresh
 	  evars. Therefore, we give back the goal updated accordingly *)
-      let t_of_constr goal (rlt: AAC_coq.Relation.t ) envs  : constr -> AAC_matcher.Terms.t * AAC_coq.goal_sigma =
+      let t_of_constr goal (rlt: Coq.Relation.t ) envs  : constr -> Matcher.Terms.t * Coq.goal_sigma =
 	let r_goal = ref (goal) in
 	let rec aux x =
-	  match AAC_coq.decomp_term x with
-	    | Rel i -> AAC_matcher.Terms.Var i
+	  match Coq.decomp_term x with
+	    | Rel i -> Matcher.Terms.Var i
 	    | _ ->
 		let goal, pack , p_app, ca = discriminate (!r_goal) envs rlt   x in
 		  r_goal := goal;
@@ -648,16 +648,16 @@ module Trans = struct
 			  begin match pack.Bin.comm with
 			    | Some _ ->
 				assert (Array.length ca = 2);
-				AAC_matcher.Terms.Plus ( k, aux ca.(0), aux ca.(1))
+				Matcher.Terms.Plus ( k, aux ca.(0), aux ca.(1))
 			    | None  ->
 				assert (Array.length ca = 2);
-				AAC_matcher.Terms.Dot ( k, aux ca.(0), aux ca.(1))
+				Matcher.Terms.Dot ( k, aux ca.(0), aux ca.(1))
 			  end
 		      | Unit _ ->
 			  assert (Array.length ca = 0);
-			  AAC_matcher.Terms.Unit ( k)
+			  Matcher.Terms.Unit ( k)
 		      | Sym _  ->
-			  AAC_matcher.Terms.Sym ( k, Array.map aux ca)		
+			  Matcher.Terms.Sym ( k, Array.map aux ca)		
 	in
 	  (
 	    fun x -> let r = aux x in r,  !r_goal
@@ -689,12 +689,12 @@ module Trans = struct
 	bin  : (int * Bin.pack) list	;
 	units : (int * Unit.pack) list;
 	sym : (int * Term.constr) list  ;
-	matcher_units : AAC_matcher.ext_units
+	matcher_units : Matcher.ext_units
       }
 	
   let ir_to_units ir = ir.matcher_units
    
-  let ir_of_envs goal (rlt : AAC_coq.Relation.t) envs =
+  let ir_of_envs goal (rlt : Coq.Relation.t) envs =
     let add x y l = (x,y)::l in
     let  nil = [] in
     let sym ,
@@ -729,7 +729,7 @@ module Trans = struct
 	  )
 	  ([],[]) bin
       in
-      {AAC_matcher.unit_for = unit_for; AAC_matcher.is_ac = is_ac}
+      {Matcher.unit_for = unit_for; Matcher.is_ac = is_ac}
 
     in
     let units : (int * Unit.pack) list =
@@ -745,7 +745,7 @@ module Trans = struct
 		    if unit_of.Unit.uf_u = u
 		    then
 		      {unit_of with
-			Unit.uf_idx = (AAC_coq.Pos.of_int nop)} :: acc
+			Unit.uf_idx = (Coq.Pos.of_int nop)} :: acc
 		    else
 		      acc
 	      )
@@ -779,7 +779,7 @@ module Trans = struct
   (** [raw_constr_of_t_debruijn] rebuilds a term in the raw
       representation, without products on top, and maybe escaping free
       debruijn indices (in the case of a pattern for example).  *)
-  let raw_constr_of_t_debruijn ir  (t : AAC_matcher.Terms.t) : Term.constr * int list =
+  let raw_constr_of_t_debruijn ir  (t : Matcher.Terms.t) : Term.constr * int list =
     let add_set,get =
       let r = ref [] in
       let rec add x = function
@@ -794,31 +794,31 @@ module Trans = struct
 	 find the wrong kind of pack in the maps *)
     let rec aux t =
       match t with
-	| AAC_matcher.Terms.Plus (s,l,r) ->
+	| Matcher.Terms.Plus (s,l,r) ->
 	    begin match Hashtbl.find ir.packer s with
 	      | Bin (s,_) ->
 		  mkApp (s.Bin.value ,  [|(aux l);(aux r)|])
 	      | _ -> 	    Printf.printf "erreur:%i\n%!"s;
 		  assert false
 	    end
-	| AAC_matcher.Terms.Dot (s,l,r) ->
+	| Matcher.Terms.Dot (s,l,r) ->
 	    begin match Hashtbl.find ir.packer s with
 	      | Bin (s,_) ->
 		  mkApp (s.Bin.value,  [|(aux l);(aux r)|])
 	      | _ -> assert false
 	    end
-	| AAC_matcher.Terms.Sym (s,t) ->
+	| Matcher.Terms.Sym (s,t) ->
 	    begin match Hashtbl.find ir.packer s with
 	      | Sym s ->
 		  mkApp (s.Sym.value, Array.map aux t)
 	      | _ -> assert false
 	    end
-	| AAC_matcher.Terms.Unit  x ->
+	| Matcher.Terms.Unit  x ->
 	    begin match Hashtbl.find ir.packer x with
 	      | Unit s -> s
 	      | _ -> assert false
 	    end
-	| AAC_matcher.Terms.Var i -> add_set i;
+	| Matcher.Terms.Var i -> add_set i;
 	      mkRel (i)
     in
     let t = aux t in
@@ -873,15 +873,15 @@ module Trans = struct
   (* Note : this function can fail if the user is using the wrong
      relation, like proving a = b, while the classes are defined with
      another relation (==) *)
-  let build_reif_params goal (rlt : AAC_coq.Relation.t) (zero) :
-      reif_params * AAC_coq.goal_sigma =
-    let carrier = rlt.AAC_coq.Relation.carrier in
+  let build_reif_params goal (rlt : Coq.Relation.t) (zero) :
+      reif_params * Coq.goal_sigma =
+    let carrier = rlt.Coq.Relation.carrier in
     let bin_null =
       try
-	let op,goal = AAC_coq.evar_binary goal carrier in
+	let op,goal = Coq.evar_binary goal carrier in
 	let assoc,goal = Classes.Associative.infer goal rlt op in
 	let compat,goal = Classes.Proper.infer goal rlt op 2 in
-	let op = AAC_coq.nf_evar goal op in
+	let op = Coq.nf_evar goal op in
 	  {
 	    Bin.value = op;
 	    Bin.compat = compat;
@@ -892,11 +892,11 @@ module Trans = struct
     in
     let zero, goal =
       try
-	let evar_op,goal = AAC_coq.evar_binary goal carrier in
-	let evar_unit, goal = AAC_coq.evar_unit goal carrier in
+	let evar_op,goal = Coq.evar_binary goal carrier in
+	let evar_unit, goal = Coq.evar_unit goal carrier in
 	let query = Classes.Unit.ty rlt evar_op evar_unit in
-	let _, goal = AAC_coq.resolve_one_typeclass goal query in
-	  AAC_coq.nf_evar goal evar_unit, goal
+	let _, goal = Coq.resolve_one_typeclass goal query in
+	  Coq.nf_evar goal evar_unit, goal
       with _ -> 	zero, goal in 		
     let sym_null = Sym.null rlt in
     let unit_null = Unit.default zero in
@@ -932,7 +932,7 @@ module Trans = struct
 
   (** [build_sigma_maps] given a envs and some reif_params, we are
       able to build the sigmas *)
-  let build_sigma_maps  (rlt : AAC_coq.Relation.t) zero ir (k : sigmas * sigma_maps -> Proof_type.tactic ) : Proof_type.tactic = fun goal ->
+  let build_sigma_maps  (rlt : Coq.Relation.t) zero ir (k : sigmas * sigma_maps -> Proof_type.tactic ) : Proof_type.tactic = fun goal ->
     let rp,goal = build_reif_params goal rlt zero  in
     let renumbered_sym, to_local, to_global = renumber ir.sym  in
     let env_sym = Sigma.of_list
@@ -940,7 +940,7 @@ module Trans = struct
       (rp.sym_null)
       renumbered_sym
     in
-      AAC_coq.cps_mk_letin "env_sym" env_sym
+      Coq.cps_mk_letin "env_sym" env_sym
 	(fun env_sym ->
 	   let bin = (List.map ( fun (n,s) -> n, Bin.mk_pack rlt s) ir.bin) in
 	   let env_bin =
@@ -949,7 +949,7 @@ module Trans = struct
 	       (Bin.mk_pack rlt rp.bin_null)
 	       bin
 	   in
-	     AAC_coq.cps_mk_letin "env_bin" env_bin
+	     Coq.cps_mk_letin "env_bin" env_bin
 	       (fun env_bin ->
 		  let units = (List.map (fun (n,s) -> n, Unit.mk_pack rlt env_bin s)ir.units) in 	     		   
 		  let env_units =
@@ -959,7 +959,7 @@ module Trans = struct
 		      units
 		  in
 
-		    AAC_coq.cps_mk_letin "env_units" env_units
+		    Coq.cps_mk_letin "env_units" env_units
 		      (fun env_units -> 		   
 			 let sigmas =
 			   {
@@ -967,7 +967,7 @@ module Trans = struct
 			     env_bin =   env_bin ;
 			     env_units  = env_units;
 			   } in
-			 let f = List.map (fun (x,_) -> (x,AAC_coq.Pos.of_int x)) in
+			 let f = List.map (fun (x,_) -> (x,Coq.Pos.of_int x)) in
 			 let sigma_maps =
 			   {
 			     sym_to_pos = (let sym = f renumbered_sym in fun x ->  (List.assoc (to_local x) sym));
@@ -1006,7 +1006,7 @@ module Trans = struct
       | n  -> let n = n-1 in
 	  mkApp( vcons,
  		 [|
-		   (AAC_coq.Nat.of_int n);
+		   (Coq.Nat.of_int n);
 		   v.(ar - 1 - n);
 		   (aux (n))
 		 |]	
@@ -1014,9 +1014,9 @@ module Trans = struct
     in aux ar
 	
   (* TODO: use a do notation *)
-  let mk_reif_builders  (rlt: AAC_coq.Relation.t)   (env_sym:constr)  (k: reif_builders -> Proof_type.tactic) =
-    let x = (rlt.AAC_coq.Relation.carrier) in
-    let r = (rlt.AAC_coq.Relation.r) in
+  let mk_reif_builders  (rlt: Coq.Relation.t)   (env_sym:constr)  (k: reif_builders -> Proof_type.tactic) =
+    let x = (rlt.Coq.Relation.carrier) in
+    let r = (rlt.Coq.Relation.r) in
 
     let x_r_env = [|x;r;env_sym|] in
     let tty =  mkApp (Lazy.force Stubs._Tty, x_r_env) in
@@ -1025,17 +1025,17 @@ module Trans = struct
     let rsym = mkApp (Lazy.force Stubs.rsym, x_r_env) in
     let vnil = mkApp (Lazy.force Stubs.vnil, x_r_env) in
     let vcons = mkApp (Lazy.force Stubs.vcons, x_r_env) in
-      AAC_coq.cps_mk_letin "tty" tty
+      Coq.cps_mk_letin "tty" tty
       (fun tty ->
-      AAC_coq.cps_mk_letin "rsum" rsum
+      Coq.cps_mk_letin "rsum" rsum
       (fun rsum ->
-      AAC_coq.cps_mk_letin "rprd" rprd
+      Coq.cps_mk_letin "rprd" rprd
       (fun rprd ->
-      AAC_coq.cps_mk_letin "rsym" rsym
+      Coq.cps_mk_letin "rsym" rsym
       (fun rsym ->
-      AAC_coq.cps_mk_letin "vnil" vnil
+      Coq.cps_mk_letin "vnil" vnil
       (fun vnil ->
-      AAC_coq.cps_mk_letin "vcons" vcons
+      Coq.cps_mk_letin "vcons" vcons
       (fun vcons ->
 	 let r ={
 	   rsum =
@@ -1074,21 +1074,21 @@ module Trans = struct
   (** [reif_constr_of_t reifier t] rebuilds the term [t] in the
       reified form. We use the [reifier] to minimise the size of the
       terms (we make as much lets as possible)*)
-  let reif_constr_of_t (sm,rb) (t:AAC_matcher.Terms.t) : constr =
+  let reif_constr_of_t (sm,rb) (t:Matcher.Terms.t) : constr =
     let rec aux = function
-      | AAC_matcher.Terms.Plus (s,l,r) ->
+      | Matcher.Terms.Plus (s,l,r) ->
 	  let idx = sm.bin_to_pos s  in
 	    rb.rsum idx (aux l) (aux r)
-      | AAC_matcher.Terms.Dot (s,l,r) ->
+      | Matcher.Terms.Dot (s,l,r) ->
 	  let idx = sm.bin_to_pos s in
 	    rb.rprd idx (aux l) (aux r)
-      | AAC_matcher.Terms.Sym (s,t) ->
+      | Matcher.Terms.Sym (s,t) ->
 	  let idx =  sm.sym_to_pos  s in
 	    rb.rsym idx (Array.map aux t)
-      | AAC_matcher.Terms.Unit s ->
+      | Matcher.Terms.Unit s ->
 	  let idx = sm.units_to_pos s in
 	    rb.runit idx
-      | AAC_matcher.Terms.Var i ->
+      | Matcher.Terms.Var i ->
 	  anomaly "call to reif_constr_of_t on a term with variables."
     in aux t
 end

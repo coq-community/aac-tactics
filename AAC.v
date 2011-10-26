@@ -1132,4 +1132,4 @@ Section t.
 
 End t.
        
-Declare ML Module "aac_tactics".
+Declare ML Module "aac".

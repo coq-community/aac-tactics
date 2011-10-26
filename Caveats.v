@@ -13,8 +13,6 @@
    with the path to the [aac_tactics] library
 *)
 
-Add Rec LoadPath "." as AAC_tactics.
-Add ML Path ".".
 Require Import AAC.
 Require Instances.
 

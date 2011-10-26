@@ -1,10 +1,19 @@
-AAC_coq.ml
-AAC_helper.ml
-AAC_search_monad.ml
-AAC_matcher.ml
-AAC_theory.ml
-AAC_print.ml
-AAC_rewrite.ml
+-R . AAC_tactics
+coq.mli
+helper.mli
+search_monad.mli
+matcher.mli
+theory.mli
+print.mli
+rewrite.mli
+coq.ml
+helper.ml
+search_monad.ml
+matcher.ml
+theory.ml
+print.ml
+rewrite.ml4
+aac.mlpack
 AAC.v
 Instances.v
 Tutorial.v

@@ -38,10 +38,10 @@ struct
   let printing = false
 end
 
-module Debug = AAC_helper.Debug (Control)
+module Debug = Helper.Debug (Control)
 open Debug
 
-module Search = AAC_search_monad 	(* a handle *)
+module Search = Search_monad 	(* a handle *)
 
 type symbol = int
 type var = int
@@ -116,7 +116,7 @@ module Terms : sig
      
       A term in normal form is the canonical representative of the
       equivalence class of all the terms that are equal modulo
-      Associativity and Commutativity. Outside the {!AAC_matcher} module,
+      Associativity and Commutativity. Outside the {!Matcher} module,
       one does not need to access the actual representation of this
       type.  *)
 

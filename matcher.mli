@@ -22,7 +22,7 @@
     subject must make a perfect match against the pattern ([x+x] does
     not match [a+a+b] ).
    
-    We use a search monad {!AAC_search_monad} to perform non-deterministic
+    We use a search monad {!Search_monad} to perform non-deterministic
     choices in an almost transparent way.
 
     We also provide a function {!subterm} for finding a match that is
@@ -175,7 +175,7 @@ end
     while x+x+y does not match a+b+c, since this would require to
     assign 1 to x).
 *)
-val matcher : ?strict:bool -> ext_units -> Terms.t -> Terms.t -> Subst.t AAC_search_monad.m
+val matcher : ?strict:bool -> ext_units -> Terms.t -> Terms.t -> Subst.t Search_monad.m
 
 (** [subterm p t] computes a set of solutions to the given
     subterm-matching problem.
@@ -185,5 +185,5 @@ val matcher : ?strict:bool -> ext_units -> Terms.t -> Terms.t -> Subst.t AAC_sea
     problem). The context is actually a {!Terms.t} where the variables
     are yet to be instantiated by one of the associated substitutions
 *)
-val subterm : ?strict:bool -> ext_units -> Terms.t -> Terms.t -> (int * Terms.t * Subst.t AAC_search_monad.m) AAC_search_monad.m
+val subterm : ?strict:bool -> ext_units -> Terms.t -> Terms.t -> (int * Terms.t * Subst.t Search_monad.m) Search_monad.m
 

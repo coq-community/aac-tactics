@@ -21,7 +21,7 @@
 *)
 
 (** Both in OCaml and Coq, we represent finite multisets using
-    weighted lists ([('a*int) list]), see {!AAC_matcher.mset}.
+    weighted lists ([('a*int) list]), see {!Matcher.mset}.
 
     [mk_mset ty l] constructs a Coq multiset from an OCaml multiset
     [l] of Coq terms of type [ty] *)
@@ -57,16 +57,16 @@ sig
 
 
   (** [mk_pack rlt (ar,value,morph)]  *)
-  val mk_pack: AAC_coq.Relation.t -> pack -> Term.constr
+  val mk_pack: Coq.Relation.t -> pack -> Term.constr
    
-  (** [null] builds a dummy (identity) symbol, given an {!AAC_coq.Relation.t} *)
-  val null: AAC_coq.Relation.t -> Term.constr
+  (** [null] builds a dummy (identity) symbol, given an {!Coq.Relation.t} *)
+  val null: Coq.Relation.t -> Term.constr
  
 end
 
 
 (** We need to export some Coq stubs out of this module. They are used
-    by the main tactic, see {!AAC_rewrite} *)
+    by the main tactic, see {!Rewrite} *)
 module Stubs : sig
   val lift : Term.constr Lazy.t
   val lift_proj_equivalence : Term.constr Lazy.t
@@ -96,7 +96,7 @@ module Trans :  sig
 
   (** This module provides facilities to interpret a term with
       arbitrary operators as an instance of an abstract syntax tree
-      {!AAC_matcher.Terms.t}.
+      {!Matcher.Terms.t}.
 
       For each Coq application [f x_1 ... x_n], this amounts to
       deciding whether one of the partial applications [f x_1
@@ -125,7 +125,7 @@ module Trans :  sig
   val empty_envs : unit -> envs
    
 
-  (** {2 Reification: from Coq terms to AST {!AAC_matcher.Terms.t}  } *)
+  (** {2 Reification: from Coq terms to AST {!Matcher.Terms.t}  } *)
 
 
   (** [t_of_constr goal rlt envs (left,right)] builds the abstract
@@ -136,11 +136,11 @@ module Trans :  sig
       evars; this is why we give back the [goal], accordingly
       updated. *)
   
-  val t_of_constr : AAC_coq.goal_sigma -> AAC_coq.Relation.t -> envs -> (Term.constr * Term.constr) -> AAC_matcher.Terms.t * AAC_matcher.Terms.t * AAC_coq.goal_sigma
+  val t_of_constr : Coq.goal_sigma -> Coq.Relation.t -> envs -> (Term.constr * Term.constr) -> Matcher.Terms.t * Matcher.Terms.t * Coq.goal_sigma
 
   (** [add_symbol] adds a given binary symbol to the environment of
       known stuff. *)
-  val add_symbol : AAC_coq.goal_sigma -> AAC_coq.Relation.t -> envs -> Term.constr -> AAC_coq.goal_sigma
+  val add_symbol : Coq.goal_sigma -> Coq.Relation.t -> envs -> Term.constr -> Coq.goal_sigma
 
   (** {2 Reconstruction: from AST back to Coq terms  }
      
@@ -151,8 +151,8 @@ module Trans :  sig
       the reflexive decision procedure. *)
 
   type ir
-  val ir_of_envs : AAC_coq.goal_sigma -> AAC_coq.Relation.t -> envs -> AAC_coq.goal_sigma * ir
-  val ir_to_units : ir -> AAC_matcher.ext_units
+  val ir_of_envs : Coq.goal_sigma -> Coq.Relation.t -> envs -> Coq.goal_sigma * ir
+  val ir_to_units : ir -> Matcher.ext_units
 
   (** {2 Building raw, natural, terms} *)
        
@@ -160,7 +160,7 @@ module Trans :  sig
       reconstruct the named products on top of it. In particular, this
       allow us to print the context put around the left (or right)
       hand side of a pattern. *)
-  val raw_constr_of_t : ir ->  AAC_coq.Relation.t -> (Term.rel_context)  ->AAC_matcher.Terms.t -> Term.constr
+  val raw_constr_of_t : ir ->  Coq.Relation.t -> (Term.rel_context)  ->Matcher.Terms.t -> Term.constr
 
   (** {2 Building reified terms} *)
 
@@ -188,10 +188,10 @@ module Trans :  sig
       reify each term successively.*)
   type reifier
 
-  val mk_reifier :   AAC_coq.Relation.t -> Term.constr -> ir -> (sigmas * reifier -> Proof_type.tactic) -> Proof_type.tactic
+  val mk_reifier :   Coq.Relation.t -> Term.constr -> ir -> (sigmas * reifier -> Proof_type.tactic) -> Proof_type.tactic
 
   (** [reif_constr_of_t  reifier t] rebuilds the term [t] in the
       reified form. *)
-  val reif_constr_of_t : reifier -> AAC_matcher.Terms.t -> Term.constr
+  val reif_constr_of_t : reifier -> Matcher.Terms.t -> Term.constr
 
 end
