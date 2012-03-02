@@ -29,7 +29,7 @@ let tac_or_exn tac exn msg = fun gl ->
 (* helper to be used with the previous function: raise a new anomaly
    except if a another one was previously raised *)
 let push_anomaly msg = function
-  | Util.Anomaly _ as e -> raise e
+  | Errors.Anomaly _ as e -> raise e
   | _ -> Coq.anomaly msg
 
 module M = Matcher

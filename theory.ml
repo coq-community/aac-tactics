@@ -295,10 +295,10 @@ module Unit = struct
 end
 
 let anomaly msg =
-  Util.anomaly ("aac_tactics: " ^ msg)
+  Errors.anomaly ("aac_tactics: " ^ msg)
 
 let user_error msg =
-  Util.error ("aac_tactics: " ^ msg)
+  Errors.error ("aac_tactics: " ^ msg)
 
 module Trans = struct
  
