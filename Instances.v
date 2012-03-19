@@ -162,7 +162,7 @@ Module Prop_ops.
   Instance aac_False : Unit iff and True.  Proof.  constructor; firstorder.  Qed.
  
   Program Instance aac_not_compat : Proper (iff ==> iff) not.
-  Solve All Obligations using firstorder.
+  Solve All Obligations with firstorder.
 
   Instance lift_impl_iff : AAC_lift Basics.impl iff := Build_AAC_lift _  _.
 End Prop_ops.
