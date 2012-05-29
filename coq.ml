@@ -19,15 +19,15 @@ let contrib_name = "aac_tactics"
 (* Getting constrs (primitive Coq terms) from existing Coq
    libraries. *)
 let find_constant contrib dir s =
-  Libnames.constr_of_global (Coqlib.find_reference contrib dir s)
+  Globnames.constr_of_global (Coqlib.find_reference contrib dir s)
 
 let init_constant dir s = find_constant contrib_name dir s
 
 (* A clause specifying that the [let] should not try to fold anything
    in the goal *)
 let nowhere =
-  { Tacexpr.onhyps = Some [];
-    Tacexpr.concl_occs = Glob_term.no_occurrences_expr
+  { Locus.onhyps = Some [];
+    Locus.concl_occs = Locus.NoOccurrences
   }
 
 let cps_mk_letin
@@ -576,10 +576,10 @@ let rewrite ?(abort=false)hypinfo subst k =
 	if not abort then
 	  Equality.general_rewrite_bindings
 	    hypinfo.l2r
-	    Termops.all_occurrences
+	    Locus.AllOccurrences
 	    true (* tell if existing evars must be frozen for instantiation *)
 	    false
-	    (rew,Glob_term.NoBindings)
+	    (rew,Misctypes.NoBindings)
 	    true
 	else
 	  Tacticals.tclIDTAC
