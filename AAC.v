@@ -33,6 +33,7 @@ Require Import RelationClasses Equality.
 Require Export Morphisms.
 
 Set Implicit Arguments.
+Set Asymmetric Patterns.
 
 Local Open Scope signature_scope.
 
