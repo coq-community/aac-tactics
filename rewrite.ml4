@@ -257,13 +257,15 @@ let aac_normalise = fun goal ->
     [
       aac_conclude by_aac_normalise;
       Tacinterp.interp (
+	(* TODO: replace "__aac_x/y__" with dynamically generated fresh names
+	   (I don't know how to do this with this syntax) *)
       	<:tactic<
-	  intro x;
-	  intro y;
-	  vm_compute in x;
-	  vm_compute in y;
-	  unfold x;
-	  unfold y;
+	  intro __aac_x__;
+	  intro __aac_y__;
+	  vm_compute in __aac_x__;
+	  vm_compute in __aac_y__;
+	  unfold __aac_x__;
+	  unfold __aac_y__;
       	  compute [Internal.eval Internal.fold_map Internal.copy Prect]; simpl
       	>>
       );

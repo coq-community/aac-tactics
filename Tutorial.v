@@ -330,7 +330,7 @@ Section AAC_normalise.
   Require Import ZArith.
   Open Scope Z_scope.
  
-  Variable a b c d : Z.
+  Variable x y a b c d : Z.
   Goal a + (b + c*c*d) + a + 0 + d*1 = a.
     aac_normalise.
   Abort.
