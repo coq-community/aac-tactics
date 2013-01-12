@@ -22,6 +22,8 @@
 # 
 # This Makefile may take arguments passed as environment variables:
 # COQBIN to specify the directory where Coq binaries resides;
+# TIMECMD set a command to log .v compilation time;
+# TIMED if non empty, use the default time command as TIMECMD;
 # ZDEBUG/COQDEBUG to specify debug flags for ocamlc&ocamlopt/coqc;
 # DSTROOT to specify a prefix to install path.
 
@@ -30,8 +32,13 @@ define donewline
 
 
 endef
-includecmdwithout@ = $(eval $(subst @,$(donewline),$(shell { $(1) | tr '\n' '@'; })))
+includecmdwithout@ = $(eval $(subst @,$(donewline),$(shell { $(1) | tr -d '\r' | tr '\n' '@'; })))
 $(call includecmdwithout@,$(COQBIN)coqtop -config)
+
+TIMED=
+TIMECMD=
+STDTIME?=/usr/bin/time -f "$* (user: %U mem: %M ko)"
+TIMER=$(if $(TIMED), $(STDTIME), $(TIMECMD))
 
 ##########################
 #                        #
@@ -51,49 +58,51 @@ COQDOCLIBS?=-R . AAC_tactics
 
 
 OPT?=
-COQDEP?=$(COQBIN)coqdep -c
+COQDEP?="$(COQBIN)coqdep" -c
 COQFLAGS?=-q $(OPT) $(COQLIBS) $(OTHERFLAGS) $(COQ_XML)
 COQCHKFLAGS?=-silent -o
 COQDOCFLAGS?=-interpolate -utf8
-COQC?=$(COQBIN)coqc
-GALLINA?=$(COQBIN)gallina
-COQDOC?=$(COQBIN)coqdoc
-COQCHK?=$(COQBIN)coqchk
+COQC?=$(TIMER) "$(COQBIN)coqc"
+GALLINA?="$(COQBIN)gallina"
+COQDOC?="$(COQBIN)coqdoc"
+COQCHK?="$(COQBIN)coqchk"
+COQMKTOP?="$(COQBIN)coqmktop"
 
-COQSRCLIBS?=-I $(COQLIB)kernel -I $(COQLIB)lib \
-  -I $(COQLIB)library -I $(COQLIB)parsing \
-  -I $(COQLIB)pretyping -I $(COQLIB)interp \
-  -I $(COQLIB)printing -I $(COQLIB)intf \
-  -I $(COQLIB)proofs -I $(COQLIB)tactics \
-  -I $(COQLIB)toplevel -I $(COQLIB)grammar \
-  -I $(COQLIB)plugins/btauto \
-  -I $(COQLIB)plugins/cc \
-  -I $(COQLIB)plugins/decl_mode \
-  -I $(COQLIB)plugins/extraction \
-  -I $(COQLIB)plugins/field \
-  -I $(COQLIB)plugins/firstorder \
-  -I $(COQLIB)plugins/fourier \
-  -I $(COQLIB)plugins/funind \
-  -I $(COQLIB)plugins/micromega \
-  -I $(COQLIB)plugins/nsatz \
-  -I $(COQLIB)plugins/omega \
-  -I $(COQLIB)plugins/quote \
-  -I $(COQLIB)plugins/ring \
-  -I $(COQLIB)plugins/romega \
-  -I $(COQLIB)plugins/rtauto \
-  -I $(COQLIB)plugins/setoid_ring \
-  -I $(COQLIB)plugins/syntax \
-  -I $(COQLIB)plugins/xml
-ZFLAGS=$(OCAMLLIBS) $(COQSRCLIBS) -I $(CAMLP4LIB)
+COQSRCLIBS?=-I "$(COQLIB)kernel" -I "$(COQLIB)lib" \
+  -I "$(COQLIB)library" -I "$(COQLIB)parsing" -I "$(COQLIB)pretyping" \
+  -I "$(COQLIB)interp" -I "$(COQLIB)printing" -I "$(COQLIB)intf" \
+  -I "$(COQLIB)proofs" -I "$(COQLIB)tactics" -I "$(COQLIB)tools" \
+  -I "$(COQLIB)toplevel" -I "$(COQLIB)grammar" \
+  -I "$(COQLIB)"plugins/btauto \
+  -I "$(COQLIB)"plugins/cc \
+  -I "$(COQLIB)"plugins/decl_mode \
+  -I "$(COQLIB)"plugins/extraction \
+  -I "$(COQLIB)"plugins/firstorder \
+  -I "$(COQLIB)"plugins/fourier \
+  -I "$(COQLIB)"plugins/funind \
+  -I "$(COQLIB)"plugins/micromega \
+  -I "$(COQLIB)"plugins/nsatz \
+  -I "$(COQLIB)"plugins/omega \
+  -I "$(COQLIB)"plugins/quote \
+  -I "$(COQLIB)"plugins/romega \
+  -I "$(COQLIB)"plugins/rtauto \
+  -I "$(COQLIB)"plugins/setoid_ring \
+  -I "$(COQLIB)"plugins/syntax \
+  -I "$(COQLIB)"plugins/xml
+ZFLAGS=$(OCAMLLIBS) $(COQSRCLIBS) -I "$(CAMLP4LIB)"
 
 CAMLC?=$(OCAMLC) -c
 CAMLOPTC?=$(OCAMLOPT) -c
 CAMLLINK?=$(OCAMLC)
 CAMLOPTLINK?=$(OCAMLOPT)
 GRAMMARS?=grammar.cma
-CAMLP4EXTEND?=pa_extend.cmo pa_macro.cmo q_MLast.cmo
-CAMLP4OPTIONS?=-loc loc
-PP?=-pp "$(CAMLP4BIN)$(CAMLP4)o -I $(CAMLLIB) -I . $(COQSRCLIBS) $(CAMLP4EXTEND) $(GRAMMARS) $(CAMLP4OPTIONS) -impl"
+ifeq ($(CAMLP4),camlp5)
+CAMLP4EXTEND=pa_extend.cmo q_MLast.cmo pa_macro.cmo
+else
+CAMLP4EXTEND=
+endif
+PP?=-pp '"$(CAMLP4O)" -I "$(CAMLLIB)" -I . $(COQSRCLIBS) compat5.cmo \
+  $(CAMLP4EXTEND) $(GRAMMARS) $(CAMLP4OPTIONS) -impl'
 
 ##################
 #                #
@@ -102,12 +111,12 @@ PP?=-pp "$(CAMLP4BIN)$(CAMLP4)o -I $(CAMLLIB) -I . $(COQSRCLIBS) $(CAMLP4EXTEND)
 ##################
 
 ifdef USERINSTALL
-XDG_DATA_HOME?=$(HOME)/.local/share
+XDG_DATA_HOME?="$(HOME)/.local/share"
 COQLIBINSTALL=$(XDG_DATA_HOME)/coq
 COQDOCINSTALL=$(XDG_DATA_HOME)/doc/coq
 else
-COQLIBINSTALL=${COQLIB}user-contrib
-COQDOCINSTALL=${DOCDIR}user-contrib
+COQLIBINSTALL="${COQLIB}user-contrib"
+COQDOCINSTALL="${DOCDIR}user-contrib"
 endif
 
 ######################
@@ -167,6 +176,11 @@ CMXFILES=$(CMOFILES:.cmo=.cmx)
 OFILES=$(CMXFILES:.cmx=.o)
 CMIFILES=$(sort $(ALLCMOFILES:.cmo=.cmi) $(MLIFILES:.mli=.cmi))
 CMXSFILES=$(CMXFILES:.cmx=.cmxs)
+ifeq '$(HASNATDYNLINK)' 'true'
+HASNATDYNLINK_OR_EMPTY := yes
+else
+HASNATDYNLINK_OR_EMPTY :=
+endif
 
 #######################################
 #                                     #
@@ -174,7 +188,7 @@ CMXSFILES=$(CMXFILES:.cmx=.cmxs)
 #                                     #
 #######################################
 
-all: $(VOFILES) $(CMOFILES) $(if ifeq '$(HASNATDYNLINK)' 'true',$(CMXSFILES)) 
+all: $(VOFILES) $(CMOFILES) $(if $(HASNATDYNLINK_OR_EMPTY),$(CMXSFILES)) 
 
 mlihtml: $(MLIFILES:.mli=.cmi)
 	 mkdir $@ || rm -rf $@/*
@@ -215,7 +229,7 @@ beautify: $(VFILES:=.beautified)
 	@echo 'Do not do "make clean" until you are sure that everything went well!'
 	@echo 'If there were a problem, execute "for file in $$(find . -name \*.v.old -print); do mv $${file} $${file%.old}; done" in your shell/'
 
-.PHONY: all opt byte archclean clean install userinstall depend html validate
+.PHONY: all opt byte archclean clean install uninstall_me.sh uninstall userinstall depend html validate
 
 #####################################
 #                                   #
@@ -245,34 +259,41 @@ userinstall:
 	+$(MAKE) USERINSTALL=true install
 
 install-natdynlink:
-	for i in $(CMXSFILES); do \
-	 install -d `dirname $(DSTROOT)$(COQLIBINSTALL)/AAC_tactics/$$i`; \
-	 install -m 0644 $$i $(DSTROOT)$(COQLIBINSTALL)/AAC_tactics/$$i; \
+	cd "." && for i in $(CMXSFILES); do \
+	 install -d "`dirname "$(DSTROOT)"$(COQLIBINSTALL)/AAC_tactics/$$i`"; \
+	 install -m 0644 $$i "$(DSTROOT)"$(COQLIBINSTALL)/AAC_tactics/$$i; \
 	done
 
-install:$(if ifeq '$(HASNATDYNLINK)' 'true',install-natdynlink)
-	for i in $(VOFILES); do \
-	 install -d `dirname $(DSTROOT)$(COQLIBINSTALL)/AAC_tactics/$$i`; \
-	 install -m 0644 $$i $(DSTROOT)$(COQLIBINSTALL)/AAC_tactics/$$i; \
-	done
-	for i in $(CMOFILES); do \
-	 install -d `dirname $(DSTROOT)$(COQLIBINSTALL)/AAC_tactics/$$i`; \
-	 install -m 0644 $$i $(DSTROOT)$(COQLIBINSTALL)/AAC_tactics/$$i; \
-	done
-	for i in $(CMIFILES); do \
-	 install -d `dirname $(DSTROOT)$(COQLIBINSTALL)/AAC_tactics/$$i`; \
-	 install -m 0644 $$i $(DSTROOT)$(COQLIBINSTALL)/AAC_tactics/$$i; \
+install:$(if $(HASNATDYNLINK_OR_EMPTY),install-natdynlink)
+	cd "." && for i in $(VOFILES) $(CMOFILES) $(CMIFILES) $(CMAFILES); do \
+	 install -d "`dirname "$(DSTROOT)"$(COQLIBINSTALL)/AAC_tactics/$$i`"; \
+	 install -m 0644 $$i "$(DSTROOT)"$(COQLIBINSTALL)/AAC_tactics/$$i; \
 	done
 
 install-doc:
-	install -d $(DSTROOT)$(COQDOCINSTALL)/AAC_tactics/html
+	install -d "$(DSTROOT)"$(COQDOCINSTALL)/AAC_tactics/html
 	for i in html/*; do \
-	 install -m 0644 $$i $(DSTROOT)$(COQDOCINSTALL)/AAC_tactics/$$i;\
+	 install -m 0644 $$i "$(DSTROOT)"$(COQDOCINSTALL)/AAC_tactics/$$i;\
 	done
-	install -d $(DSTROOT)$(COQDOCINSTALL)/AAC_tactics/mlihtml
+	install -d "$(DSTROOT)"$(COQDOCINSTALL)/AAC_tactics/mlihtml
 	for i in mlihtml/*; do \
-	 install -m 0644 $$i $(DSTROOT)$(COQDOCINSTALL)/AAC_tactics/$$i;\
+	 install -m 0644 $$i "$(DSTROOT)"$(COQDOCINSTALL)/AAC_tactics/$$i;\
 	done
+
+uninstall_me.sh:
+	echo '#!/bin/sh' > $@ 
+	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/AAC_tactics && rm -f $(CMXSFILES) && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "AAC_tactics" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
+	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/AAC_tactics && rm -f $(VOFILES) $(CMOFILES) $(CMIFILES) $(CMAFILES) && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "AAC_tactics" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
+	printf 'cd "$${DSTROOT}"$(COQDOCINSTALL)/AAC_tactics \\\n' >> "$@"
+	printf '&& rm -f $(shell find "html" -maxdepth 1 -and -type f -print)\n' >> "$@"
+	printf 'cd "$${DSTROOT}"$(COQDOCINSTALL) && find AAC_tactics/html -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
+	printf 'cd "$${DSTROOT}"$(COQDOCINSTALL)/AAC_tactics \\\n' >> "$@"
+	printf '&& rm -f $(shell find "mlihtml" -maxdepth 1 -and -type f -print)\n' >> "$@"
+	printf 'cd "$${DSTROOT}"$(COQDOCINSTALL) && find AAC_tactics/mlihtml -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
+	chmod +x $@
+
+uninstall: uninstall_me.sh
+	sh $<
 
 clean:
 	rm -f $(ALLCMOFILES) $(CMIFILES) $(CMAFILES)
@@ -280,23 +301,23 @@ clean:
 	rm -f $(addsuffix .d,$(MLFILES) $(MLIFILES) $(ML4FILES) $(MLLIBFILES) $(MLPACKFILES))
 	rm -f $(VOFILES) $(VIFILES) $(GFILES) $(VFILES:.v=.v.d) $(VFILES:=.beautified) $(VFILES:=.old)
 	rm -f all.ps all-gal.ps all.pdf all-gal.pdf all.glob $(VFILES:.v=.glob) $(VFILES:.v=.tex) $(VFILES:.v=.g.tex) all-mli.tex
-	- rm -rf html mlihtml
+	- rm -rf html mlihtml uninstall_me.sh
 
 archclean:
 	rm -f *.cmx *.o
 
 printenv:
-	@$(COQBIN)coqtop -config
-	@echo CAMLC =	$(CAMLC)
-	@echo CAMLOPTC =	$(CAMLOPTC)
-	@echo PP =	$(PP)
-	@echo COQFLAGS =	$(COQFLAGS)
-	@echo COQLIBINSTALL =	$(COQLIBINSTALL)
-	@echo COQDOCINSTALL =	$(COQDOCINSTALL)
+	@"$(COQBIN)coqtop" -config
+	@echo 'CAMLC =	$(CAMLC)'
+	@echo 'CAMLOPTC =	$(CAMLOPTC)'
+	@echo 'PP =	$(PP)'
+	@echo 'COQFLAGS =	$(COQFLAGS)'
+	@echo 'COQLIBINSTALL =	$(COQLIBINSTALL)'
+	@echo 'COQDOCINSTALL =	$(COQDOCINSTALL)'
 
 Makefile: files.txt
 	mv -f $@ $@.bak
-	$(COQBIN)coq_makefile -f $< -o $@
+	"$(COQBIN)coq_makefile" -f $< -o $@
 
 
 ###################
@@ -329,6 +350,9 @@ Makefile: files.txt
 %.ml.d: %.ml
 	$(OCAMLDEP) -slash $(OCAMLLIBS) "$<" > "$@" || ( RV=$$?; rm -f "$@"; exit $${RV} )
 
+%.cmxs: %.cmxa
+	$(CAMLOPTLINK) $(ZDEBUG) $(ZFLAGS) -linkall -shared -o $@ $<
+
 %.cmxs: %.cmx
 	$(CAMLOPTLINK) $(ZDEBUG) $(ZFLAGS) -shared -o $@ $<
 
@@ -360,7 +384,7 @@ Makefile: files.txt
 	$(COQDOC) $(COQDOCFLAGS) -latex -g $< -o $@
 
 %.g.html: %.v %.glob
-	$(COQDOC)$(COQDOCFLAGS)  -html -g $< -o $@
+	$(COQDOC) $(COQDOCFLAGS)  -html -g $< -o $@
 
 %.v.d: %.v
 	$(COQDEP) -slash $(COQLIBS) "$<" > "$@" || ( RV=$$?; rm -f "$@"; exit $${RV} )
