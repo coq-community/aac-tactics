@@ -295,7 +295,7 @@ module Unit = struct
 end
 
 let anomaly msg =
-  Errors.anomaly ("aac_tactics: " ^ msg)
+  Errors.anomaly ~label:"aac_tactics" (Pp.str msg)
 
 let user_error msg =
   Errors.error ("aac_tactics: " ^ msg)

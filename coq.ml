@@ -69,7 +69,7 @@ let cps_resolve_one_typeclass ?error : Term.types -> (Term.constr  -> Proof_type
 		  try Typeclasses.resolve_one_typeclass env em t
 		  with Not_found ->
 		    begin match error with
-		      | None -> Errors.anomaly  "Cannot resolve a typeclass : please report"
+		      | None -> Errors.anomaly (Pp.str "Cannot resolve a typeclass : please report")
 		      | Some x -> Errors.error x
 		    end
 		in
@@ -357,7 +357,7 @@ let tclPRINT  tac = fun gl ->
 (* functions to handle the failures of our tactic. Some should be
    reported [anomaly], some are on behalf of the user [user_error]*)
 let anomaly msg =
-  Errors.anomaly ("[aac_tactics] " ^ msg)
+  Errors.anomaly ~label:"[aac_tactics]" (Pp.str msg)
 
 let user_error msg =
   Errors.error ("[aac_tactics] " ^ msg)
