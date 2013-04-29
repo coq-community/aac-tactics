@@ -13,6 +13,7 @@
     be of little interest to most readers.
 *)
 open Term
+open Context
 
 module Control = struct
   let printing = true
@@ -829,7 +830,7 @@ module Trans = struct
       (** cap rebuilds the products in front of the constr *)
     let rec cap c = function [] -> c
       | t::q -> 
-	  let i = Term.lookup_rel t context in
+	  let i = Context.lookup_rel t context in
 	  cap (mkProd_or_LetIn i c) q
     in
     let t,indices = raw_constr_of_t_debruijn ir t in

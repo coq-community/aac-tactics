@@ -317,7 +317,7 @@ end
 (**[ match_as_equation goal eqt] see [eqt] as an equation. An
    optionnal rel_context can be provided to ensure taht the term
    remains typable*)
-let match_as_equation ?(context = Term.empty_rel_context) goal equation : (constr*constr* Std.Relation.t) option  =
+let match_as_equation ?(context = Context.empty_rel_context) goal equation : (constr*constr* Std.Relation.t) option  =
   let env = Tacmach.pf_env goal in
   let env =  Environ.push_rel_context context env in
   let evar_map = Tacmach.project goal in
@@ -380,7 +380,7 @@ type hypinfo =
     {
       hyp : Term.constr;		  (** the actual constr corresponding to the hypothese  *)
       hyptype : Term.constr; 		(** the type of the hypothesis *)
-      context : Term.rel_context; 	(** the quantifications of the hypothese *)
+      context : Context.rel_context; 	(** the quantifications of the hypothese *)
       body : Term.constr; 		(** the body of the type of the hypothesis*)
       rel : Std.Relation.t; 		(** the relation  *)
       left : Term.constr;		(** left hand side *)
@@ -394,7 +394,7 @@ let get_hypinfo c ~l2r ?check_type  (k : hypinfo -> Proof_type.tactic) :    Proo
   let rec check f e =
     match decomp_term e with
       | Term.Rel i ->
-	    let name, constr_option, types = Term.lookup_rel i rel_context
+	    let name, constr_option, types = Context.lookup_rel i rel_context
 	    in f types
       | _ -> Term.fold_constr (fun acc x -> acc && check f x) true e
   in
@@ -439,7 +439,7 @@ let get_hypinfo c ~l2r ?check_type  (k : hypinfo -> Proof_type.tactic) :    Proo
 (* Fresh evars for everyone (should be the good way to do this
    recompose in Coq v8.4) *)
 let recompose_prod 
-    (context : Term.rel_context)
+    (context : Context.rel_context)
     (subst : (int * Term.constr) list)
     env
     em
@@ -460,7 +460,7 @@ let recompose_prod
 	  let em,x =
 	    try em, List.assoc n subst
 	    with | Not_found ->
-	      Evarutil.new_evar em env (Term.substl acc ty)
+	      Evarutil.new_evar em env (Vars.substl acc ty)
 	  in
 	  (Environ.push_rel t env), em,x::acc
 	else
@@ -473,7 +473,7 @@ let recompose_prod
    application to handle non-instanciated variables. *)
    
 let recompose_prod'
-    (context : Term.rel_context)
+    (context : Context.rel_context)
     (subst : (int *Term.constr) list)
     c
     =
@@ -504,7 +504,7 @@ let recompose_prod'
       | None :: sign, _ :: app ->
 	None ::	update sign (List.map (Termops.pop) app)
       | Some decl :: sign, _ :: app ->
-	Some (Term.substl_decl app decl)::update sign (List.map (Termops.pop) app) 
+	Some (Vars.substl_decl app decl)::update sign (List.map (Termops.pop) app) 
   in
   let ctxt = update ctxt app in
   (* updates the rel accordingly, taking some care not to go to far

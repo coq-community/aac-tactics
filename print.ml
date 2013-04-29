@@ -65,7 +65,7 @@ let pp_all pt : (int * Terms.t * named_env Search_monad.m) Search_monad.m -> Pp.
 rename the variables, and rebuilds raw Coq terms (for the context, and
 the terms in the environment). In order to do so, it requires the
 information gathered by the {!Theory.Trans} module.*)
-let print rlt ir m (context : Term.rel_context) goal =
+let print rlt ir m (context : Context.rel_context) goal =
   if Search_monad.count m = 0
   then
     (
@@ -80,7 +80,7 @@ let print rlt ir m (context : Term.rel_context) goal =
 	  let l = List.sort (fun (n,_) (n',_) -> Pervasives.compare n n') l in
 	  let l =
 	    List.map (fun (v,t) ->
-	      let (name,body,types) = Term.lookup_rel  v context in
+	      let (name,body,types) = Context.lookup_rel  v context in
 	      (name,t)
 	    ) l
 	  in
