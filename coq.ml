@@ -46,7 +46,8 @@ let cps_mk_letin
 type goal_sigma =  Proof_type.goal Tacmach.sigma
 let goal_update (goal : goal_sigma) evar_map : goal_sigma=
   let it = Tacmach.sig_it goal in
-    Tacmach.re_sig it evar_map
+  let eff = Tacmach.sig_eff goal in
+  Tacmach.re_sig it eff evar_map
 
 let fresh_evar goal ty : constr * goal_sigma =
   let env = Tacmach.pf_env goal in
