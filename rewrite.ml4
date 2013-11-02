@@ -187,7 +187,7 @@ let by_aac_reflexivity zero
 	   convert ;
 	   tac_or_exn apply_tac Coq.user_error "unification failure";
 	   tac_or_exn (time_tac "vm_norm" (Tactics.normalise_in_concl)) Coq.anomaly "vm_compute failure";
-	   Tacticals.tclORELSE Tactics.reflexivity
+	   Tacticals.tclORELSE (Proofview.V82.of_tactic Tactics.reflexivity)
 	     (Tacticals.tclFAIL 0 (Pp.str "Not an equality modulo A/AC"))
 	 ])
     )
@@ -256,6 +256,7 @@ let aac_normalise = fun goal ->
   Tacticals.tclTHENLIST
     [
       aac_conclude by_aac_normalise;
+      Proofview.V82.of_tactic begin
       Tacinterp.interp (
       	<:tactic<
 	  intro x;
@@ -266,7 +267,7 @@ let aac_normalise = fun goal ->
 	  unfold y;
       	  compute [Internal.eval Internal.fold_map Internal.copy Prect]; simpl
       	>>
-      );
+      )end;
       Tactics.keep ids
     ] goal
 
@@ -486,39 +487,39 @@ PRINTED BY pr_constro
 END
 
 TACTIC EXTEND _aac_reflexivity_
-| [ "aac_reflexivity" ] -> [ aac_reflexivity ]
+| [ "aac_reflexivity" ] -> [ Proofview.V82.tactic aac_reflexivity ]
 END
 
 TACTIC EXTEND _aac_normalise_
-| [ "aac_normalise" ] -> [ aac_normalise ]
+| [ "aac_normalise" ] -> [ Proofview.V82.tactic aac_normalise ]
 END
 
 TACTIC EXTEND _aac_rewrite_
 | [ "aac_rewrite" orient(l2r) constr(c) aac_args(args) constro(extra)] ->
-  [ fun gl -> aac_rewrite ?extra ~args ~l2r ~strict:true c gl ]
+  [ Proofview.V82.tactic (fun gl -> aac_rewrite ?extra ~args ~l2r ~strict:true c gl) ]
 END
  
 TACTIC EXTEND _aac_pattern_
 | [ "aac_pattern" orient(l2r) constr(c) aac_args(args) constro(extra)] ->
-  [ fun gl -> aac_rewrite ?extra ~args ~l2r ~strict:true ~abort:true c gl ]
+  [ Proofview.V82.tactic (fun gl -> aac_rewrite ?extra ~args ~l2r ~strict:true ~abort:true c gl) ]
 END
 
 TACTIC EXTEND _aac_instances_
 | [ "aac_instances" orient(l2r) constr(c) aac_args(args) constro(extra)] ->
-  [ fun gl -> aac_rewrite ?extra ~args ~l2r ~strict:true ~show:true c gl ]
+  [ Proofview.V82.tactic (fun gl -> aac_rewrite ?extra ~args ~l2r ~strict:true ~show:true c gl) ]
 END
 
 TACTIC EXTEND _aacu_rewrite_
 | [ "aacu_rewrite" orient(l2r) constr(c) aac_args(args) constro(extra)] ->
-  [ fun gl -> aac_rewrite ?extra ~args ~l2r ~strict:false c gl ]
+  [ Proofview.V82.tactic (fun gl -> aac_rewrite ?extra ~args ~l2r ~strict:false c gl) ]
 END
  
 TACTIC EXTEND _aacu_pattern_
 | [ "aacu_pattern" orient(l2r) constr(c) aac_args(args) constro(extra)] ->
-  [ fun gl -> aac_rewrite ?extra ~args ~l2r ~strict:false ~abort:true c gl ]
+  [ Proofview.V82.tactic (fun gl -> aac_rewrite ?extra ~args ~l2r ~strict:false ~abort:true c gl) ]
 END
 
 TACTIC EXTEND _aacu_instances_
 | [ "aacu_instances" orient(l2r) constr(c) aac_args(args) constro(extra)] ->
-  [ fun gl -> aac_rewrite ?extra ~args ~l2r ~strict:false ~show:true c gl ]
+  [ Proofview.V82.tactic (fun gl -> aac_rewrite ?extra ~args ~l2r ~strict:false ~show:true c gl) ]
 END
