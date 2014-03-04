@@ -27,15 +27,8 @@ open Debug
 (** {1 HMap :     Specialized Hashtables based on constr} *)
 
 
-module Hashed_constr =
-struct
-  type t = constr
-  let equal = (=)
-  let hash = Hashtbl.hash
-end
-
   (* TODO module HMap = Hashtbl, du coup ? *)
-module HMap = Hashtbl.Make(Hashed_constr)
+module HMap = Hashtbl.Make(Constr)
 
 let ac_theory_path = ["AAC_tactics"; "AAC"]
 
@@ -330,6 +323,64 @@ module Trans = struct
     | Sym of Sym.pack 		
     | Unit of constr  			(* to avoid confusion in bloom *)
 
+  module PackHash =
+  struct
+    open Hashset.Combine
+
+    type t = pack
+
+    let eq_sym_pack p1 p2 =
+      let open Sym in
+      Constr.equal p1.ar p2.ar &&
+      Constr.equal p1.value p2.value &&
+      Constr.equal p1.morph p2.morph
+
+    let hash_sym_pack p =
+      let open Sym in
+      combine3 (Constr.hash p.ar) (Constr.hash p.value) (Constr.hash p.morph)
+
+    let eq_bin_pack p1 p2 =
+      let open Bin in
+      Constr.equal p1.value p2.value &&
+      Constr.equal p1.compat p2.compat &&
+      Constr.equal p1.assoc p2.assoc &&
+      Option.equal Constr.equal p1.comm p2.comm
+
+    let hash_bin_pack p =
+      let open Bin in
+      combine4 (Constr.hash p.value) (Constr.hash p.compat)
+        (Constr.hash p.assoc) (Option.hash Constr.hash p.comm)
+
+    let eq_unit_of u1 u2 =
+      let open Unit in
+      Constr.equal u1.uf_u u2.uf_u &&
+      Constr.equal u1.uf_idx u2.uf_idx &&
+      Constr.equal u1.uf_desc u2.uf_desc
+
+    let hash_unit_of u =
+      let open Unit in
+      combine3 (Constr.hash u.uf_u) (Constr.hash u.uf_idx)
+        (Constr.hash u.uf_desc)
+
+    let equal p1 p2 = match p1, p2 with
+    | Bin (p1, o1), Bin (p2, o2) ->
+      eq_bin_pack p1 p2 && Option.equal eq_unit_of o1 o2
+    | Sym p1, Sym p2 -> eq_sym_pack p1 p2
+    | Unit c1, Unit c2 -> Constr.equal c1 c2
+    | _ -> false
+
+    let hash p = match p with
+    | Bin (p, o) ->
+      combinesmall 1 (combine (hash_bin_pack p) (Option.hash hash_unit_of o))
+    | Sym p ->
+      combinesmall 2 (hash_sym_pack p)
+    | Unit c ->
+      combinesmall 3 (Constr.hash c)
+
+  end
+
+  module PackTable = Hashtbl.Make(PackHash)
+
   (** discr is a map from {!Term.constr} to {!pack}.
      
       [None] means that it is not possible to instantiate this partial
@@ -344,7 +395,7 @@ module Trans = struct
   type envs =
       {
 	discr : (pack option) HMap.t ;
-	bloom : (pack, int ) Hashtbl.t;
+	bloom : int PackTable.t;
 	bloom_back  : (int, pack ) Hashtbl.t;
 	bloom_next : int ref;
       }
@@ -352,7 +403,7 @@ module Trans = struct
   let empty_envs () =
     {
       discr = HMap.create 17;
-      bloom  =  Hashtbl.create 17;
+      bloom  =  PackTable.create 17;
       bloom_back  =  Hashtbl.create 17; 
       bloom_next = ref 1;
     }
@@ -360,16 +411,16 @@ module Trans = struct
           
 
   let add_bloom envs pack =
-    if Hashtbl.mem envs.bloom pack
+    if PackTable.mem envs.bloom pack
     then ()
     else
       let x = ! (envs.bloom_next) in
-	Hashtbl.add envs.bloom pack x;
+	PackTable.add envs.bloom pack x;
 	Hashtbl.add envs.bloom_back x pack;
 	incr (envs.bloom_next)
 
   let find_bloom envs pack =
-    try Hashtbl.find envs.bloom pack
+    try PackTable.find envs.bloom pack
     with Not_found -> assert false
 
   	    (********************************************)
@@ -721,7 +772,7 @@ module Trans = struct
 	    match wu with
 	      | None -> acc
 	      | Some (unit_of) ->
-		let unit_n = Hashtbl.find envs.bloom
+		let unit_n = PackTable.find envs.bloom
 		  (Unit unit_of.Unit.uf_u)
 		in
 		( n,  unit_n)::unit_for,
@@ -743,7 +794,7 @@ module Trans = struct
 		match wu with
 		  | None -> acc
 		  | Some unit_of ->
-		    if unit_of.Unit.uf_u = u
+		    if Constr.equal (unit_of.Unit.uf_u) u
 		    then
 		      {unit_of with
 			Unit.uf_idx = (Coq.Pos.of_int nop)} :: acc
