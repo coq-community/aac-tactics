@@ -38,7 +38,7 @@ Module Peano.
 
 
   (* We also provide liftings from le to eq *)
-  Instance preorder_le : PreOrder le := Build_PreOrder _ _ le_refl le_trans.
+  Instance preorder_le : PreOrder le := Build_PreOrder _ le_refl le_trans.
   Instance lift_le_eq : AAC_lift le eq := Build_AAC_lift eq_equivalence _.
 
 End Peano.
@@ -63,7 +63,7 @@ Module Z.
   Instance aac_zero_Zplus  : Unit eq Zplus 0 := Build_Unit eq Zplus 0 Zplus_0_l Zplus_0_r.
 
   (* We also provide liftings from le to eq *)
-  Instance preorder_Zle : PreOrder Zle := Build_PreOrder _ _ Zle_refl Zle_trans.
+  Instance preorder_Zle : PreOrder Zle := Build_PreOrder _ Zle_refl Zle_trans.
   Instance lift_le_eq : AAC_lift Zle eq := Build_AAC_lift eq_equivalence _.
 
 End Z.
@@ -101,7 +101,7 @@ Module N.
   Instance aac_zero_max  :  Unit eq Nmax 0 := Build_Unit eq Nmax 0 N.max_0_l N.max_0_r. 
    
   (* We also provide liftings from le to eq *)
-  Instance preorder_le : PreOrder Nle := Build_PreOrder _ Nle N.le_refl N.le_trans.
+  Instance preorder_le : PreOrder Nle := Build_PreOrder Nle N.le_refl N.le_trans.
   Instance lift_le_eq : AAC_lift Nle eq := Build_AAC_lift eq_equivalence _.
 
 End N.
@@ -126,7 +126,7 @@ Module P.
   Instance aac_one_max  :  Unit eq Pmax 1 := Build_Unit eq Pmax 1 Pos.max_1_l Pos.max_1_r. 
 
   (* We also provide liftings from le to eq *)
-  Instance preorder_le : PreOrder Ple := Build_PreOrder _ Ple Pos.le_refl Pos.le_trans.
+  Instance preorder_le : PreOrder Ple := Build_PreOrder Ple Pos.le_refl Pos.le_trans.
   Instance lift_le_eq : AAC_lift Ple eq := Build_AAC_lift eq_equivalence _.
 End P.
 
@@ -148,7 +148,7 @@ Module Q.
   Instance aac_zero_Qplus  : Unit Qeq Qplus 0 := Build_Unit Qeq Qplus 0 Qplus_0_l Qplus_0_r.
 
   (* We also provide liftings from le to eq *)
-  Instance preorder_le : PreOrder Qle := Build_PreOrder _ Qle Qle_refl Qle_trans.
+  Instance preorder_le : PreOrder Qle := Build_PreOrder Qle Qle_refl Qle_trans.
   Instance lift_le_eq : AAC_lift Qle Qeq := Build_AAC_lift QOrderedType.QOrder.TO.eq_equiv _.
 
 End Q.
