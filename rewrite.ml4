@@ -8,6 +8,7 @@
 
 (** aac_rewrite -- rewriting modulo  *)
 
+DECLARE PLUGIN "aac"
 
 module Control =   struct
     let debug = false

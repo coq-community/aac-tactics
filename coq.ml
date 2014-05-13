@@ -19,7 +19,7 @@ let contrib_name = "aac_tactics"
 (* Getting constrs (primitive Coq terms) from existing Coq
    libraries. *)
 let find_constant contrib dir s =
-  Globnames.constr_of_global (Coqlib.find_reference contrib dir s)
+  Universes.constr_of_global (Coqlib.find_reference contrib dir s)
 
 let init_constant dir s = find_constant contrib_name dir s
 
