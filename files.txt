@@ -1,3 +1,4 @@
+-I .
 -R . AAC_tactics
 coq.mli
 helper.mli
