@@ -40,6 +40,7 @@ val cps_evar_relation : Term.constr -> (Term.constr -> Proof_type.tactic) -> Pro
 (** [cps_mk_letin name v] binds the constr [v] using a letin tactic  *)
 val cps_mk_letin : string -> Term.constr -> ( Term.constr -> Proof_type.tactic) -> Proof_type.tactic
 
+val retype : Term.constr -> Proof_type.tactic
 
 val decomp_term : Term.constr -> (Term.constr , Term.types) Term.kind_of_term
 val lapp : Term.constr lazy_t -> Term.constr array -> Term.constr

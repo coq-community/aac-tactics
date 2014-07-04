@@ -30,6 +30,10 @@ let nowhere =
     Locus.concl_occs = Locus.NoOccurrences
   }
 
+let retype c gl =
+  let sigma, _ = Tacmach.pf_apply Typing.e_type_of gl c in
+    Refiner.tclEVARS sigma gl
+
 let cps_mk_letin
     (name:string)
     (c: constr)
@@ -39,7 +43,7 @@ let cps_mk_letin
     let name = (Names.id_of_string name) in
     let name =  Tactics.fresh_id [] name goal in
     let letin = (Proofview.V82.of_tactic (Tactics.letin_tac None  (Name name) c None nowhere)) in
-      Tacticals.tclTHEN letin (k (mkVar name)) goal
+      Tacticals.tclTHENLIST [retype c; letin; (k (mkVar name))] goal
 
 (** {2 General functions}  *)
 

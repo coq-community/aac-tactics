@@ -27,6 +27,9 @@ let tac_or_exn tac exn msg = fun gl ->
     pr_constr "last goal" (Tacmach.pf_concl gl);
     exn msg e
 
+
+let retype = Coq.retype
+
 (* helper to be used with the previous function: raise a new anomaly
    except if a another one was previously raised *)
 let push_anomaly msg = function
@@ -184,7 +187,7 @@ let by_aac_reflexivity zero
       let convert = Tactics.convert_concl convert_to Term.VMcast in
       let apply_tac = Tactics.apply decision_thm in
       (Tacticals.tclTHENLIST
-	 [
+	 [ retype decision_thm; retype convert_to;
 	   convert ;
 	   tac_or_exn apply_tac Coq.user_error "unification failure";
 	   tac_or_exn (time_tac "vm_norm" (Tactics.normalise_in_concl)) Coq.anomaly "vm_compute failure";
@@ -215,7 +218,7 @@ let by_aac_normalise zero lift ir t t' =
       let convert = Tactics.convert_concl convert_to Term.VMcast in
       let apply_tac = Tactics.apply normalise_thm in
       (Tacticals.tclTHENLIST
-	 [
+	 [ retype normalise_thm; retype convert_to;
 	   convert ;
 	   apply_tac;
 	 ])
@@ -291,7 +294,8 @@ let aac_reflexivity = fun goal ->
 		   |])
 	  in
 	  Tacticals.tclTHEN
-	    (Tactics.apply lift_reflexivity)
+	  
+	  (Tacticals.tclTHEN (retype lift_reflexivity) (Tactics.apply lift_reflexivity))
 	    (fun goal ->
 	      let concl = Tacmach.pf_concl goal in
 	      let _ = pr_constr "concl "concl in 	     
@@ -328,7 +332,7 @@ let lift_transitivity in_left (step:constr) preorder lifting (using_eq : Coq.Equ
 	     |])
     in
     Tacticals.tclTHENLIST
-      [
+      [ retype lift_transitivity;
 	Tactics.apply lift_transitivity
       ] goal
 
