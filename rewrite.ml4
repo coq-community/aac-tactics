@@ -185,7 +185,7 @@ let by_aac_reflexivity zero
 	 way *)
       let convert_to = mkApp (r, [| mkApp (eval,[| t |]); mkApp (eval, [|t'|])|])   in
       let convert = Tactics.convert_concl convert_to Term.VMcast in
-      let apply_tac = Tactics.apply decision_thm in
+      let apply_tac = Proofview.V82.of_tactic (Tactics.apply decision_thm) in
       (Tacticals.tclTHENLIST
 	 [ retype decision_thm; retype convert_to;
 	   convert ;
@@ -216,7 +216,7 @@ let by_aac_normalise zero lift ir t t' =
 	 way *)
       let convert_to = mkApp (rlt.Coq.Relation.r, [| mkApp (eval,[| t |]); mkApp (eval, [|t'|])|])   in
       let convert = Tactics.convert_concl convert_to Term.VMcast in
-      let apply_tac = Tactics.apply normalise_thm in
+      let apply_tac = Proofview.V82.of_tactic (Tactics.apply normalise_thm) in
       (Tacticals.tclTHENLIST
 	 [ retype normalise_thm; retype convert_to;
 	   convert ;
@@ -295,7 +295,7 @@ let aac_reflexivity = fun goal ->
 	  in
 	  Tacticals.tclTHEN
 	  
-	  (Tacticals.tclTHEN (retype lift_reflexivity) (Tactics.apply lift_reflexivity))
+	  (Tacticals.tclTHEN (retype lift_reflexivity) (Proofview.V82.of_tactic (Tactics.apply lift_reflexivity)))
 	    (fun goal ->
 	      let concl = Tacmach.pf_concl goal in
 	      let _ = pr_constr "concl "concl in 	     
@@ -333,7 +333,7 @@ let lift_transitivity in_left (step:constr) preorder lifting (using_eq : Coq.Equ
     in
     Tacticals.tclTHENLIST
       [ retype lift_transitivity;
-	Tactics.apply lift_transitivity
+	Proofview.V82.of_tactic (Tactics.apply lift_transitivity)
       ] goal
 
 

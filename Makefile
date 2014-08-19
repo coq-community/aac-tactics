@@ -343,7 +343,7 @@ $(addsuffix .d,$(MLIFILES)): %.mli.d: %.mli
 $(ML4FILES:.ml4=.cmo): %.cmo: %.ml4
 	$(CAMLC) $(ZDEBUG) $(ZFLAGS) $(PP) -impl $<
 
-$(filter $(CMXFILES),$(ML4FILES:.ml4=.cmx)): %.cmx: %.ml4
+$(filter-out $(MLPACKFILES:.mlpack=.cmx),$(ML4FILES:.ml4=.cmx)): %.cmx: %.ml4
 	$(CAMLOPTC) $(ZDEBUG) $(ZFLAGS) $(PP) -impl $<
 
 $(addsuffix .d,$(ML4FILES)): %.ml4.d: %.ml4
@@ -352,13 +352,13 @@ $(addsuffix .d,$(ML4FILES)): %.ml4.d: %.ml4
 $(MLFILES:.ml=.cmo): %.cmo: %.ml
 	$(CAMLC) $(ZDEBUG) $(ZFLAGS) $<
 
-$(filter $(CMXFILES),$(MLFILES:.ml=.cmx)): %.cmx: %.ml
+$(filter-out $(MLPACKFILES:.mlpack=.cmx),$(MLFILES:.ml=.cmx)): %.cmx: %.ml
 	$(CAMLOPTC) $(ZDEBUG) $(ZFLAGS) $<
 
 $(addsuffix .d,$(MLFILES)): %.ml.d: %.ml
 	$(OCAMLDEP) -slash $(OCAMLLIBS) "$<" > "$@" || ( RV=$$?; rm -f "$@"; exit $${RV} )
 
-$(MLFILES:.ml=.cmxs) $(ML4FILES:.ml4=.cmxs) $(MLPACKFILES:.mlpack=.cmxs): %.cmxs: %.cmx
+$(filter-out $(MLLIBFILES:.mllib=.cmxs),$(MLFILES:.ml=.cmxs) $(ML4FILES:.ml4=.cmxs) $(MLPACKFILES:.mlpack=.cmxs)): %.cmxs: %.cmx
 	$(CAMLOPTLINK) $(ZDEBUG) $(ZFLAGS) -shared -o $@ $<
 
 $(MLLIBFILES:.mllib=.cmxs): %.cmxs: %.cmxa
