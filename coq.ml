@@ -55,7 +55,7 @@ let goal_update (goal : goal_sigma) evar_map : goal_sigma=
 let fresh_evar goal ty : constr * goal_sigma =
   let env = Tacmach.pf_env goal in
   let evar_map = Tacmach.project goal in
-  let (em,x) = Evarutil.new_evar evar_map env ty in
+  let (em,x) = Evarutil.new_evar env evar_map ty in
     x,( goal_update goal em)
      
 let resolve_one_typeclass goal ty : constr*goal_sigma=
@@ -88,28 +88,28 @@ let nf_evar goal c : Term.constr=
 let evar_unit (gl : goal_sigma) (x : constr) : constr * goal_sigma =
   let env = Tacmach.pf_env gl in
   let evar_map = Tacmach.project gl in
-  let (em,x) = Evarutil.new_evar evar_map env x in
+  let (em,x) = Evarutil.new_evar env evar_map x in
     x,(goal_update gl em)
      
 let evar_binary (gl: goal_sigma) (x : constr) =
   let env = Tacmach.pf_env gl in
   let evar_map = Tacmach.project gl in
   let ty = mkArrow x (mkArrow x x) in
-  let (em,x) = Evarutil.new_evar evar_map env  ty in
+  let (em,x) = Evarutil.new_evar env evar_map ty in
     x,( goal_update gl em)
 
 let evar_relation (gl: goal_sigma) (x: constr) =
   let env = Tacmach.pf_env gl in
   let evar_map = Tacmach.project gl in
   let ty = mkArrow x (mkArrow x (mkSort prop_sort)) in
-  let (em,r) = Evarutil.new_evar evar_map env  ty in
+  let (em,r) = Evarutil.new_evar env evar_map ty in
     r,( goal_update gl em)
 
 let cps_evar_relation (x: constr) k = fun goal -> 
   Tacmach.pf_apply
     (fun env em ->
       let ty = mkArrow x (mkArrow x (mkSort prop_sort)) in
-      let (em,r) = Evarutil.new_evar em env  ty in 	
+      let (em,r) = Evarutil.new_evar env em ty in
       Tacticals.tclTHENLIST [Refiner.tclEVARS em; k r] goal
     )	goal
 
@@ -464,7 +464,7 @@ let recompose_prod
 	  let em,x =
 	    try em, List.assoc n subst
 	    with | Not_found ->
-	      Evarutil.new_evar em env (Vars.substl acc ty)
+	      Evarutil.new_evar env em (Vars.substl acc ty)
 	  in
 	  (Environ.push_rel t env), em,x::acc
 	else
