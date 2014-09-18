@@ -343,7 +343,7 @@ $(addsuffix .d,$(MLIFILES)): %.mli.d: %.mli
 $(ML4FILES:.ml4=.cmo): %.cmo: %.ml4
 	$(CAMLC) $(ZDEBUG) $(ZFLAGS) $(PP) -impl $<
 
-$(filter-out $(MLPACKFILES:.mlpack=.cmx),$(ML4FILES:.ml4=.cmx)): %.cmx: %.ml4
+$(filter-out $(addsuffix .cmx,$(foreach lib,$(MLPACKFILES:.mlpack=_MLPACK_DEPENDENCIES),$($(lib)))),$(ML4FILES:.ml4=.cmx)): %.cmx: %.ml4
 	$(CAMLOPTC) $(ZDEBUG) $(ZFLAGS) $(PP) -impl $<
 
 $(addsuffix .d,$(ML4FILES)): %.ml4.d: %.ml4
@@ -352,7 +352,7 @@ $(addsuffix .d,$(ML4FILES)): %.ml4.d: %.ml4
 $(MLFILES:.ml=.cmo): %.cmo: %.ml
 	$(CAMLC) $(ZDEBUG) $(ZFLAGS) $<
 
-$(filter-out $(MLPACKFILES:.mlpack=.cmx),$(MLFILES:.ml=.cmx)): %.cmx: %.ml
+$(filter-out $(addsuffix .cmx,$(foreach lib,$(MLPACKFILES:.mlpack=_MLPACK_DEPENDENCIES),$($(lib)))),$(MLFILES:.ml=.cmx)): %.cmx: %.ml
 	$(CAMLOPTC) $(ZDEBUG) $(ZFLAGS) $<
 
 $(addsuffix .d,$(MLFILES)): %.ml.d: %.ml
