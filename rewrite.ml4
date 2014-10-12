@@ -184,7 +184,7 @@ let by_aac_reflexivity zero
       (* This convert is required to deal with evars in a proper
 	 way *)
       let convert_to = mkApp (r, [| mkApp (eval,[| t |]); mkApp (eval, [|t'|])|])   in
-      let convert = Tactics.convert_concl convert_to Term.VMcast in
+      let convert = Proofview.V82.of_tactic (Tactics.convert_concl convert_to Term.VMcast) in
       let apply_tac = Proofview.V82.of_tactic (Tactics.apply decision_thm) in
       (Tacticals.tclTHENLIST
 	 [ retype decision_thm; retype convert_to;
@@ -215,7 +215,7 @@ let by_aac_normalise zero lift ir t t' =
       (* This convert is required to deal with evars in a proper
 	 way *)
       let convert_to = mkApp (rlt.Coq.Relation.r, [| mkApp (eval,[| t |]); mkApp (eval, [|t'|])|])   in
-      let convert = Tactics.convert_concl convert_to Term.VMcast in
+      let convert = Proofview.V82.of_tactic (Tactics.convert_concl convert_to Term.VMcast) in
       let apply_tac = Proofview.V82.of_tactic (Tactics.apply normalise_thm) in
       (Tacticals.tclTHENLIST
 	 [ retype normalise_thm; retype convert_to;
