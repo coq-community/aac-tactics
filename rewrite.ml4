@@ -272,7 +272,7 @@ let aac_normalise = fun goal ->
       	  compute [Internal.eval Internal.fold_map Internal.copy Prect]; simpl
       	>>
       )end;
-      Tactics.keep ids
+      Proofview.V82.of_tactic (Tactics.keep ids)
     ] goal
 
 let aac_reflexivity = fun goal ->
