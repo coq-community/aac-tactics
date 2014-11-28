@@ -323,7 +323,7 @@ printenv:
 	@echo 'COQLIBINSTALL =	$(COQLIBINSTALL)'
 	@echo 'COQDOCINSTALL =	$(COQDOCINSTALL)'
 
-Makefile: files.txt
+Makefile: Make
 	mv -f $@ $@.bak
 	"$(COQBIN)coq_makefile" -f $< -o $@
 
