@@ -6,6 +6,11 @@
 (*       Copyright 2009-2010: Thomas Braibant, Damien Pous.                *)
 (***************************************************************************)
 
+Require List.
+Require Arith NArith Max Min.
+Require ZArith Zminmax.
+Require QArith Qminmax.
+Require Relations.
 
 Require Export AAC.
 
@@ -19,7 +24,7 @@ Proof. intros x y ->. reflexivity. Qed.
 (* At the moment, all the instances are exported even if they are packaged into modules. Even using LocalInstances in fact*)
 
 Module Peano.
-  Require Import Arith NArith Max Min.
+  Import Arith NArith Max Min.
   Instance aac_plus_Assoc : Associative eq plus := plus_assoc.
   Instance aac_plus_Comm : Commutative eq plus :=  plus_comm.
  
@@ -45,7 +50,7 @@ End Peano.
 
 
 Module Z.
-  Require Import ZArith Zminmax.
+  Import ZArith Zminmax.
   Open Scope Z_scope.
   Instance aac_Zplus_Assoc : Associative eq Zplus :=  Zplus_assoc.
   Instance aac_Zplus_Comm : Commutative eq Zplus :=  Zplus_comm.
@@ -69,7 +74,7 @@ Module Z.
 End Z.
 
 Module Lists.
-   Require Import List.
+   Import List.
    Instance aac_append_Assoc {A} : Associative eq (@app A) := @app_assoc A.
    Instance aac_nil_append  {A} : @Unit (list A) eq (@app A) (@nil A) := Build_Unit _ (@app A) (@nil A) (@app_nil_l A) (@app_nil_r A).
    Instance aac_append_Proper {A} : Proper (eq ==> eq ==> eq) (@app A).
@@ -82,7 +87,7 @@ End Lists.
 
 
 Module N.
-  Require Import NArith.
+  Import NArith.
   Open Scope N_scope.
   Instance aac_Nplus_Assoc : Associative eq Nplus :=  Nplus_assoc.
   Instance aac_Nplus_Comm : Commutative eq Nplus :=  Nplus_comm.
@@ -107,7 +112,7 @@ Module N.
 End N.
 
 Module P.
-  Require Import NArith.
+  Import NArith.
   Open Scope positive_scope.
   Instance aac_Pplus_Assoc : Associative eq Pplus :=  Pplus_assoc.
   Instance aac_Pplus_Comm : Commutative eq Pplus :=  Pplus_comm.
@@ -131,7 +136,7 @@ Module P.
 End P.
 
 Module Q.
-  Require Import QArith Qminmax.
+  Import QArith Qminmax.
   Instance aac_Qplus_Assoc : Associative Qeq Qplus :=  Qplus_assoc.
   Instance aac_Qplus_Comm : Commutative Qeq Qplus :=  Qplus_comm.
  
@@ -179,7 +184,7 @@ Module Bool.
 End Bool.
 
 Module Relations.
-  Require Import Relations.
+  Import Relations.Relations.
   Section defs.
     Variable T : Type.
     Variables R S: relation T.
