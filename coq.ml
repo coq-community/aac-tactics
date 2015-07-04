@@ -31,7 +31,7 @@ let nowhere =
   }
 
 let retype c gl =
-  let sigma, _ = Tacmach.pf_apply Typing.e_type_of gl c in
+  let sigma, _ = Tacmach.pf_apply Typing.type_of gl c in
     Refiner.tclEVARS sigma gl
 
 let cps_mk_letin
@@ -332,7 +332,7 @@ let match_as_equation ?(context = Context.empty_rel_context) goal equation : (co
 	let left  =  ca.(n-2) in
 	let right =  ca.(n-1) in
 	let r = (mkApp (c, Array.sub ca 0 (n - 2))) in
-	let carrier =  Typing.type_of env evar_map left in
+	let carrier =  Typing.unsafe_type_of env evar_map left in
 	let rlt =Std.Relation.make carrier r
 	in
 	Some (left, right, rlt )
@@ -393,7 +393,7 @@ type hypinfo =
     }
 
 let get_hypinfo c ~l2r ?check_type  (k : hypinfo -> Proof_type.tactic) :    Proof_type.tactic = fun goal ->
-  let ctype =  Tacmach.pf_type_of goal c in 
+  let ctype =  Tacmach.pf_unsafe_type_of goal c in 
   let (rel_context, body_type) = Term.decompose_prod_assum ctype in 
   let rec check f e =
     match decomp_term e with
