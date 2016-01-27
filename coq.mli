@@ -147,9 +147,9 @@ module Equivalence : sig
 end
 
 (** [match_as_equation ?context goal c] try to decompose c as a
-    relation applied to two terms. An optionnal rel_context can be
+    relation applied to two terms. An optionnal rel-context can be
     provided to ensure that the term remains typable *)
-val match_as_equation  : ?context:Context.rel_context -> goal_sigma -> Term.constr -> (Term.constr * Term.constr * Relation.t) option
+val match_as_equation  : ?context:Context.Rel.t -> goal_sigma -> Term.constr -> (Term.constr * Term.constr * Relation.t) option
 
 (** {2 Some tacticials}  *)
 
@@ -190,7 +190,7 @@ type hypinfo =
     {
       hyp : Term.constr;		  (** the actual constr corresponding to the hypothese  *)
       hyptype : Term.constr; 		(** the type of the hypothesis *)
-      context : Context.rel_context; 	(** the quantifications of the hypothese *)
+      context : Context.Rel.t;		(** the quantifications of the hypothese *)
       body : Term.constr; 		(** the body of the hypothese*)
       rel : Relation.t; 		(** the relation  *)
       left : Term.constr;		(** left hand side *)
