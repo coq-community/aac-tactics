@@ -160,7 +160,7 @@ module Trans :  sig
       reconstruct the named products on top of it. In particular, this
       allow us to print the context put around the left (or right)
       hand side of a pattern. *)
-  val raw_constr_of_t : ir ->  Coq.Relation.t -> (Context.rel_context)  ->Matcher.Terms.t -> Term.constr
+  val raw_constr_of_t : ir ->  Coq.Relation.t -> (Context.Rel.t)  ->Matcher.Terms.t -> Term.constr
 
   (** {2 Building reified terms} *)
 

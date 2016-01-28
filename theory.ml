@@ -877,7 +877,7 @@ module Trans = struct
       t , get ( )
 
   (** [raw_constr_of_t] rebuilds a term in the raw representation *)
-  let raw_constr_of_t ir rlt (context:rel_context) t =
+  let raw_constr_of_t ir rlt (context:Context.Rel.t) t =
       (** cap rebuilds the products in front of the constr *)
     let rec cap c = function [] -> c
       | t::q -> 

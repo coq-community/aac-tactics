@@ -65,7 +65,7 @@ let pp_all pt : (int * Terms.t * named_env Search_monad.m) Search_monad.m -> Pp.
 rename the variables, and rebuilds raw Coq terms (for the context, and
 the terms in the environment). In order to do so, it requires the
 information gathered by the {!Theory.Trans} module.*)
-let print rlt ir m (context : Context.rel_context) goal =
+let print rlt ir m (context : Context.Rel.t) goal =
   if Search_monad.count m = 0
   then
     (
