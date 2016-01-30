@@ -409,7 +409,7 @@ let get_hypinfo c ~l2r ?check_type  (k : hypinfo -> Proof_type.tactic) :    Proo
   let rec check f e =
     match decomp_term e with
       | Term.Rel i ->
-	    let name, constr_option, types = Context.lookup_rel i rel_context
+	    let name, constr_option, types = Context.Rel.lookup i rel_context
 	    in f types
       | _ -> Term.fold_constr (fun acc x -> acc && check f x) true e
   in
