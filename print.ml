@@ -10,6 +10,8 @@
    solution *)
 open Pp
 open Matcher
+open Context.Rel.Declaration
+
 type named_env = (Names.name * Terms.t) list
  
 
@@ -80,8 +82,7 @@ let print rlt ir m (context : Context.Rel.t) goal =
 	  let l = List.sort (fun (n,_) (n',_) -> Pervasives.compare n n') l in
 	  let l =
 	    List.map (fun (v,t) ->
-	      let (name,body,types) = Context.Rel.lookup v context in
-	      (name,t)
+	      get_name (Context.Rel.lookup v context), t
 	    ) l
 	  in
 	  Search_monad.return l

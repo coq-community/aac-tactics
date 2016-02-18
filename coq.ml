@@ -13,6 +13,7 @@ open Term
 open Names
 open Coqlib
 open Sigma.Notations
+open Context.Rel.Declaration
 
 (* The contrib name is used to locate errors when loading constrs *)
 let contrib_name = "aac_tactics"
@@ -408,16 +409,14 @@ let get_hypinfo c ~l2r ?check_type  (k : hypinfo -> Proof_type.tactic) :    Proo
   let (rel_context, body_type) = Term.decompose_prod_assum ctype in 
   let rec check f e =
     match decomp_term e with
-      | Term.Rel i ->
-	    let name, constr_option, types = Context.Rel.lookup i rel_context
-	    in f types
+      | Term.Rel i -> f (get_type (Context.Rel.lookup i rel_context))
       | _ -> Term.fold_constr (fun acc x -> acc && check f x) true e
   in
   begin match check_type with
     | None -> ()
     | Some f ->
-      if not (check f body_type)
-      then user_error "Unable to deal with higher-order or heterogeneous patterns";
+	if not (check f body_type)
+	then user_error "Unable to deal with higher-order or heterogeneous patterns";
   end;
   begin
     match match_as_equation ~context:rel_context  goal body_type with
@@ -468,7 +467,7 @@ let recompose_prod
     match context with
       | [] ->
 	env, em, acc
-      | ((name,c,ty) as t)::q ->
+      | t::q ->
 	let env, em, acc = aux q acc em (n+1) in
 	if n >= min_n
 	then
@@ -476,7 +475,7 @@ let recompose_prod
 	    try em, List.assoc n subst
 	    with | Not_found ->
               let em = Sigma.Unsafe.of_evar_map em in
-	      let Sigma (r, em, _) = Evarutil.new_evar env em (Vars.substl acc ty) in
+	      let Sigma (r, em, _) = Evarutil.new_evar env em (Vars.substl acc (get_type t)) in
               let em = Sigma.to_evar_map em in
               (em, r)
 	  in
@@ -501,7 +500,7 @@ let recompose_prod'
       | [] -> []
       | t::q -> pop t :: (popn pop (n-1) q)
   in
-  let pop_rel_decl (name,c,ty) = (name,c,Termops.pop ty) in
+  let pop_rel_decl = map_type Termops.pop in
   let rec aux sign n next app ctxt =
     match sign with
       | [] -> List.rev app, List.rev ctxt
