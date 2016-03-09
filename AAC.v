@@ -1115,6 +1115,11 @@ Section s.
 End s.
 End Internal.
 
+Local Ltac internal_normalize :=
+  let x := fresh in let y := fresh in
+  intro x; intro y; vm_compute in x; vm_compute in y; unfold x; unfold y;
+  compute [Internal.eval Internal.fold_map Internal.copy Prect]; simpl.
+
 
 (** * Lemmas for performing transitivity steps
    given an instance of AAC_lift *)

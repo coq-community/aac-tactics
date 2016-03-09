@@ -190,7 +190,7 @@ let by_aac_reflexivity zero
 	 [ retype decision_thm; retype convert_to;
 	   convert ;
 	   tac_or_exn apply_tac Coq.user_error "unification failure";
-	   tac_or_exn (time_tac "vm_norm" (Tactics.normalise_in_concl)) Coq.anomaly "vm_compute failure";
+	   tac_or_exn (time_tac "vm_norm" (Proofview.V82.of_tactic (Tactics.normalise_in_concl))) Coq.anomaly "vm_compute failure";
 	   Tacticals.tclORELSE (Proofview.V82.of_tactic Tactics.reflexivity)
 	     (Tacticals.tclFAIL 0 (Pp.str "Not an equality modulo A/AC"))
 	 ])
@@ -253,25 +253,19 @@ let aac_conclude
     | Not_found -> Coq.user_error "No lifting from the goal's relation to an equivalence"
 
 open Libnames
+open Tacexpr
 open Tacinterp
 
 let aac_normalise = fun goal ->
   let ids = Tacmach.pf_ids_of_hyps goal in
+  let loc = Loc.ghost in
+  let mp = MPfile (DirPath.make (List.map Id.of_string ["AAC"; "AAC_tactics"])) in
+  let norm_tac = KerName.make2 mp (Label.make "internal_normalize") in
+  let norm_tac = Misctypes.ArgArg (loc, norm_tac) in
   Tacticals.tclTHENLIST
     [
       aac_conclude by_aac_normalise;
-      Proofview.V82.of_tactic begin
-      Tacinterp.interp (
-      	<:tactic<
-	  intro x;
-	  intro y;
-	  vm_compute in x;
-	  vm_compute in y;
-	  unfold x;
-	  unfold y;
-      	  compute [Internal.eval Internal.fold_map Internal.copy Prect]; simpl
-      	>>
-      )end;
+      Proofview.V82.of_tactic (Tacinterp.eval_tactic (TacArg (loc, TacCall (loc, norm_tac, []))));
       Proofview.V82.of_tactic (Tactics.keep ids)
     ] goal
 
