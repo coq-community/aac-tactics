@@ -8,6 +8,11 @@
 
 (** aac_rewrite -- rewriting modulo  *)
 
+open Pcoq.Prim
+open Pcoq.Constr
+open Stdarg
+open Constrarg
+
 DECLARE PLUGIN "aac"
 
 module Control =   struct
