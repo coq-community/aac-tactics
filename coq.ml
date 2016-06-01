@@ -357,15 +357,15 @@ let match_as_equation ?(context = Context.Rel.empty) goal equation : (constr*con
 let tclTIME msg tac = fun gl ->
   let u = Sys.time () in
   let r = tac gl in
-  let _ = Pp.msgnl (Pp.str (Printf.sprintf "%s:%fs" msg (Sys.time ()-.  u))) in
+  let _ = Feedback.msg_notice (Pp.str (Printf.sprintf "%s:%fs" msg (Sys.time ()-.  u))) in
     r
 
 let tclDEBUG msg tac = fun gl ->
-  let _ = Pp.msgnl (Pp.str msg) in
+  let _ = Feedback.msg_debug (Pp.str msg) in
     tac gl
 
 let tclPRINT  tac = fun gl ->
-  let _ = Pp.msgnl (Printer.pr_constr (Tacmach.pf_concl gl)) in
+  let _ = Feedback.msg_notice (Printer.pr_constr (Tacmach.pf_concl gl)) in
     tac gl
 
 
@@ -379,7 +379,7 @@ let user_error msg =
   Errors.error ("[aac_tactics] " ^ msg)
 
 let warning msg =
-  Pp.msg_warning (Pp.str ("[aac_tactics]" ^ msg))
+  Feedback.msg_warning (Pp.str ("[aac_tactics]" ^ msg))
 
      
 (** {1 Rewriting tactics used in aac_rewrite}  *)

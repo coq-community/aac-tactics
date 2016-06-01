@@ -74,7 +74,7 @@ let print rlt ir m (context : Context.Rel.t) goal =
       Tacticals.tclFAIL 0  (Pp.str "No subterm modulo AC")  goal
     )
   else
-    let _ = Pp.msgnl (Pp.str "All solutions:") in
+    let _ = Feedback.msg_notice (Pp.str "All solutions:") in
     let m = Search_monad.(>>) m
       (fun (i,t,envm) ->
 	let envm = Search_monad.(>>) envm ( fun env ->
@@ -92,7 +92,7 @@ let print rlt ir m (context : Context.Rel.t) goal =
       )
     in
     let m = Search_monad.sort (fun (x,_,_) (y,_,_) -> x -  y) m in
-    let _ = Pp.msgnl
+    let _ = Feedback.msg_notice
       (pp_all
 	 (fun t -> Printer.pr_constr (Theory.Trans.raw_constr_of_t ir rlt  context  t) ) m
       )

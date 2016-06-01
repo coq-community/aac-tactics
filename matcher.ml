@@ -1092,7 +1092,7 @@ let unit_warning p ~nullif ~unitif =
   if not (Search.is_empty unitif)
   then
     begin
-      Pp.msg_warning
+      Feedback.msg_warning
 	(Pp.str
 	   "[aac_tactics] This pattern can be instanciated to match units, some solutions can be missing");
     end
