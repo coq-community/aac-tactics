@@ -455,7 +455,7 @@ end
        | Dot (s,l,r) -> Dot (s, aux l, aux r)
        | Var i -> 
 	   begin match find t i  with
-	     | None -> Errors.error "aac_tactics: instantiate failure"
+	     | None -> CErrors.error "aac_tactics: instantiate failure"
 	     | Some x -> t_of_term  x
 	   end
      in aux x

@@ -38,7 +38,7 @@ let retype = Coq.retype
 (* helper to be used with the previous function: raise a new anomaly
    except if a another one was previously raised *)
 let push_anomaly msg = function
-  | e when Errors.is_anomaly e -> raise e
+  | e when CErrors.is_anomaly e -> raise e
   | _ -> Coq.anomaly msg
 
 module M = Matcher

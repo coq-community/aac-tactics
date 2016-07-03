@@ -289,10 +289,10 @@ module Unit = struct
 end
 
 let anomaly msg =
-  Errors.anomaly ~label:"aac_tactics" (Pp.str msg)
+  CErrors.anomaly ~label:"aac_tactics" (Pp.str msg)
 
 let user_error msg =
-  Errors.error ("aac_tactics: " ^ msg)
+  CErrors.error ("aac_tactics: " ^ msg)
 
 module Trans = struct
  
