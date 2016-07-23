@@ -434,7 +434,7 @@ let aac_rewrite  ?abort rew ?(l2r=true) ?(show = false) ?(in_left=true) ?strict 
 		| NoSolutions ->
 		  Tacticals.tclFAIL 0
 		    (Pp.str (if occ_subterm = None && occ_sol = None
-		      then "No matching occurence modulo AC found"
+		      then "No matching occurrence modulo AC found"
 		      else "No such solution"))
 	)   
     ) goal

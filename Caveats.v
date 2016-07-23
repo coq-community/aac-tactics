@@ -333,7 +333,7 @@ Goal a+b*c = c.
      *)
 Abort.
 
-(** **** If the pattern is a unit or can be instanciated to be equal
+(** **** If the pattern is a unit or can be instantiated to be equal
    to a unit:
   
    The heuristic is to make the unit appear at each possible position
@@ -350,7 +350,7 @@ Goal a+b+c = c.
   (** 7 solutions, we miss solutions like [(a+b+c+0*(1+0*[]))]*)
 Abort.
 
-(** *** Another example of the former case is the following, where the hypothesis can be instanciated to be equal to [1] *)
+(** *** Another example of the former case is the following, where the hypothesis can be instantiated to be equal to [1] *)
 Hypothesis H : forall x y, (x+y)*x = x*x + y *x.
 Goal a*a+b*a + c = c.
   (** Here, only one solution if we use the aac_instance tactic  *)

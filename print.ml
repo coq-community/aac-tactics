@@ -53,7 +53,7 @@ remain compatible with the parameters of {!aac_rewrite} *)
 let pp_all pt : (int * Terms.t * named_env Search_monad.m) Search_monad.m -> Pp.std_ppcmds = fun m ->
   let _,s = Search_monad.fold
     (fun (size,context,envm) (n,acc) -> 
-       let s = str (Printf.sprintf "occurence %i: transitivity through " n) in
+       let s = str (Printf.sprintf "occurrence %i: transitivity through " n) in
        let s = s ++ pt context ++ str "\n" in
        let s = if trivial_substitution envm then s else
 	 s ++ str (Printf.sprintf "%i possible(s) substitution(s)" (Search_monad.count envm) )
