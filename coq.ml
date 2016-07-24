@@ -487,7 +487,7 @@ let recompose_prod
   em, acc
 
 (* no fresh evars : instead, use a lambda abstraction around an
-   application to handle non-instanciated variables. *)
+   application to handle non-instantiated variables. *)
    
 let recompose_prod'
     (context : Context.Rel.t)

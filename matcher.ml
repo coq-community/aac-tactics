@@ -1094,7 +1094,7 @@ let unit_warning p ~nullif ~unitif =
     begin
       Feedback.msg_warning
 	(Pp.str
-	   "[aac_tactics] This pattern can be instanciated to match units, some solutions can be missing");
+	   "[aac_tactics] This pattern can be instantiated to match units, some solutions can be missing");
     end
 
 ;;
@@ -1127,7 +1127,7 @@ let unit_warning p ~nullif ~unitif =
     pattern uninstantiated. We do so in order to allow interaction
     with the user, to choose the env.
 
-    Strange patterms like x*y*x can be instanciated by nothing, inside
+    Strange patterms like x*y*x can be instantiated by nothing, inside
     a product. Therefore, we need to check that all the term is not
     going into the context. With proper support for interaction with
     the user, we should lift these tests. However, at the moment, they

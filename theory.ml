@@ -423,16 +423,16 @@ module Trans = struct
     try PackTable.find envs.bloom pack
     with Not_found -> assert false
 
-  	    (********************************************)
-	    (* (\* Gather the occuring AC/A symbols *\) *)
-	    (********************************************)
+  	    (*********************************************)
+	    (* (\* Gather the occurring AC/A symbols *\) *)
+	    (*********************************************)
 
   (** This modules exhibit a function that memoize in the environment
-      all the AC/A operators as well as the morphism that occur. This
+      all the AC/A operators as well as the morphism that occurr. This
       staging process allows us to prefer AC/A operators over raw
       morphisms. Moreover, for each AC/A operators, we need to try to
       infer units. Otherwise, we do not have [x * y * x <= a * a] since 1
-      does not occur.
+      does not occurr.
      
       But, do  we also need to check whether constants are
       units. Otherwise, we do not have the ability to rewrite [0 = a +
@@ -679,7 +679,7 @@ module Trans = struct
 	    (* TODO: is it the only source of invalid use that fall
 	       into this catch_all ? *)
 	  |  e -> 
-	    user_error "Cannot handle this kind of hypotheses (variables occuring under a function symbol which is not a proper morphism)."
+	    user_error "Cannot handle this kind of hypotheses (variables occurring under a function symbol which is not a proper morphism)."
 
       (** [t_of_constr goal rlt envs cstr] builds the abstract syntax tree
 	  of the term [cstr]. Doing so, it modifies the environment of
@@ -724,7 +724,7 @@ module Trans = struct
   (* [t_of_constr] buils a the abstract syntax tree of a constr,
      updating in place the environment. Doing so, we infer all the
      morphisms and the AC/A operators. It is mandatory to do so both
-     for the pattern and the term, since AC symbols can occur in one
+     for the pattern and the term, since AC symbols can occurr in one
      and not the other *)
   let t_of_constr goal rlt envs (l,r) =
     let goal = Gather.gather goal rlt envs l in
