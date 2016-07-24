@@ -428,11 +428,11 @@ module Trans = struct
 	    (*********************************************)
 
   (** This modules exhibit a function that memoize in the environment
-      all the AC/A operators as well as the morphism that occurr. This
+      all the AC/A operators as well as the morphism that occur. This
       staging process allows us to prefer AC/A operators over raw
       morphisms. Moreover, for each AC/A operators, we need to try to
       infer units. Otherwise, we do not have [x * y * x <= a * a] since 1
-      does not occurr.
+      does not occur.
      
       But, do  we also need to check whether constants are
       units. Otherwise, we do not have the ability to rewrite [0 = a +
@@ -724,7 +724,7 @@ module Trans = struct
   (* [t_of_constr] buils a the abstract syntax tree of a constr,
      updating in place the environment. Doing so, we infer all the
      morphisms and the AC/A operators. It is mandatory to do so both
-     for the pattern and the term, since AC symbols can occurr in one
+     for the pattern and the term, since AC symbols can occur in one
      and not the other *)
   let t_of_constr goal rlt envs (l,r) =
     let goal = Gather.gather goal rlt envs l in
