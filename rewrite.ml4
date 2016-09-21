@@ -11,7 +11,6 @@
 open Pcoq.Prim
 open Pcoq.Constr
 open Stdarg
-open Constrarg
 
 DECLARE PLUGIN "aac"
 
