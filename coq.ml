@@ -126,7 +126,7 @@ let cps_evar_relation (x: constr) k = fun goal ->
     )	goal
 
 (* decomp_term :  constr -> (constr, types) kind_of_term *)
-let decomp_term c = kind_of_term (strip_outer_cast c)
+let decomp_term c = kind_of_term (Termops.strip_outer_cast c)
    
 let lapp c v  = mkApp (Lazy.force c, v)
 
