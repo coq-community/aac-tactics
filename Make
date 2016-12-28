@@ -7,14 +7,14 @@ search_monad.mli
 matcher.mli
 theory.mli
 print.mli
-rewrite.mli
+aac_rewrite.mli
 coq.ml
 helper.ml
 search_monad.ml
 matcher.ml
 theory.ml
 print.ml
-rewrite.ml4
+aac_rewrite.ml4
 aac.mlpack
 
 AAC.v
