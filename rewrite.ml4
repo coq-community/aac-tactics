@@ -10,6 +10,7 @@
 
 open Pcoq.Prim
 open Pcoq.Constr
+open Ltac_plugin
 open Stdarg
 
 DECLARE PLUGIN "aac"
