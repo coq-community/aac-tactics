@@ -18,6 +18,6 @@ val print :
   Coq.Relation.t ->
   Theory.Trans.ir ->
   (int * Matcher.Terms.t * Matcher.Subst.t Search_monad.m) Search_monad.m ->
-  Context.Rel.t  ->
+  EConstr.rel_context  ->
   Proof_type.tactic
 

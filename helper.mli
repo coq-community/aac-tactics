@@ -28,6 +28,6 @@ sig
 	
       (** {!pr_constr} print a Coq constructor, that can be labelled
       by a string *)
-      val pr_constr : string -> Term.constr -> unit
+      val pr_constr : string -> EConstr.constr -> unit
 
     end

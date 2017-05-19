@@ -30,7 +30,7 @@ module Debug (X : CONTROL) = struct
   let pr_constr msg constr =
     if printing then
       (  Feedback.msg_notice (Pp.str (Printf.sprintf "=====%s====" msg));
-	 Feedback.msg_notice (Printer.pr_constr constr);
+	 Feedback.msg_notice (Printer.pr_econstr constr);
       )
 
 

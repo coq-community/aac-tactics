@@ -43,7 +43,7 @@ let push_anomaly msg = function
 
 module M = Matcher
 
-open Term
+open EConstr
 open Names
 open Coqlib
 open Proof_type
@@ -89,7 +89,7 @@ type aac_lift =
     {
       r : Coq.Relation.t;
       e : Coq.Equivalence.t;
-      lift : Term.constr    
+      lift : constr
     }
      
 type rewinfo =
@@ -233,9 +233,9 @@ let by_aac_normalise zero lift ir t t' =
 (** A handler tactic, that reifies the goal, and infer the liftings,
     and then call its continuation *)
 let aac_conclude
-    (k : Term.constr -> aac_lift -> Theory.Trans.ir -> Matcher.Terms.t -> Matcher.Terms.t -> Proof_type.tactic) = fun goal ->
+    (k : constr -> aac_lift -> Theory.Trans.ir -> Matcher.Terms.t -> Matcher.Terms.t -> Proof_type.tactic) = fun goal ->
 
-    let (equation : Term.types) = Tacmach.pf_concl goal in
+    let (equation : types) = Tacmach.pf_concl goal in
     let envs = Theory.Trans.empty_envs () in
     let left, right,r =
       match Coq.match_as_equation goal equation with
@@ -384,7 +384,7 @@ let choose_subst  subterm sol m=
     of the goal *)
 let aac_rewrite  ?abort rew ?(l2r=true) ?(show = false) ?(in_left=true) ?strict ~occ_subterm ~occ_sol ?extra : Proof_type.tactic  = fun goal ->
   let envs = Theory.Trans.empty_envs () in
-  let (concl : Term.types) = Tacmach.pf_concl goal in
+  let (concl : types) = Tacmach.pf_concl goal in
   let (_,_,rlt) as concl =
     match Coq.match_as_equation goal concl with
       | None -> Coq.user_error "The goal is not an applied relation"
@@ -400,7 +400,7 @@ let aac_rewrite  ?abort rew ?(l2r=true) ?(show = false) ?(in_left=true) ?strict 
 	  fun rewinfo ->
 	    let goal =
 	      match extra with
-		| Some t -> Theory.Trans.add_symbol goal rewinfo.morph_rlt envs t
+		| Some t -> Theory.Trans.add_symbol goal rewinfo.morph_rlt envs (EConstr.to_constr (Tacmach.project goal) t)
 		| None -> goal
 	    in
 	    let pattern, subject, goal =

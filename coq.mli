@@ -23,27 +23,28 @@
 
 (** {2 Getting Coq terms from the environment}  *)
 
-val init_constant : string list -> string -> Term.constr
+val init_constant_constr : string list -> string -> Term.constr
+val init_constant : string list -> string -> EConstr.constr
 
 (** {2 General purpose functions} *)
 
 type goal_sigma =  Proof_type.goal Tacmach.sigma
 val goal_update : goal_sigma -> Evd.evar_map -> goal_sigma
-val resolve_one_typeclass : Proof_type.goal Tacmach.sigma -> Term.types -> Term.constr * goal_sigma
-val cps_resolve_one_typeclass: ?error:string -> Term.types -> (Term.constr  -> Proof_type.tactic) -> Proof_type.tactic
-val nf_evar : goal_sigma -> Term.constr -> Term.constr
-val fresh_evar :goal_sigma -> Term.types ->  Term.constr* goal_sigma
-val evar_unit :goal_sigma ->Term.constr ->  Term.constr* goal_sigma
-val evar_binary: goal_sigma -> Term.constr -> Term.constr* goal_sigma
-val evar_relation: goal_sigma -> Term.constr -> Term.constr* goal_sigma
-val cps_evar_relation : Term.constr -> (Term.constr -> Proof_type.tactic) -> Proof_type.tactic
+val resolve_one_typeclass : Proof_type.goal Tacmach.sigma -> EConstr.types -> EConstr.constr * goal_sigma
+val cps_resolve_one_typeclass: ?error:string -> EConstr.types -> (EConstr.constr  -> Proof_type.tactic) -> Proof_type.tactic
+val nf_evar : goal_sigma -> EConstr.constr -> EConstr.constr
+val fresh_evar :goal_sigma -> EConstr.types ->  EConstr.constr* goal_sigma
+val evar_unit :goal_sigma ->EConstr.constr ->  EConstr.constr* goal_sigma
+val evar_binary: goal_sigma -> EConstr.constr -> EConstr.constr* goal_sigma
+val evar_relation: goal_sigma -> EConstr.constr -> EConstr.constr* goal_sigma
+val cps_evar_relation : EConstr.constr -> (EConstr.constr -> Proof_type.tactic) -> Proof_type.tactic
 (** [cps_mk_letin name v] binds the constr [v] using a letin tactic  *)
-val cps_mk_letin : string -> Term.constr -> ( Term.constr -> Proof_type.tactic) -> Proof_type.tactic
+val cps_mk_letin : string -> EConstr.constr -> ( EConstr.constr -> Proof_type.tactic) -> Proof_type.tactic
 
-val retype : Term.constr -> Proof_type.tactic
+val retype : EConstr.constr -> Proof_type.tactic
 
-val decomp_term : Term.constr -> (Term.constr , Term.types) Term.kind_of_term
-val lapp : Term.constr lazy_t -> Term.constr array -> Term.constr
+val decomp_term : Evd.evar_map -> EConstr.constr -> (EConstr.constr , EConstr.types, EConstr.ESorts.t, EConstr.EInstance.t) Term.kind_of_term
+val lapp : EConstr.constr lazy_t -> EConstr.constr array -> EConstr.constr
 
 (** {2 Bindings with Coq' Standard Library}  *)
 
@@ -51,81 +52,81 @@ val lapp : Term.constr lazy_t -> Term.constr array -> Term.constr
 module List:
 sig
   (** [of_list ty l]  *)
-  val of_list:Term.constr ->Term.constr list ->Term.constr
+  val of_list:EConstr.constr ->EConstr.constr list ->EConstr.constr
    
   (** [type_of_list ty] *)
-  val type_of_list:Term.constr ->Term.constr
+  val type_of_list:EConstr.constr ->EConstr.constr
 end
 
 (** Coq pairs *)
 module Pair:
 sig
-  val typ:Term.constr lazy_t
-  val pair:Term.constr lazy_t
-  val of_pair : Term.constr -> Term.constr ->  Term.constr * Term.constr -> Term.constr
+  val typ:EConstr.constr lazy_t
+  val pair:EConstr.constr lazy_t
+  val of_pair : EConstr.constr -> EConstr.constr ->  EConstr.constr * EConstr.constr -> EConstr.constr
 end
 
 module Bool : sig
-  val typ : Term.constr lazy_t
-  val of_bool : bool -> Term.constr
+  val typ : EConstr.constr lazy_t
+  val of_bool : bool -> EConstr.constr
 end
 
 
 module Comparison : sig
-  val typ : Term.constr lazy_t
-  val eq : Term.constr lazy_t
-  val lt : Term.constr lazy_t
-  val gt : Term.constr lazy_t
+  val typ : EConstr.constr lazy_t
+  val eq : EConstr.constr lazy_t
+  val lt : EConstr.constr lazy_t
+  val gt : EConstr.constr lazy_t
 end
 
 module Leibniz : sig
-  val eq_refl : Term.types -> Term.constr -> Term.constr
+  val eq_refl : EConstr.types -> EConstr.constr -> EConstr.constr
 end
 
 module Option : sig
-  val some : Term.constr -> Term.constr -> Term.constr
-  val none : Term.constr -> Term.constr
-  val of_option : Term.constr -> Term.constr option -> Term.constr
+  val some : EConstr.constr -> EConstr.constr -> EConstr.constr
+  val none : EConstr.constr -> EConstr.constr
+  val of_option : EConstr.constr -> EConstr.constr option -> EConstr.constr
 end   
 
 (** Coq positive numbers (pos) *)
 module Pos:
 sig
-  val typ:Term.constr lazy_t
-  val of_int: int ->Term.constr
+  val typ:EConstr.constr lazy_t
+  val of_int: int ->EConstr.constr
 end
 
 (** Coq unary numbers (peano) *)
 module Nat:
 sig
-  val typ:Term.constr lazy_t
-  val of_int: int ->Term.constr
+  val typ:EConstr.constr lazy_t
+  val of_int: int ->EConstr.constr
 end
 
 (** Coq typeclasses *)
 module Classes:
 sig
-  val mk_morphism: Term.constr -> Term.constr -> Term.constr -> Term.constr
-  val mk_equivalence: Term.constr ->  Term.constr -> Term.constr
-  val mk_reflexive: Term.constr ->  Term.constr -> Term.constr
-  val mk_transitive: Term.constr ->  Term.constr -> Term.constr
+  val mk_morphism: EConstr.constr -> EConstr.constr -> EConstr.constr -> EConstr.constr
+  val mk_equivalence: EConstr.constr ->  EConstr.constr -> EConstr.constr
+  val mk_reflexive: EConstr.constr ->  EConstr.constr -> EConstr.constr
+  val mk_transitive: EConstr.constr ->  EConstr.constr -> EConstr.constr
 end
 
 module Relation : sig
-  type t = {carrier : Term.constr; r : Term.constr;}	
-  val make : Term.constr -> Term.constr -> t
-  val split : t -> Term.constr * Term.constr
+  type t = {carrier : EConstr.constr; r : EConstr.constr;}
+  val make : EConstr.constr -> EConstr.constr -> t
+  val split : t -> EConstr.constr * EConstr.constr
 end
    
 module Transitive : sig
   type t =
       {
-	carrier : Term.constr;
-	leq : Term.constr;
-	transitive : Term.constr;
+	carrier : EConstr.constr;
+	leq : EConstr.constr;
+	transitive : EConstr.constr;
       }
-  val make : Term.constr -> Term.constr -> Term.constr -> t
-  val infer : goal_sigma -> Term.constr -> Term.constr -> t  * goal_sigma
+  val make : EConstr.constr -> EConstr.constr -> EConstr.constr -> t
+  val infer : goal_sigma -> EConstr.constr -> EConstr.constr -> t  * goal_sigma
   val from_relation : goal_sigma -> Relation.t -> t * goal_sigma
   val cps_from_relation : Relation.t -> (t -> Proof_type.tactic) -> Proof_type.tactic
   val to_relation : t -> Relation.t
@@ -134,22 +135,22 @@ end
 module Equivalence : sig
   type t =
       {
-	carrier : Term.constr;
-	eq : Term.constr;
-	equivalence : Term.constr;	     
+	carrier : EConstr.constr;
+	eq : EConstr.constr;
+	equivalence : EConstr.constr;
       } 
-  val make  : Term.constr -> Term.constr -> Term.constr -> t
-  val infer  : goal_sigma -> Term.constr -> Term.constr -> t  * goal_sigma
+  val make  : EConstr.constr -> EConstr.constr -> EConstr.constr -> t
+  val infer  : goal_sigma -> EConstr.constr -> EConstr.constr -> t  * goal_sigma
   val from_relation : goal_sigma -> Relation.t -> t * goal_sigma
   val cps_from_relation : Relation.t -> (t -> Proof_type.tactic) -> Proof_type.tactic
   val to_relation : t -> Relation.t
-  val split : t -> Term.constr * Term.constr * Term.constr
+  val split : t -> EConstr.constr * EConstr.constr * EConstr.constr
 end
 
 (** [match_as_equation ?context goal c] try to decompose c as a
     relation applied to two terms. An optionnal rel-context can be
     provided to ensure that the term remains typable *)
-val match_as_equation  : ?context:Context.Rel.t -> goal_sigma -> Term.constr -> (Term.constr * Term.constr * Relation.t) option
+val match_as_equation  : ?context:EConstr.rel_context -> goal_sigma -> EConstr.constr -> (EConstr.constr * EConstr.constr * Relation.t) option
 
 (** {2 Some tacticials}  *)
 
@@ -188,13 +189,13 @@ module Rewrite : sig
 *)
 type hypinfo =
     {
-      hyp : Term.constr;		  (** the actual constr corresponding to the hypothese  *)
-      hyptype : Term.constr; 		(** the type of the hypothesis *)
-      context : Context.Rel.t;		(** the quantifications of the hypothese *)
-      body : Term.constr; 		(** the body of the hypothese*)
+      hyp : EConstr.constr;		  (** the actual constr corresponding to the hypothese  *)
+      hyptype : EConstr.constr; 		(** the type of the hypothesis *)
+      context : EConstr.rel_context;		(** the quantifications of the hypothese *)
+      body : EConstr.constr; 		(** the body of the hypothese*)
       rel : Relation.t; 		(** the relation  *)
-      left : Term.constr;		(** left hand side *)
-      right : Term.constr;		(** right hand side  *)
+      left : EConstr.constr;		(** left hand side *)
+      right : EConstr.constr;		(** right hand side  *)
       l2r : bool; 			(** rewriting from left to right  *)
     }
 
@@ -202,7 +203,7 @@ type hypinfo =
     build the related hypinfo, in CPS style. Moreover, an optionnal
     function can be provided to check the type of every free
     variable of the body of the hypothesis.  *)
-val get_hypinfo :Term.constr -> l2r:bool -> ?check_type:(Term.types -> bool) ->   (hypinfo -> Proof_type.tactic) -> Proof_type.tactic
+val get_hypinfo :EConstr.constr -> l2r:bool -> ?check_type:(EConstr.types -> bool) ->   (hypinfo -> Proof_type.tactic) -> Proof_type.tactic
  
 (** {2 Rewriting with bindings}
 
@@ -219,14 +220,14 @@ val get_hypinfo :Term.constr -> l2r:bool -> ?check_type:(Term.types -> bool) -> 
 *)
 
 (** build the constr to rewrite, in CPS style, with lambda abstractions  *)
-val build :  hypinfo ->  (int * Term.constr) list ->  (Term.constr -> Proof_type.tactic) -> Proof_type.tactic
+val build :  hypinfo ->  (int * EConstr.constr) list ->  (EConstr.constr -> Proof_type.tactic) -> Proof_type.tactic
 
 (** build the constr to rewrite, in CPS style, with evars  *)
-val build_with_evar :  hypinfo ->  (int * Term.constr) list ->  (Term.constr -> Proof_type.tactic) -> Proof_type.tactic
+val build_with_evar :  hypinfo ->  (int * EConstr.constr) list ->  (EConstr.constr -> Proof_type.tactic) -> Proof_type.tactic
 
 (** [rewrite ?abort hypinfo subst] builds the rewriting tactic
     associated with the given [subst] and [hypinfo], and feeds it to
     the given continuation. If [abort] is set to [true], we build
     [tclIDTAC] instead. *)
-val rewrite : ?abort:bool -> hypinfo -> (int * Term.constr) list -> (Proof_type.tactic -> Proof_type.tactic) -> Proof_type.tactic
+val rewrite : ?abort:bool -> hypinfo -> (int * EConstr.constr) list -> (Proof_type.tactic -> Proof_type.tactic) -> Proof_type.tactic
 end

@@ -26,7 +26,7 @@
     [mk_mset ty l] constructs a Coq multiset from an OCaml multiset
     [l] of Coq terms of type [ty] *)
 
-val mk_mset:Term.constr -> (Term.constr * int) list ->Term.constr
+val mk_mset:EConstr.constr -> (EConstr.constr * int) list ->EConstr.constr
 
 (** {2 Packaging modules} *)
 
@@ -34,16 +34,16 @@ val mk_mset:Term.constr -> (Term.constr * int) list ->Term.constr
 module Sigma:
 sig
   (**  [add ty n x map] adds the value [x] of type [ty] with key [n] in [map]  *)
-  val add: Term.constr ->Term.constr ->Term.constr ->Term.constr ->Term.constr
+  val add: EConstr.constr ->EConstr.constr ->EConstr.constr ->EConstr.constr ->EConstr.constr
    
   (** [empty ty] create an empty map of type [ty]  *)
-  val empty: Term.constr ->Term.constr
+  val empty: EConstr.constr ->EConstr.constr
 
   (** [of_list ty null l] translates an OCaml association list into a Coq one *)
-  val of_list: Term.constr -> Term.constr -> (int * Term.constr ) list -> Term.constr
+  val of_list: EConstr.constr -> EConstr.constr -> (int * EConstr.constr ) list -> EConstr.constr
 
   (** [to_fun ty null map] converts a Coq association list into a Coq function (with default value [null]) *)
-  val to_fun: Term.constr ->Term.constr ->Term.constr ->Term.constr
+  val to_fun: EConstr.constr ->EConstr.constr ->EConstr.constr ->EConstr.constr
 end
 
 
@@ -53,14 +53,14 @@ sig
   (** mimics the Coq record [Sym.pack] *)
   type pack = {ar: Term.constr; value: Term.constr ; morph: Term.constr}
 
-  val typ: Term.constr lazy_t
+  val typ: EConstr.constr lazy_t
 
 
   (** [mk_pack rlt (ar,value,morph)]  *)
-  val mk_pack: Coq.Relation.t -> pack -> Term.constr
+  val mk_pack: Coq.Relation.t -> pack -> EConstr.constr
    
   (** [null] builds a dummy (identity) symbol, given an {!Coq.Relation.t} *)
-  val null: Coq.Relation.t -> Term.constr
+  val null: Coq.Relation.t -> EConstr.constr
  
 end
 
@@ -68,20 +68,20 @@ end
 (** We need to export some Coq stubs out of this module. They are used
     by the main tactic, see {!Rewrite} *)
 module Stubs : sig
-  val lift : Term.constr Lazy.t
-  val lift_proj_equivalence : Term.constr Lazy.t
-  val lift_transitivity_left : Term.constr Lazy.t
-  val lift_transitivity_right : Term.constr Lazy.t
-  val lift_reflexivity : Term.constr Lazy.t
+  val lift : EConstr.constr Lazy.t
+  val lift_proj_equivalence : EConstr.constr Lazy.t
+  val lift_transitivity_left : EConstr.constr Lazy.t
+  val lift_transitivity_right : EConstr.constr Lazy.t
+  val lift_reflexivity : EConstr.constr Lazy.t
     (** The evaluation fonction, used to convert a reified coq term to a
 	raw coq term *)
-  val eval: Term.constr lazy_t
+  val eval: EConstr.constr lazy_t
    
   (** The main lemma of our theory, that is
       [compare (norm u) (norm v) = Eq -> eval u == eval v] *)
-  val decide_thm:Term.constr lazy_t 
+  val decide_thm:EConstr.constr lazy_t
 
-  val lift_normalise_thm : Term.constr lazy_t
+  val lift_normalise_thm : EConstr.constr lazy_t
 end
 
 (** {2 Building reified terms}
@@ -136,7 +136,7 @@ module Trans :  sig
       evars; this is why we give back the [goal], accordingly
       updated. *)
   
-  val t_of_constr : Coq.goal_sigma -> Coq.Relation.t -> envs -> (Term.constr * Term.constr) -> Matcher.Terms.t * Matcher.Terms.t * Coq.goal_sigma
+  val t_of_constr : Coq.goal_sigma -> Coq.Relation.t -> envs -> (EConstr.constr * EConstr.constr) -> Matcher.Terms.t * Matcher.Terms.t * Coq.goal_sigma
 
   (** [add_symbol] adds a given binary symbol to the environment of
       known stuff. *)
@@ -160,16 +160,16 @@ module Trans :  sig
       reconstruct the named products on top of it. In particular, this
       allow us to print the context put around the left (or right)
       hand side of a pattern. *)
-  val raw_constr_of_t : ir ->  Coq.Relation.t -> (Context.Rel.t)  ->Matcher.Terms.t -> Term.constr
+  val raw_constr_of_t : ir ->  Coq.Relation.t -> EConstr.rel_context -> Matcher.Terms.t -> EConstr.constr
 
   (** {2 Building reified terms} *)
 
   (** The reification environments, as Coq constrs *)
 
   type sigmas = {
-    env_sym : Term.constr;
-    env_bin : Term.constr;
-    env_units : Term.constr; 		(* the [idx -> X:constr] *)
+    env_sym : EConstr.constr;
+    env_bin : EConstr.constr;
+    env_units : EConstr.constr; 		(* the [idx -> X:constr] *)
   }
     
 
@@ -188,10 +188,10 @@ module Trans :  sig
       reify each term successively.*)
   type reifier
 
-  val mk_reifier :   Coq.Relation.t -> Term.constr -> ir -> (sigmas * reifier -> Proof_type.tactic) -> Proof_type.tactic
+  val mk_reifier :   Coq.Relation.t -> EConstr.constr -> ir -> (sigmas * reifier -> Proof_type.tactic) -> Proof_type.tactic
 
   (** [reif_constr_of_t  reifier t] rebuilds the term [t] in the
       reified form. *)
-  val reif_constr_of_t : reifier -> Matcher.Terms.t -> Term.constr
+  val reif_constr_of_t : reifier -> Matcher.Terms.t -> EConstr.constr
 
 end

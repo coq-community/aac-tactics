@@ -7,9 +7,9 @@
 (***************************************************************************)
 
 (** Interface with Coq *)
-type constr = Term.constr
 
 open Term
+open EConstr
 open Names
 open Coqlib
 open Sigma.Notations
@@ -23,7 +23,9 @@ let contrib_name = "aac_tactics"
 let find_constant contrib dir s =
   Universes.constr_of_global (Coqlib.find_reference contrib dir s)
 
-let init_constant dir s = find_constant contrib_name dir s
+let init_constant_constr dir s = find_constant contrib_name dir s
+
+let init_constant dir s = EConstr.of_constr (find_constant contrib_name dir s)
 
 (* A clause specifying that the [let] should not try to fold anything
    in the goal *)
@@ -71,7 +73,7 @@ let resolve_one_typeclass goal ty : constr*goal_sigma=
 let general_error =
   "Cannot resolve a typeclass : please report"
 
-let cps_resolve_one_typeclass ?error : Term.types -> (Term.constr  -> Proof_type.tactic) -> Proof_type.tactic = fun t k  goal  ->
+let cps_resolve_one_typeclass ?error : types -> (constr  -> Proof_type.tactic) -> Proof_type.tactic = fun t k  goal  ->
   Tacmach.pf_apply
     (fun env em -> let em ,c =  
 		  try Typeclasses.resolve_one_typeclass env em t
@@ -85,7 +87,7 @@ let cps_resolve_one_typeclass ?error : Term.types -> (Term.constr  -> Proof_type
     )	goal
 
 
-let nf_evar goal c : Term.constr=
+let nf_evar goal c : constr=
   let evar_map = Tacmach.project goal in
     Evarutil.nf_evar evar_map c
 
@@ -125,8 +127,7 @@ let cps_evar_relation (x: constr) k = fun goal ->
       Tacticals.tclTHENLIST [Refiner.tclEVARS em; k r] goal
     )	goal
 
-(* decomp_term :  constr -> (constr, types) kind_of_term *)
-let decomp_term c = kind_of_term (Termops.strip_outer_cast c)
+let decomp_term sigma c = kind sigma (Termops.strip_outer_cast sigma c)
    
 let lapp c v  = mkApp (Lazy.force c, v)
 
@@ -335,10 +336,10 @@ end
    remains typable*)
 let match_as_equation ?(context = Context.Rel.empty) goal equation : (constr*constr* Std.Relation.t) option  =
   let env = Tacmach.pf_env goal in
-  let env =  Environ.push_rel_context context env in
+  let env = EConstr.push_rel_context context env in
   let evar_map = Tacmach.project goal in
   begin
-    match decomp_term equation with
+    match decomp_term evar_map equation with
       | App(c,ca) when Array.length ca >= 2 ->
 	let n = Array.length ca  in
 	let left  =  ca.(n-2) in
@@ -365,7 +366,7 @@ let tclDEBUG msg tac = fun gl ->
     tac gl
 
 let tclPRINT  tac = fun gl ->
-  let _ = Feedback.msg_notice (Printer.pr_constr (Tacmach.pf_concl gl)) in
+  let _ = Feedback.msg_notice (Printer.pr_econstr (Tacmach.pf_concl gl)) in
     tac gl
 
 
@@ -394,23 +395,24 @@ module Rewrite = struct
 
 type hypinfo =
     {
-      hyp : Term.constr;		  (** the actual constr corresponding to the hypothese  *)
-      hyptype : Term.constr; 		(** the type of the hypothesis *)
-      context : Context.Rel.t;       	(** the quantifications of the hypothese *)
-      body : Term.constr; 		(** the body of the type of the hypothesis*)
+      hyp : constr;		  (** the actual constr corresponding to the hypothese  *)
+      hyptype : constr; 		(** the type of the hypothesis *)
+      context : EConstr.rel_context;       	(** the quantifications of the hypothese *)
+      body : constr; 		(** the body of the type of the hypothesis*)
       rel : Std.Relation.t; 		(** the relation  *)
-      left : Term.constr;		(** left hand side *)
-      right : Term.constr;		(** right hand side  *)
+      left : constr;		(** left hand side *)
+      right : constr;		(** right hand side  *)
       l2r : bool; 			(** rewriting from left to right  *)
     }
 
 let get_hypinfo c ~l2r ?check_type  (k : hypinfo -> Proof_type.tactic) :    Proof_type.tactic = fun goal ->
   let ctype =  Tacmach.pf_unsafe_type_of goal c in 
-  let (rel_context, body_type) = Term.decompose_prod_assum ctype in 
+  let evar_map = Tacmach.project goal in
+  let (rel_context, body_type) = decompose_prod_assum evar_map ctype in
   let rec check f e =
-    match decomp_term e with
+    match decomp_term evar_map e with
       | Term.Rel i -> f (get_type (Context.Rel.lookup i rel_context))
-      | _ -> Term.fold_constr (fun acc x -> acc && check f x) true e
+      | _ -> fold evar_map (fun acc x -> acc && check f x) true e
   in
   begin match check_type with
     | None -> ()
@@ -419,7 +421,7 @@ let get_hypinfo c ~l2r ?check_type  (k : hypinfo -> Proof_type.tactic) :    Proo
 	then user_error "Unable to deal with higher-order or heterogeneous patterns";
   end;
   begin
-    match match_as_equation ~context:rel_context  goal body_type with
+    match match_as_equation ~context:rel_context goal body_type with
       | None -> 
 	user_error "The hypothesis is not an applied relation"
       |  Some (hleft,hright,hrlt) ->
@@ -453,11 +455,11 @@ let get_hypinfo c ~l2r ?check_type  (k : hypinfo -> Proof_type.tactic) :    Proo
 (* Fresh evars for everyone (should be the good way to do this
    recompose in Coq v8.4) *)
 let recompose_prod 
-    (context : Context.Rel.t)
-    (subst : (int * Term.constr) list)
+    (context : rel_context)
+    (subst : (int * constr) list)
     env
     em
-    : Evd.evar_map * Term.constr list =
+    : Evd.evar_map * constr list =
   (* the last index of rel relevant for the rewriting *)
   let min_n = List.fold_left
     (fun acc (x,_) -> min acc x)
@@ -479,7 +481,7 @@ let recompose_prod
               let em = Sigma.to_evar_map em in
               (em, r)
 	  in
-	  (Environ.push_rel t env), em,x::acc
+	  (EConstr.push_rel t env), em,x::acc
 	else
 	  env,em,acc
   in
@@ -490,8 +492,8 @@ let recompose_prod
    application to handle non-instantiated variables. *)
    
 let recompose_prod'
-    (context : Context.Rel.t)
-    (subst : (int *Term.constr) list)
+    (context : rel_context)
+    (subst : (int *constr) list)
     c
     =
   let rec popn pop n l =
@@ -509,7 +511,7 @@ let recompose_prod'
 	    aux sign (n+1) next (term::app) (None :: ctxt)
 	with
 	  | Not_found ->
-	    let term = Term.mkRel next in
+	    let term = mkRel next in
 	    aux sign (n+1) (next+1) (term::app) (Some decl :: ctxt)
   in
   let app,ctxt = aux context 1 1 [] [] in
@@ -536,8 +538,8 @@ let recompose_prod'
   	update sign (decl :: res) (n+1)
   in
   let ctxt = update ctxt [] 0 in
-  let c = Term.applistc c (List.rev app) in
-  let c = Term.it_mkLambda_or_LetIn c (ctxt) in
+  let c = applist (c,List.rev app) in
+  let c = it_mkLambda_or_LetIn c ctxt in
   c
 
 (* Version de Matthieu
@@ -566,22 +568,22 @@ let recompose_prod' context subst c =
 
 let build
     (h : hypinfo)
-    (subst : (int *Term.constr) list)
-    (k :Term.constr -> Proof_type.tactic)
+    (subst : (int *constr) list)
+    (k :constr -> Proof_type.tactic)
     : Proof_type.tactic = fun goal ->
       let c = recompose_prod' h.context subst h.hyp in
       Tacticals.tclTHENLIST [k c] goal
 
 let build_with_evar
     (h : hypinfo)
-    (subst : (int *Term.constr) list)
-    (k :Term.constr -> Proof_type.tactic)
+    (subst : (int *constr) list)
+    (k :constr -> Proof_type.tactic)
     : Proof_type.tactic
     = fun goal ->
       Tacmach.pf_apply
 	(fun env em ->
 	  let evar_map,  acc = recompose_prod h.context subst env em in
-	  let c = Term.applistc h.hyp (List.rev acc) in
+	  let c = applist (h.hyp,List.rev acc) in
 	  Tacticals.tclTHENLIST [Refiner.tclEVARS evar_map; k c] goal
 	) goal
 

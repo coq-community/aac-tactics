@@ -12,7 +12,7 @@
     particular structure of {b AAC.v}, therefore, it should
     be of little interest to most readers.
 *)
-open Term
+open EConstr
 open Context
 
 module Control = struct
@@ -68,7 +68,7 @@ module Classes = struct
   module Associative = struct
     let path = ac_theory_path
     let typ = lazy (Coq.init_constant path "Associative")
-    let ty (rlt : Coq.Relation.t) (value : Term.constr) =
+    let ty (rlt : Coq.Relation.t) (value : constr) =
       mkApp (Lazy.force typ, [| rlt.Coq.Relation.carrier;
 				rlt.Coq.Relation.r;
 				value
@@ -81,7 +81,7 @@ module Classes = struct
   module Commutative = struct
     let path = ac_theory_path
     let typ = lazy (Coq.init_constant path "Commutative")
-    let ty (rlt : Coq.Relation.t) (value : Term.constr) =
+    let ty (rlt : Coq.Relation.t) (value : constr) =
       mkApp (Lazy.force typ, [| rlt.Coq.Relation.carrier;
 				rlt.Coq.Relation.r;
 				value
@@ -112,7 +112,7 @@ module Classes = struct
   module Unit = struct
     let path = ac_theory_path
     let typ = lazy (Coq.init_constant path "Unit")
-    let ty (rlt : Coq.Relation.t) (value : Term.constr) (unit : Term.constr)=
+    let ty (rlt : Coq.Relation.t) (value : constr) (unit : constr)=
       mkApp (Lazy.force typ, [| rlt.Coq.Relation.carrier;
  				rlt.Coq.Relation.r;
  				value;
@@ -197,7 +197,7 @@ module Sym = struct
   let null = lazy (Coq.init_constant path "null")
   let mk_pack (rlt: Coq.Relation.t) s =
     let (x,r) = Coq.Relation.split rlt in
-      mkApp (Lazy.force mkPack, [|x;r; s.ar;s.value;s.morph|])
+      mkApp (Lazy.force mkPack, [|x;r; EConstr.of_constr s.ar;EConstr.of_constr s.value;EConstr.of_constr s.morph|])
   let null  rlt =
     let x = rlt.Coq.Relation.carrier in
     let r = rlt.Coq.Relation.r in
@@ -219,14 +219,14 @@ module Bin =struct
   let typ = lazy (Coq.init_constant path "pack")
   let mkPack = lazy (Coq.init_constant path "mk_pack")
    
-  let mk_pack: Coq.Relation.t -> pack -> Term.constr = fun (rlt) s ->
+  let mk_pack: Coq.Relation.t -> pack -> constr = fun (rlt) s ->
     let (x,r) = Coq.Relation.split rlt in
-    let comm_ty = Classes.Commutative.ty rlt s.value in
+    let comm_ty = Classes.Commutative.ty rlt (EConstr.of_constr s.value) in
     mkApp (Lazy.force mkPack , [| x ; r;
-				  s.value;
-				  s.compat ;
-				  s.assoc;
-				  Coq.Option.of_option comm_ty s.comm
+				  EConstr.of_constr s.value;
+				  EConstr.of_constr s.compat ;
+				  EConstr.of_constr s.assoc;
+				  Coq.Option.of_option comm_ty (Option.map EConstr.of_constr s.comm)
 			       |])
   let mk_ty : Coq.Relation.t -> constr = fun rlt ->
    let (x,r) = Coq.Relation.split rlt in
@@ -248,7 +248,7 @@ module Unit = struct
       }
 	
   type pack = {
-    u_value : Term.constr;	(* X *)
+    u_value : constr;	(* X *)
     u_desc : (unit_of) list (* unit_of u_value *)
   }
 
@@ -266,11 +266,11 @@ module Unit = struct
 				      r;
 				      e_bin ;
 				      u;
-				      unit_of.uf_idx;
-				      unit_of.uf_desc
+				      EConstr.of_constr unit_of.uf_idx;
+				      EConstr.of_constr unit_of.uf_desc
 				   |])
    
-  let mk_pack rlt e_bin pack : Term.constr =
+  let mk_pack rlt e_bin pack : constr =
     let (x,r) = Coq.Relation.split rlt in
     let ty = ty_unit_of rlt e_bin pack.u_value in
     let mk_unit_of = mk_unit_of rlt e_bin pack.u_value in
@@ -321,7 +321,7 @@ module Trans = struct
     | Bin of Bin.pack with_unit
     (* will only be used in the second pass : {!Parse}*)
     | Sym of Sym.pack 		
-    | Unit of constr  			(* to avoid confusion in bloom *)
+    | Unit of Term.constr  			(* to avoid confusion in bloom *)
 
   module PackHash =
   struct
@@ -381,7 +381,7 @@ module Trans = struct
 
   module PackTable = Hashtbl.Make(PackHash)
 
-  (** discr is a map from {!Term.constr} to {!pack}.
+  (** discr is a map from {!constr} to {!pack}.
      
       [None] means that it is not possible to instantiate this partial
       application to an interesting class.
@@ -438,7 +438,7 @@ module Trans = struct
       units. Otherwise, we do not have the ability to rewrite [0 = a +
       a] in [a = ...]*)
   module Gather : sig
-    val gather : Coq.goal_sigma -> Coq.Relation.t -> envs -> Term.constr -> Coq.goal_sigma
+    val gather : Coq.goal_sigma -> Coq.Relation.t -> envs -> constr -> Coq.goal_sigma
   end
     = struct   
 
@@ -492,10 +492,10 @@ module Trans = struct
 	      None, goal
 	  in
 	  let bin =
-	    {Bin.value = op;
-	     Bin.compat = proper;
-	     Bin.assoc = assoc;
-	     Bin.comm = comm }
+	    {Bin.value = EConstr.to_constr (Tacmach.project goal) op;
+	     Bin.compat = EConstr.to_constr (Tacmach.project goal) proper;
+	     Bin.assoc = EConstr.to_constr (Tacmach.project goal) assoc;
+	     Bin.comm = Option.map (EConstr.to_constr (Tacmach.project goal)) comm }
 	  in
 	  Some (goal,bin)
 	with |Not_found -> None
@@ -509,25 +509,27 @@ module Trans = struct
 	      | Some (gl, unit,s) ->
 		let unit_of =
 		  {
-		    Unit.uf_u = unit;
+		    Unit.uf_u = EConstr.to_constr (Tacmach.project goal) unit;
 		  (* TRICK : this term is not well-typed by itself,
 		     but it is okay the way we use it in the other
 		     functions *)
-		    Unit.uf_idx = op;
-		    Unit.uf_desc = s;
+		    Unit.uf_idx = EConstr.to_constr (Tacmach.project goal) op;
+		    Unit.uf_desc = EConstr.to_constr (Tacmach.project goal) s;
 		  }
 		in Some (gl,Bin (bin_pack, Some (unit_of)))
 		
 
     (** {is_morphism} try to infer the kind of operator we are
 	dealing with *)
-    let is_morphism goal (rlt : Coq.Relation.t) (papp : Term.constr) (ar : int) : (Coq.goal_sigma * pack ) option      =
+    let is_morphism goal (rlt : Coq.Relation.t) (papp : constr) (ar : int) : (Coq.goal_sigma * pack ) option      =
       let typeof = Classes.Proper.mk_typeof rlt ar in
       let relof = Classes.Proper.mk_relof rlt ar in
       let m = Coq.Classes.mk_morphism  typeof relof  papp in
 	try
 	  let m,goal = Coq.resolve_one_typeclass goal m in
-	  let pack = {Sym.ar = (Coq.Nat.of_int ar); Sym.value= papp; Sym.morph= m} in
+	  let pack = {Sym.ar = EConstr.to_constr (Tacmach.project goal) (Coq.Nat.of_int ar);
+                      Sym.value= EConstr.to_constr (Tacmach.project goal) papp;
+                      Sym.morph= EConstr.to_constr (Tacmach.project goal) m} in
 	    Some (goal, Sym pack)
 	with
 	  | Not_found -> None
@@ -541,7 +543,7 @@ module Trans = struct
 	if n <= 1
 	then None
 	else
-	  let papp = Term.mkApp (t, Array.sub ca 0 (n-2) ) in
+	  let papp = mkApp (t, Array.sub ca 0 (n-2) ) in
 	  let args = Array.sub ca (n-2) 2 in
 	  Some (papp, args )
 	     
@@ -550,16 +552,16 @@ module Trans = struct
 	let nb_params = Array.length ca in
 	let rec aux n =
 	  assert (n < nb_params && 0 < nb_params );
-	  let papp = Term.mkApp (t, Array.sub ca 0 n) in 	   
+	  let papp = mkApp (t, Array.sub ca 0 n) in
 	    match is_morphism goal rlt papp (nb_params - n) with
 	      | None ->
 		  (* here we have to memoize the failures *)
-		  HMap.add envs.discr papp None;
+		  HMap.add envs.discr (EConstr.to_constr (Tacmach.project goal) papp) None;
 		  if n < nb_params - 1 then aux (n+1) else goal
 	      | Some (goal, pack) ->
 		  let args = Array.sub ca (n) (nb_params -n)in
 		  let goal = Array.fold_left cont goal args in
-		    memoize envs papp pack;
+		    memoize envs (EConstr.to_constr (Tacmach.project goal) papp) pack;
 		    goal
 	in
 	  if nb_params = 0 then goal else aux 0
@@ -572,7 +574,7 @@ module Trans = struct
 	      begin match is_aac papp goal with
 		| None -> fold_morphism t ca
 		| Some (goal, pack) ->
-		    memoize envs papp pack;
+		    memoize envs (EConstr.to_constr (Tacmach.project goal) papp) pack;
 		    Array.fold_left cont goal args 	     
 	      end
 	  	
@@ -580,8 +582,8 @@ module Trans = struct
        have to memoize failures, here. *)
     let gather goal (rlt : Coq.Relation.t ) envs t : Coq.goal_sigma =
       let rec aux goal x = 
-	match Coq.decomp_term x  with
-	  | App (t,ca) ->
+	match Coq.decomp_term (Tacmach.project goal) x with
+	  | Term.App (t,ca) ->
 	      fold goal rlt envs t ca (aux )
 	  | _ ->  goal
       in
@@ -614,13 +616,15 @@ module Trans = struct
 	  This functions is prevented to go through [ar < 0] by the fact
 	  that a constant is a morphism. But not an eva. *)
 
-      let is_morphism goal (rlt : Coq.Relation.t) (papp : Term.constr) (ar : int) : (Coq.goal_sigma * pack ) option      =
+      let is_morphism goal (rlt : Coq.Relation.t) (papp : constr) (ar : int) : (Coq.goal_sigma * pack ) option      =
 	let typeof = Classes.Proper.mk_typeof rlt ar in
 	let relof = Classes.Proper.mk_relof rlt ar in
 	let m = Coq.Classes.mk_morphism  typeof relof  papp in
 	try
 	  let m,goal = Coq.resolve_one_typeclass goal m in
-	  let pack = {Sym.ar = (Coq.Nat.of_int ar); Sym.value= papp; Sym.morph= m} in
+	  let pack = {Sym.ar = EConstr.to_constr (Tacmach.project goal) (Coq.Nat.of_int ar);
+                      Sym.value= EConstr.to_constr (Tacmach.project goal) papp;
+                      Sym.morph= EConstr.to_constr (Tacmach.project goal) m} in
 	  Some (goal, Sym pack)
 	with
 	  | e ->  None
@@ -634,7 +638,7 @@ module Trans = struct
 	    let p_app = mkApp (t, Array.sub ca 0 (nb_params - ar)) in
 	    begin	
 	      try
-		begin match HMap.find envs.discr p_app with
+		begin match HMap.find envs.discr (EConstr.to_constr (Tacmach.project goal) p_app) with
 		  | None -> 
 		    fold goal (ar-1)
 		  | Some pack ->
@@ -649,7 +653,7 @@ module Trans = struct
 	  assert (0 <= ar && ar <= nb_params);
 	  match x with
 	    | Some (goal, pack) ->
-	      HMap.add envs.discr p_app (Some pack);
+	      HMap.add envs.discr (EConstr.to_constr (Tacmach.project goal) p_app) (Some pack);
 	      add_bloom envs pack;
 	      (goal, pack, p_app, Array.sub ca (nb_params-ar) ar)
 	    | None ->
@@ -657,21 +661,21 @@ module Trans = struct
 	      if ar = 0 then raise NotReflexive;
 	      begin
 		(* to memoise the failures *)
-		HMap.add envs.discr p_app None;
+		HMap.add envs.discr (EConstr.to_constr (Tacmach.project goal) p_app) None;
 		(* will terminate, since [const] is capped, and it is
 		   easy to find an instance of a constant *)
 		fold goal (ar-1)
 	      end
 	in
-	try match HMap.find envs.discr (mkApp (t,ca))with
+	try match HMap.find envs.discr (EConstr.to_constr (Tacmach.project goal) (mkApp (t,ca))) with
 	  | None -> fold goal (nb_params)
 	  | Some pack -> goal, pack, (mkApp (t,ca)), [| |]
 	with Not_found -> fold goal (nb_params)
 	 
       let discriminate goal envs rlt  x =
 	try
-	  match Coq.decomp_term x with
-	    | App (t,ca) ->
+	  match Coq.decomp_term (Tacmach.project goal) x with
+	    | Term.App (t,ca) ->
 	      discriminate goal envs rlt   t ca
 	    | _ -> discriminate goal envs rlt x [| |]
 	with
@@ -688,8 +692,8 @@ module Trans = struct
       let t_of_constr goal (rlt: Coq.Relation.t ) envs  : constr -> Matcher.Terms.t * Coq.goal_sigma =
 	let r_goal = ref (goal) in
 	let rec aux x =
-	  match Coq.decomp_term x with
-	    | Rel i -> Matcher.Terms.Var i
+	  match Coq.decomp_term (Tacmach.project goal) x with
+	    | Term.Rel i -> Matcher.Terms.Var i
 	    | _ ->
 		let goal, pack , p_app, ca = discriminate (!r_goal) envs rlt   x in
 		  r_goal := goal;
@@ -718,7 +722,7 @@ module Trans = struct
     end (* Parse *)
 
   let add_symbol goal rlt envs l =
-    let goal = Gather.gather goal rlt envs (Term.mkApp (l, [| Term.mkRel 0;Term.mkRel 0|])) in
+    let goal = Gather.gather goal rlt envs (EConstr.of_constr (Term.mkApp (l, [| Term.mkRel 0;Term.mkRel 0|]))) in
     goal
    
   (* [t_of_constr] buils a the abstract syntax tree of a constr,
@@ -740,7 +744,7 @@ module Trans = struct
 	packer : (int, pack) Hashtbl.t; (* = bloom_back *)
 	bin  : (int * Bin.pack) list	;
 	units : (int * Unit.pack) list;
-	sym : (int * Term.constr) list  ;
+	sym : (int * constr) list  ;
 	matcher_units : Matcher.ext_units
       }
 	
@@ -751,7 +755,7 @@ module Trans = struct
     let  nil = [] in
     let sym ,
       (bin   : (int * Bin.pack with_unit) list),
-      (units : (int * constr) list) =
+      (units : (int * Term.constr) list) =
       Hashtbl.fold
 	(fun int pack (sym,bin,units) ->
 	  match pack with
@@ -797,14 +801,14 @@ module Trans = struct
 		    if Constr.equal (unit_of.Unit.uf_u) u
 		    then
 		      {unit_of with
-			Unit.uf_idx = (Coq.Pos.of_int nop)} :: acc
+			Unit.uf_idx = EConstr.to_constr (Tacmach.project goal) (Coq.Pos.of_int nop)} :: acc
 		    else
 		      acc
 	      )
 	      [] bin
 	  in
 	  (n,{
-	    Unit.u_value = u;
+	    Unit.u_value = EConstr.of_constr u;
 	    Unit.u_desc = all_bin
 	  })::acc			    
 	)
@@ -831,7 +835,7 @@ module Trans = struct
   (** [raw_constr_of_t_debruijn] rebuilds a term in the raw
       representation, without products on top, and maybe escaping free
       debruijn indices (in the case of a pattern for example).  *)
-  let raw_constr_of_t_debruijn ir  (t : Matcher.Terms.t) : Term.constr * int list =
+  let raw_constr_of_t_debruijn ir  (t : Matcher.Terms.t) : constr * int list =
     let add_set,get =
       let r = ref [] in
       let rec add x = function
@@ -849,25 +853,25 @@ module Trans = struct
 	| Matcher.Terms.Plus (s,l,r) ->
 	    begin match Hashtbl.find ir.packer s with
 	      | Bin (s,_) ->
-		  mkApp (s.Bin.value ,  [|(aux l);(aux r)|])
+		  mkApp (EConstr.of_constr s.Bin.value ,  [|(aux l);(aux r)|])
 	      | _ -> 	    Printf.printf "erreur:%i\n%!"s;
 		  assert false
 	    end
 	| Matcher.Terms.Dot (s,l,r) ->
 	    begin match Hashtbl.find ir.packer s with
 	      | Bin (s,_) ->
-		  mkApp (s.Bin.value,  [|(aux l);(aux r)|])
+		  mkApp (EConstr.of_constr s.Bin.value,  [|(aux l);(aux r)|])
 	      | _ -> assert false
 	    end
 	| Matcher.Terms.Sym (s,t) ->
 	    begin match Hashtbl.find ir.packer s with
 	      | Sym s ->
-		  mkApp (s.Sym.value, Array.map aux t)
+		  mkApp (EConstr.of_constr s.Sym.value, Array.map aux t)
 	      | _ -> assert false
 	    end
 	| Matcher.Terms.Unit  x ->
 	    begin match Hashtbl.find ir.packer x with
-	      | Unit s -> s
+	      | Unit s -> EConstr.of_constr s
 	      | _ -> assert false
 	    end
 	| Matcher.Terms.Var i -> add_set i;
@@ -877,7 +881,7 @@ module Trans = struct
       t , get ( )
 
   (** [raw_constr_of_t] rebuilds a term in the raw representation *)
-  let raw_constr_of_t ir rlt (context:Context.Rel.t) t =
+  let raw_constr_of_t ir rlt (context:rel_context) t =
       (** cap rebuilds the products in front of the constr *)
     let rec cap c = function [] -> c
       | t::q -> 
@@ -906,16 +910,16 @@ module Trans = struct
       from the symbols (as ints) to indexes (as constr) *)
 
   type sigmas = {
-    env_sym : Term.constr;
-    env_bin : Term.constr;
-    env_units : Term.constr; 		(* the [idx -> X:constr] *)
+    env_sym : constr;
+    env_bin : constr;
+    env_units : constr; 		(* the [idx -> X:constr] *)
   }
     
 
   type sigma_maps = {
-    sym_to_pos : int -> Term.constr;
-    bin_to_pos : int -> Term.constr;
-    units_to_pos : int -> Term.constr;
+    sym_to_pos : int -> constr;
+    bin_to_pos : int -> constr;
+    units_to_pos : int -> constr;
   }
 
 
@@ -935,9 +939,9 @@ module Trans = struct
 	let compat,goal = Classes.Proper.infer goal rlt op 2 in
 	let op = Coq.nf_evar goal op in
 	  {
-	    Bin.value = op;
-	    Bin.compat = compat;
-	    Bin.assoc = assoc;
+	    Bin.value = EConstr.to_constr (Tacmach.project goal) op;
+	    Bin.compat = EConstr.to_constr (Tacmach.project goal) compat;
+	    Bin.assoc = EConstr.to_constr (Tacmach.project goal) assoc;
 	    Bin.comm = None
 	  }
       with Not_found -> user_error "Cannot infer a default A operator (required at least to be Proper and Associative)"

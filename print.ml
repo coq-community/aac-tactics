@@ -67,7 +67,7 @@ let pp_all pt : (int * Terms.t * named_env Search_monad.m) Search_monad.m -> Pp.
 rename the variables, and rebuilds raw Coq terms (for the context, and
 the terms in the environment). In order to do so, it requires the
 information gathered by the {!Theory.Trans} module.*)
-let print rlt ir m (context : Context.Rel.t) goal =
+let print rlt ir m (context : EConstr.rel_context) goal =
   if Search_monad.count m = 0
   then
     (
@@ -94,7 +94,7 @@ let print rlt ir m (context : Context.Rel.t) goal =
     let m = Search_monad.sort (fun (x,_,_) (y,_,_) -> x -  y) m in
     let _ = Feedback.msg_notice
       (pp_all
-	 (fun t -> Printer.pr_constr (Theory.Trans.raw_constr_of_t ir rlt  context  t) ) m
+	 (fun t -> Printer.pr_econstr (Theory.Trans.raw_constr_of_t ir rlt  context  t) ) m
       )
     in
     Tacticals.tclIDTAC goal
