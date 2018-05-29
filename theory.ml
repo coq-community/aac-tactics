@@ -13,7 +13,6 @@
     be of little interest to most readers.
 *)
 open EConstr
-open Context
 
 module Control = struct
   let printing = true
@@ -292,7 +291,7 @@ let anomaly msg =
   CErrors.anomaly ~label:"aac_tactics" (Pp.str msg)
 
 let user_error msg =
-  CErrors.error ("aac_tactics: " ^ msg)
+  CErrors.user_err Pp.(strbrk "aac_tactics: " ++ msg)
 
 module Trans = struct
  
@@ -679,11 +678,11 @@ module Trans = struct
 	      discriminate goal envs rlt   t ca
 	    | _ -> discriminate goal envs rlt x [| |]
 	with
-	  | NotReflexive -> user_error "The relation to which the goal was lifted is not Reflexive"
+	  | NotReflexive -> user_error @@ Pp.strbrk "The relation to which the goal was lifted is not Reflexive"
 	    (* TODO: is it the only source of invalid use that fall
 	       into this catch_all ? *)
 	  |  e -> 
-	    user_error "Cannot handle this kind of hypotheses (variables occurring under a function symbol which is not a proper morphism)."
+	    user_error @@ Pp.strbrk "Cannot handle this kind of hypotheses (variables occurring under a function symbol which is not a proper morphism)."
 
       (** [t_of_constr goal rlt envs cstr] builds the abstract syntax tree
 	  of the term [cstr]. Doing so, it modifies the environment of
@@ -944,7 +943,7 @@ module Trans = struct
 	    Bin.assoc = EConstr.to_constr (Tacmach.project goal) assoc;
 	    Bin.comm = None
 	  }
-      with Not_found -> user_error "Cannot infer a default A operator (required at least to be Proper and Associative)"
+      with Not_found -> user_error @@ Pp.strbrk "Cannot infer a default A operator (required at least to be Proper and Associative)"
     in
     let zero, goal =
       try

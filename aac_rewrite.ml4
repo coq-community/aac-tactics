@@ -35,49 +35,10 @@ let tac_or_exn tac exn msg = fun gl ->
 
 let retype = Coq.retype
 
-(* helper to be used with the previous function: raise a new anomaly
-   except if a another one was previously raised *)
-let push_anomaly msg = function
-  | e when CErrors.is_anomaly e -> raise e
-  | _ -> Coq.anomaly msg
-
-module M = Matcher
-
 open EConstr
 open Names
-open Coqlib
 open Proof_type
 
-(** The various kind of relation we can encounter, as a hierarchy *)
-type rew_relation =
-  | Bare of Coq.Relation.t
-  | Transitive of Coq.Transitive.t
-  | Equivalence of Coq.Equivalence.t
-
-(** {!promote try to go higher in the aforementionned hierarchy} *)
-let promote (rlt : Coq.Relation.t) (k : rew_relation -> Proof_type.tactic) =
-  try Coq.Equivalence.cps_from_relation rlt
-	(fun e -> k (Equivalence e))
-  with
-    | Not_found ->
-      begin
-	try Coq.Transitive.cps_from_relation rlt
-	      (fun trans -> k (Transitive trans))
-	with
-	  |Not_found -> k (Bare rlt)
-      end
-
-
-(*
-  Various situations:
-  p == q |- left == right : rewrite <- ->
-  p <= q |- left <= right : rewrite ->
-  p <= q |- left == right : failure
-  p == q |- left <= right : rewrite <- ->
- 
-  Not handled
-  p <= q |- left >= right : failure
-*)
 
 (** aac_lift : the ideal type beyond AAC.v/Lift
 
@@ -115,7 +76,7 @@ let infer_lifting (rlt: Coq.Relation.t) (k : lift:aac_lift -> Proof_type.tactic)
 	       e
 	     |]
       ) in
-    Coq.cps_resolve_one_typeclass ~error:"Cannot infer a lifting"
+    Coq.cps_resolve_one_typeclass ~error:(Pp.strbrk "Cannot infer a lifting")
       lift_ty (fun lift goal ->
       let x = rlt.Coq.Relation.carrier in
       let r = rlt.Coq.Relation.r in
@@ -194,7 +155,7 @@ let by_aac_reflexivity zero
       (Tacticals.tclTHENLIST
 	 [ retype decision_thm; retype convert_to;
 	   convert ;
-	   tac_or_exn apply_tac Coq.user_error "unification failure";
+	   tac_or_exn apply_tac Coq.user_error (Pp.strbrk "unification failure");
 	   tac_or_exn (time_tac "vm_norm" (Proofview.V82.of_tactic (Tactics.normalise_in_concl))) Coq.anomaly "vm_compute failure";
 	   Tacticals.tclORELSE (Proofview.V82.of_tactic Tactics.reflexivity)
 	     (Tacticals.tclFAIL 0 (Pp.str "Not an equality modulo A/AC"))
@@ -239,7 +200,7 @@ let aac_conclude
     let envs = Theory.Trans.empty_envs () in
     let left, right,r =
       match Coq.match_as_equation goal equation with
-	| None -> Coq.user_error "The goal is not an applied relation"
+	| None -> Coq.user_error @@ Pp.strbrk "The goal is not an applied relation"
 	| Some x -> x in    
     try infer_lifting r
       (fun ~lift  goal ->
@@ -255,22 +216,19 @@ let aac_conclude
 	  goal
       )goal
   with
-    | Not_found -> Coq.user_error "No lifting from the goal's relation to an equivalence"
+    | Not_found -> Coq.user_error @@ Pp.strbrk "No lifting from the goal's relation to an equivalence"
 
-open Libnames
 open Tacexpr
-open Tacinterp
 
 let aac_normalise = fun goal ->
   let ids = Tacmach.pf_ids_of_hyps goal in
-  let loc = Loc.ghost in
   let mp = MPfile (DirPath.make (List.map Id.of_string ["AAC"; "AAC_tactics"])) in
   let norm_tac = KerName.make2 mp (Label.make "internal_normalize") in
-  let norm_tac = Misctypes.ArgArg (loc, norm_tac) in
+  let norm_tac = Misctypes.ArgArg (None, norm_tac) in
   Tacticals.tclTHENLIST
     [
       aac_conclude by_aac_normalise;
-      Proofview.V82.of_tactic (Tacinterp.eval_tactic (TacArg (loc, TacCall (loc, norm_tac, []))));
+      Proofview.V82.of_tactic (Tacinterp.eval_tactic (TacArg (None, TacCall (None, (norm_tac, [])))));
       Proofview.V82.of_tactic (Tactics.keep ids)
     ] goal
 
@@ -279,7 +237,7 @@ let aac_reflexivity = fun goal ->
     (fun zero lift ir t t' ->
       let x,r = Coq.Relation.split (lift.r) in
       let r_reflexive = (Coq.Classes.mk_reflexive x r) in
-      Coq.cps_resolve_one_typeclass ~error:"The goal's relation is not reflexive"
+      Coq.cps_resolve_one_typeclass ~error:(Pp.strbrk "The goal's relation is not reflexive")
 	r_reflexive
 	(fun reflexive ->
 	  let lift_reflexivity =
@@ -309,7 +267,7 @@ let lift_transitivity in_left (step:constr) preorder lifting (using_eq : Coq.Equ
     let concl = Tacmach.pf_concl goal in
     let (left, right, _ ) = match  Coq.match_as_equation goal concl with
       | Some x -> x
-      | None -> Coq.user_error "The goal is not an equation"
+      | None -> Coq.user_error @@ Pp.strbrk "The goal is not an equation"
     in
     let lift_transitivity =
       let thm = 
@@ -387,7 +345,7 @@ let aac_rewrite  ?abort rew ?(l2r=true) ?(show = false) ?(in_left=true) ?strict 
   let (concl : types) = Tacmach.pf_concl goal in
   let (_,_,rlt) as concl =
     match Coq.match_as_equation goal concl with
-      | None -> Coq.user_error "The goal is not an applied relation"
+      | None -> Coq.user_error @@ Pp.strbrk "The goal is not an applied relation"
       | Some (left, right, rlt) -> left,right,rlt
   in
   let check_type x =
@@ -440,18 +398,13 @@ let aac_rewrite  ?abort rew ?(l2r=true) ?(show = false) ?(in_left=true) ?strict 
     ) goal
 
 
-open Coq.Rewrite
-open Tacmach
-open Tacticals
-open Tacexpr
-open Tacinterp
 open Extraargs
 open Genarg
 
 let rec add k x = function
   | [] -> [k,x]
   | k',_ as ky::q ->
-      if k'=k then Coq.user_error ("redondant argument ("^k^")")
+      if k'=k then Coq.user_error @@ Pp.strbrk ("redondant argument ("^k^")")
       else ky::add k x q
 
 let get k l = try Some (List.assoc k l) with Not_found -> None

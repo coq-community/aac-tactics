@@ -11,8 +11,6 @@
 open Term
 open EConstr
 open Names
-open Coqlib
-open Sigma.Notations
 open Context.Rel.Declaration
 
 (* The contrib name is used to locate errors when loading constrs *)
@@ -49,29 +47,18 @@ let cps_mk_letin
     let letin = (Proofview.V82.of_tactic (Tactics.letin_tac None  (Name name) c None nowhere)) in
       Tacticals.tclTHENLIST [retype c; letin; (k (mkVar name))] goal
 
-(** {2 General functions}  *)
+(** {1 General functions}  *)
 
 type goal_sigma =  Proof_type.goal Tacmach.sigma
 let goal_update (goal : goal_sigma) evar_map : goal_sigma=
   let it = Tacmach.sig_it goal in
   Tacmach.re_sig it evar_map
-
-let fresh_evar goal ty : constr * goal_sigma =
-  let env = Tacmach.pf_env goal in
-  let evar_map = Tacmach.project goal in
-  let evar_map = Sigma.Unsafe.of_evar_map evar_map in
-  let Sigma (x,em,_) = Evarutil.new_evar env evar_map ty in
-  let em = Sigma.to_evar_map em in
-    x,( goal_update goal em)
      
 let resolve_one_typeclass goal ty : constr*goal_sigma=
   let env = Tacmach.pf_env goal in
   let evar_map = Tacmach.project goal in
   let em,c = Typeclasses.resolve_one_typeclass env evar_map ty in
     c, (goal_update goal em)
-
-let general_error =
-  "Cannot resolve a typeclass : please report"
 
 let cps_resolve_one_typeclass ?error : types -> (constr  -> Proof_type.tactic) -> Proof_type.tactic = fun t k  goal  ->
   Tacmach.pf_apply
@@ -80,7 +67,7 @@ let cps_resolve_one_typeclass ?error : types -> (constr  -> Proof_type.tactic) -
 		  with Not_found ->
 		    begin match error with
 		      | None -> CErrors.anomaly (Pp.str "Cannot resolve a typeclass : please report")
-		      | Some x -> CErrors.error x
+		      | Some x -> CErrors.user_err x
 		    end
 		in
 		Tacticals.tclTHENLIST [Refiner.tclEVARS em; k c] goal
@@ -89,41 +76,35 @@ let cps_resolve_one_typeclass ?error : types -> (constr  -> Proof_type.tactic) -
 
 let nf_evar goal c : constr=
   let evar_map = Tacmach.project goal in
-    Evarutil.nf_evar evar_map c
+  Evarutil.nf_evar evar_map c
+
+  (* TODO: refactor following similar functions*)
 
 let evar_unit (gl : goal_sigma) (x : constr) : constr * goal_sigma =
   let env = Tacmach.pf_env gl in
   let evar_map = Tacmach.project gl in
-  let evar_map = Sigma.Unsafe.of_evar_map evar_map in
-  let Sigma (x,em,_) = Evarutil.new_evar env evar_map x in
-  let em = Sigma.to_evar_map em in
+  let (em,x) = Evarutil.new_evar env evar_map x in
     x,(goal_update gl em)
      
 let evar_binary (gl: goal_sigma) (x : constr) =
   let env = Tacmach.pf_env gl in
   let evar_map = Tacmach.project gl in
   let ty = mkArrow x (mkArrow x x) in
-  let evar_map = Sigma.Unsafe.of_evar_map evar_map in
-  let Sigma (x,em,_) = Evarutil.new_evar env evar_map ty in
-  let em = Sigma.to_evar_map em in
+  let (em,x) = Evarutil.new_evar env evar_map ty in
     x,( goal_update gl em)
 
 let evar_relation (gl: goal_sigma) (x: constr) =
   let env = Tacmach.pf_env gl in
   let evar_map = Tacmach.project gl in
   let ty = mkArrow x (mkArrow x (mkSort prop_sort)) in
-  let evar_map = Sigma.Unsafe.of_evar_map evar_map in
-  let Sigma (r, em, _) = Evarutil.new_evar env evar_map ty in
-  let em = Sigma.to_evar_map em in
+  let (em,r) = Evarutil.new_evar env evar_map ty in
     r,( goal_update gl em)
 
 let cps_evar_relation (x: constr) k = fun goal -> 
   Tacmach.pf_apply
     (fun env em ->
       let ty = mkArrow x (mkArrow x (mkSort prop_sort)) in
-      let em = Sigma.Unsafe.of_evar_map em in
-      let Sigma (r, em, _) = Evarutil.new_evar env em ty in
-      let em = Sigma.to_evar_map em in
+      let (em, r) = Evarutil.new_evar env em ty in
       Tacticals.tclTHENLIST [Refiner.tclEVARS em; k r] goal
     )	goal
 
@@ -181,7 +162,7 @@ end
 
 module Pos = struct
    
-    let path = ["Coq" ; "PArith"; "BinPos"]
+    let path = ["Coq" ; "Numbers"; "BinNums"]
     let typ = lazy (init_constant path "positive")
     let xI =      lazy (init_constant path "xI")
     let xO =      lazy (init_constant path "xO")
@@ -228,7 +209,7 @@ end
    
 (** Lists from the standard library*)
 module List = struct
-  let path = ["Coq"; "Lists"; "List"]
+  let path = ["Coq"; "Init"; "Datatypes"]
   let typ = lazy (init_constant path "list")
   let nil = lazy (init_constant path "nil")
   let cons = lazy (init_constant path "cons")
@@ -377,7 +358,7 @@ let anomaly msg =
   CErrors.anomaly ~label:"[aac_tactics]" (Pp.str msg)
 
 let user_error msg =
-  CErrors.error ("[aac_tactics] " ^ msg)
+  CErrors.user_err Pp.(str "[aac_tactics] " ++ msg)
 
 let warning msg =
   Feedback.msg_warning (Pp.str ("[aac_tactics]" ^ msg))
@@ -418,12 +399,12 @@ let get_hypinfo c ~l2r ?check_type  (k : hypinfo -> Proof_type.tactic) :    Proo
     | None -> ()
     | Some f ->
 	if not (check f body_type)
-	then user_error "Unable to deal with higher-order or heterogeneous patterns";
+	then user_error @@ Pp.strbrk "Unable to deal with higher-order or heterogeneous patterns";
   end;
   begin
     match match_as_equation ~context:rel_context goal body_type with
       | None -> 
-	user_error "The hypothesis is not an applied relation"
+	user_error @@ Pp.strbrk "The hypothesis is not an applied relation"
       |  Some (hleft,hright,hrlt) ->
 	k {
     	  hyp = c;
@@ -476,9 +457,7 @@ let recompose_prod
 	  let em,x =
 	    try em, List.assoc n subst
 	    with | Not_found ->
-              let em = Sigma.Unsafe.of_evar_map em in
-	      let Sigma (r, em, _) = Evarutil.new_evar env em (Vars.substl acc (get_type t)) in
-              let em = Sigma.to_evar_map em in
+	      let (em, r) = Evarutil.new_evar env em (Vars.substl acc (get_type t)) in
               (em, r)
 	  in
 	  (EConstr.push_rel t env), em,x::acc
