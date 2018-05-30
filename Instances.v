@@ -58,18 +58,18 @@ Module Z.
   Instance aac_Zmult_Comm : Commutative eq Zmult :=  Zmult_comm.
   Instance aac_Zmult_Assoc : Associative eq Zmult :=  Zmult_assoc.
  
-  Instance aac_Zmin_Comm : Commutative eq Zmin :=  Zmin_comm.
-  Instance aac_Zmin_Assoc : Associative eq Zmin :=  Zmin_assoc.
+  Instance aac_Zmin_Comm : Commutative eq Z.min :=  Z.min_comm.
+  Instance aac_Zmin_Assoc : Associative eq Z.min :=  Z.min_assoc.
 
-  Instance aac_Zmax_Comm : Commutative eq Zmax :=  Zmax_comm.
-  Instance aac_Zmax_Assoc : Associative eq Zmax :=  Zmax_assoc.
+  Instance aac_Zmax_Comm : Commutative eq Z.max :=  Z.max_comm.
+  Instance aac_Zmax_Assoc : Associative eq Z.max :=  Z.max_assoc.
  
   Instance aac_one : Unit eq Zmult 1 :=  Build_Unit eq Zmult 1 Zmult_1_l Zmult_1_r. 
   Instance aac_zero_Zplus  : Unit eq Zplus 0 := Build_Unit eq Zplus 0 Zplus_0_l Zplus_0_r.
 
   (* We also provide liftings from le to eq *)
-  Instance preorder_Zle : PreOrder Zle := Build_PreOrder _ Zle_refl Zle_trans.
-  Instance lift_le_eq : AAC_lift Zle eq := Build_AAC_lift eq_equivalence _.
+  Instance preorder_Zle : PreOrder Z.le := Build_PreOrder _ Z.le_refl Z.le_trans.
+  Instance lift_le_eq : AAC_lift Z.le eq := Build_AAC_lift eq_equivalence _.
 
 End Z.
 
@@ -95,19 +95,19 @@ Module N.
   Instance aac_Nmult_Comm : Commutative eq Nmult :=  Nmult_comm.
   Instance aac_Nmult_Assoc : Associative eq Nmult :=  Nmult_assoc.
  
-  Instance aac_Nmin_Comm : Commutative eq Nmin :=  N.min_comm.
-  Instance aac_Nmin_Assoc : Associative eq Nmin :=  N.min_assoc.
+  Instance aac_Nmin_Comm : Commutative eq N.min :=  N.min_comm.
+  Instance aac_Nmin_Assoc : Associative eq N.min :=  N.min_assoc.
 
-  Instance aac_Nmax_Comm : Commutative eq Nmax :=  N.max_comm.
-  Instance aac_Nmax_Assoc : Associative eq Nmax :=  N.max_assoc.
+  Instance aac_Nmax_Comm : Commutative eq N.max :=  N.max_comm.
+  Instance aac_Nmax_Assoc : Associative eq N.max :=  N.max_assoc.
  
   Instance aac_one  : Unit eq Nmult (1)%N := Build_Unit eq Nmult (1)%N Nmult_1_l Nmult_1_r. 
   Instance aac_zero  : Unit eq Nplus (0)%N := Build_Unit eq Nplus (0)%N Nplus_0_l Nplus_0_r.
-  Instance aac_zero_max  :  Unit eq Nmax 0 := Build_Unit eq Nmax 0 N.max_0_l N.max_0_r. 
+  Instance aac_zero_max  :  Unit eq N.max 0 := Build_Unit eq N.max 0 N.max_0_l N.max_0_r. 
    
   (* We also provide liftings from le to eq *)
-  Instance preorder_le : PreOrder Nle := Build_PreOrder Nle N.le_refl N.le_trans.
-  Instance lift_le_eq : AAC_lift Nle eq := Build_AAC_lift eq_equivalence _.
+  Instance preorder_le : PreOrder N.le := Build_PreOrder N.le N.le_refl N.le_trans.
+  Instance lift_le_eq : AAC_lift N.le eq := Build_AAC_lift eq_equivalence _.
 
 End N.
 
@@ -120,19 +120,19 @@ Module P.
   Instance aac_Pmult_Comm : Commutative eq Pmult :=  Pmult_comm.
   Instance aac_Pmult_Assoc : Associative eq Pmult :=  Pmult_assoc.
  
-  Instance aac_Pmin_Comm : Commutative eq Pmin :=  Pos.min_comm.
-  Instance aac_Pmin_Assoc : Associative eq Pmin :=  Pos.min_assoc.
+  Instance aac_Pmin_Comm : Commutative eq Pos.min :=  Pos.min_comm.
+  Instance aac_Pmin_Assoc : Associative eq Pos.min :=  Pos.min_assoc.
 
-  Instance aac_Pmax_Comm : Commutative eq Pmax :=  Pos.max_comm.
-  Instance aac_Pmax_Assoc : Associative eq Pmax :=  Pos.max_assoc.
+  Instance aac_Pmax_Comm : Commutative eq Pos.max :=  Pos.max_comm.
+  Instance aac_Pmax_Assoc : Associative eq Pos.max :=  Pos.max_assoc.
  
   Instance aac_one  : Unit eq Pmult 1 := Build_Unit eq Pmult 1 _ Pmult_1_r. 
   intros; reflexivity. Qed.          (*  TODO : add this lemma in the stdlib *)
-  Instance aac_one_max  :  Unit eq Pmax 1 := Build_Unit eq Pmax 1 Pos.max_1_l Pos.max_1_r. 
+  Instance aac_one_max  :  Unit eq Pos.max 1 := Build_Unit eq Pos.max 1 Pos.max_1_l Pos.max_1_r. 
 
   (* We also provide liftings from le to eq *)
-  Instance preorder_le : PreOrder Ple := Build_PreOrder Ple Pos.le_refl Pos.le_trans.
-  Instance lift_le_eq : AAC_lift Ple eq := Build_AAC_lift eq_equivalence _.
+  Instance preorder_le : PreOrder Pos.le := Build_PreOrder Pos.le Pos.le_refl Pos.le_trans.
+  Instance lift_le_eq : AAC_lift Pos.le eq := Build_AAC_lift eq_equivalence _.
 End P.
 
 Module Q.
