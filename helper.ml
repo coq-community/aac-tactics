@@ -27,10 +27,10 @@ module Debug (X : CONTROL) = struct
 	r
     else f x
 
-  let pr_constr msg constr =
+  let pr_constr env evd msg constr =
     if printing then
       (  Feedback.msg_notice (Pp.str (Printf.sprintf "=====%s====" msg));
-	 Feedback.msg_notice (Printer.pr_econstr constr);
+	 Feedback.msg_notice (Printer.pr_econstr_env env evd constr);
       )
 
 

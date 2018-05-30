@@ -11,18 +11,19 @@
 open Pp
 open Matcher
 open Context.Rel.Declaration
+open Names
 
-type named_env = (Names.name * Terms.t) list
+type named_env = (Name.t * Terms.t) list
  
 
 
 (** {pp_env} prints a substitution mapping names to terms, using the
 provided printer *)
-let pp_env pt  : named_env  -> Pp.std_ppcmds = fun env ->
+let pp_env pt  : named_env  -> Pp.t = fun env ->
   List.fold_left
     (fun acc (v,t) ->
        begin match v with
-	 | Names.Name s -> str (Printf.sprintf "%s: " (Names.string_of_id s))
+	 | Names.Name s -> str (Printf.sprintf "%s: " (Id.to_string s))
 	 | Names.Anonymous -> str ("_")
        end
        ++ pt t ++ str "; " ++ acc
@@ -33,7 +34,7 @@ let pp_env pt  : named_env  -> Pp.std_ppcmds = fun env ->
 (** {pp_envm} prints a collection of possible environments, and number
 them. This number must remain compatible with the parameters given to
 {!aac_rewrite} *)
-let pp_envm pt : named_env Search_monad.m -> Pp.std_ppcmds = fun m ->
+let pp_envm pt : named_env Search_monad.m -> Pp.t = fun m ->
   let _,s =
     Search_monad.fold
       (fun env (n,acc) ->
@@ -50,7 +51,7 @@ let trivial_substitution envm =
 (** {pp_all} prints a collection of possible contexts and related
 possibles substitutions, giving a number to each. This number must
 remain compatible with the parameters of {!aac_rewrite} *)
-let pp_all pt : (int * Terms.t * named_env Search_monad.m) Search_monad.m -> Pp.std_ppcmds = fun m ->
+let pp_all pt : (int * Terms.t * named_env Search_monad.m) Search_monad.m -> Pp.t = fun m ->
   let _,s = Search_monad.fold
     (fun (size,context,envm) (n,acc) -> 
        let s = str (Printf.sprintf "occurrence %i: transitivity through " n) in
@@ -92,9 +93,11 @@ let print rlt ir m (context : EConstr.rel_context) goal =
       )
     in
     let m = Search_monad.sort (fun (x,_,_) (y,_,_) -> x -  y) m in
+    let env = Tacmach.pf_env goal in
+    let sigma = Tacmach.project goal in
     let _ = Feedback.msg_notice
       (pp_all
-	 (fun t -> Printer.pr_econstr (Theory.Trans.raw_constr_of_t ir rlt  context  t) ) m
+	 (fun t -> Printer.pr_letype_env env sigma (Theory.Trans.raw_constr_of_t ir rlt  context  t)) m
       )
     in
     Tacticals.tclIDTAC goal

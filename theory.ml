@@ -188,7 +188,7 @@ end
 
 
 module Sym = struct
-  type pack = {ar: Term.constr; value: Term.constr ; morph: Term.constr}
+  type pack = {ar: Constr.t; value: Constr.t ; morph: Constr.t}
   let path = ac_theory_path @ ["Internal";"Sym"]
   let typ = lazy (Coq.init_constant path "pack")
   let mkPack = lazy (Coq.init_constant path "mkPack")
@@ -208,10 +208,10 @@ module Sym = struct
 end
 
 module Bin =struct
-  type pack = {value : Term.constr;
-	       compat : Term.constr;
-	       assoc : Term.constr;
-	       comm : Term.constr option;
+  type pack = {value : Constr.t;
+	       compat : Constr.t;
+	       assoc : Constr.t;
+	       comm : Constr.t option;
 	      }
 
   let path = ac_theory_path @ ["Internal";"Bin"]
@@ -241,9 +241,9 @@ module Unit = struct
  
   type unit_of =
       {
-	uf_u : Term.constr; 		(* u *)
-	uf_idx : Term.constr;
-	uf_desc : Term.constr; (* Unit R (e_bin uf_idx) u *)
+	uf_u : Constr.t; 		(* u *)
+	uf_idx : Constr.t;
+	uf_desc : Constr.t; (* Unit R (e_bin uf_idx) u *)
       }
 	
   type pack = {
@@ -320,7 +320,7 @@ module Trans = struct
     | Bin of Bin.pack with_unit
     (* will only be used in the second pass : {!Parse}*)
     | Sym of Sym.pack 		
-    | Unit of Term.constr  			(* to avoid confusion in bloom *)
+    | Unit of Constr.t  			(* to avoid confusion in bloom *)
 
   module PackHash =
   struct
@@ -721,7 +721,7 @@ module Trans = struct
     end (* Parse *)
 
   let add_symbol goal rlt envs l =
-    let goal = Gather.gather goal rlt envs (EConstr.of_constr (Term.mkApp (l, [| Term.mkRel 0;Term.mkRel 0|]))) in
+    let goal = Gather.gather goal rlt envs (EConstr.of_constr (Constr.mkApp (l, [| Constr.mkRel 0;Constr.mkRel 0|]))) in
     goal
    
   (* [t_of_constr] buils a the abstract syntax tree of a constr,
@@ -754,7 +754,7 @@ module Trans = struct
     let  nil = [] in
     let sym ,
       (bin   : (int * Bin.pack with_unit) list),
-      (units : (int * Term.constr) list) =
+      (units : (int * Constr.t) list) =
       Hashtbl.fold
 	(fun int pack (sym,bin,units) ->
 	  match pack with

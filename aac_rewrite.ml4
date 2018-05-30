@@ -29,7 +29,9 @@ let time_tac msg tac =
 
 let tac_or_exn tac exn msg = fun gl ->
   try tac gl with e ->
-    pr_constr "last goal" (Tacmach.pf_concl gl);
+    let env = Tacmach.pf_env gl in
+    let sigma = Tacmach.project gl in
+    pr_constr env sigma "last goal" (Tacmach.pf_concl gl);
     exn msg e
 
 
@@ -208,7 +210,9 @@ let aac_conclude
 	let tleft,tright, goal = Theory.Trans.t_of_constr goal eq envs (left,right)   in
 	let goal, ir = Theory.Trans.ir_of_envs goal eq envs in
 	let concl = Tacmach.pf_concl goal in
-	let _ = pr_constr "concl "concl in 	     
+        let env = Tacmach.pf_env goal in
+        let sigma = Tacmach.project goal in
+        let _ = pr_constr env sigma "concl "concl in 	     
 	let evar_map = Tacmach.project goal in
 	Tacticals.tclTHEN
 	  (Refiner.tclEVARS evar_map)
@@ -255,7 +259,9 @@ let aac_reflexivity = fun goal ->
 	  (Tacticals.tclTHEN (retype lift_reflexivity) (Proofview.V82.of_tactic (Tactics.apply lift_reflexivity)))
 	    (fun goal ->
 	      let concl = Tacmach.pf_concl goal in
-	      let _ = pr_constr "concl "concl in 	     
+              let env = Tacmach.pf_env goal in
+              let sigma = Tacmach.project goal in
+	      let _ = pr_constr env sigma "concl "concl in 	     
 	      by_aac_reflexivity zero lift.e ir t t' goal)
 	)
     ) goal
@@ -294,13 +300,13 @@ let lift_transitivity in_left (step:constr) preorder lifting (using_eq : Coq.Equ
       ] goal
 
 
-(** The core tactic for aac_rewrite *)
+(** The core tactic for aac_rewrite. Env and sigma are for the constr *)
 let core_aac_rewrite ?abort
     rewinfo
     subst
     (by_aac_reflexivity : Matcher.Terms.t -> Matcher.Terms.t -> Proof_type.tactic)
-    (tr : constr) t left : tactic =
-  pr_constr "transitivity through" tr;   
+    env sigma (tr : constr) t left : tactic =
+  pr_constr env sigma "transitivity through" tr;   
   let tran_tac =
     lift_transitivity rewinfo.in_left tr rewinfo.rlt rewinfo.lifting.lift rewinfo.eqt
   in
@@ -386,7 +392,10 @@ let aac_rewrite  ?abort rew ?(l2r=true) ?(show = false) ?(in_left=true) ?strict 
 		let subst  = Matcher.Subst.to_list subst in
 		let subst = List.map (fun (x,y) -> x, conv y) subst in
 		let by_aac_reflexivity = (by_aac_reflexivity rewinfo.subject rewinfo.eqt  ir) in
-		core_aac_rewrite ?abort rewinfo subst by_aac_reflexivity tr_step_raw tr_step subject
+                let env = Tacmach.pf_env goal in
+                let sigma = Tacmach.project goal in
+                (* I'm not sure whether this is the right env/sigma for tr_step_raw *)
+		core_aac_rewrite ?abort rewinfo subst by_aac_reflexivity env sigma tr_step_raw tr_step subject
 		 
 	      with
 		| NoSolutions ->

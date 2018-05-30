@@ -28,6 +28,6 @@ sig
 	
       (** {!pr_constr} print a Coq constructor, that can be labelled
       by a string *)
-      val pr_constr : string -> EConstr.constr -> unit
+      val pr_constr : Environ.env -> Evd.evar_map -> string -> EConstr.constr -> unit
 
     end
