@@ -126,7 +126,7 @@ Section ineq.
   Import Instances.Z.
   Open Scope Z_scope.
 
-  Instance Zplus_incr: Proper (Zle ==> Zle ==> Zle) Zplus.
+  Instance Zplus_incr: Proper (Z.le ==> Z.le ==> Z.le) Zplus.
   Proof. intros ? ? H ? ? H'. apply Zplus_le_compat; assumption. Qed. 
 
   Hypothesis H: forall x, x+x <= x.

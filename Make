@@ -14,8 +14,9 @@ search_monad.ml
 matcher.ml
 theory.ml
 print.ml
-aac_rewrite.ml4
-aac.mlpack
+aac_rewrite.ml
+aac.ml4
+aac_plugin.mlpack
 
 AAC.v
 Instances.v

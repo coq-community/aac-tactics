@@ -1138,4 +1138,4 @@ Section t.
 
 End t.
        
-Declare ML Module "aac".
+Declare ML Module "aac_plugin".
