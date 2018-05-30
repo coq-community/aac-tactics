@@ -16,6 +16,7 @@ Add Rec LoadPath "." as AAC_tactics.
 Add ML Path ".".
 Require Import AAC.
 Require Instances.
+Require Arith ZArith.
 
 (** ** Introductory example 
 
@@ -29,12 +30,12 @@ Section introduction.
   Import Instances.Z.
 
   Variables a b c : Z.
-  Hypothesis H: forall x, x + Zopp x = 0.
-  Goal a + b + c + Zopp (c + a) = b.
+  Hypothesis H: forall x, x + Z.opp x = 0.
+  Goal a + b + c + Z.opp (c + a) = b.
     aac_rewrite H.
     aac_reflexivity.
   Qed.
-  Goal a + c + Zopp (b + a + Zopp b) = c.
+  Goal a + c + Z.opp (b + a + Z.opp b) = c.
     do 2 aac_rewrite H.
     reflexivity.
   Qed.
@@ -223,7 +224,7 @@ End base.
    already declared in file [Instances.v].) *)
 
 Section Peano.
-  Require Import Arith.
+  Import Arith.
     
   Instance aac_plus_Assoc : Associative eq plus := plus_assoc.
   Instance aac_plus_Comm : Commutative eq plus :=  plus_comm.
@@ -327,7 +328,7 @@ End Peano.
 Section AAC_normalise.
 
   Import Instances.Z.
-  Require Import ZArith.
+  Import ZArith.
   Open Scope Z_scope.
  
   Variable a b c d : Z.
@@ -344,30 +345,30 @@ End AAC_normalise.
 Section Examples.
 
   Import Instances.Z.
-  Require Import ZArith.
+  Import ZArith.
   Open Scope Z_scope.
 
   (** *** Reverse triangle inequality *)
 
-  Lemma Zabs_triangle : forall x y,  Zabs (x + y) <= Zabs x + Zabs y .
-  Proof Zabs_triangle.
+  Lemma Zabs_triangle : forall x y,  Z.abs (x + y) <= Z.abs x + Z.abs y .
+  Proof Z.abs_triangle.
 
   Lemma Zplus_opp_r : forall x, x + -x = 0.
   Proof Zplus_opp_r.
 
   (** The following morphisms are required to perform the required rewrites *)
-  Instance Zminus_compat : Proper (Zge ==> Zle) Zopp.
+  Instance Zminus_compat : Proper (Z.ge ==> Z.le) Z.opp.
   Proof. intros x y. omega. Qed.
  
-  Instance Proper_Zplus : Proper (Zle ==> Zle ==> Zle) Zplus.
+  Instance Proper_Zplus : Proper (Z.le ==> Z.le ==> Z.le) Zplus.
   Proof. firstorder. Qed.
 
-  Goal forall a b, Zabs a - Zabs b <= Zabs (a - b).
+  Goal forall a b, Z.abs a - Z.abs b <= Z.abs (a - b).
     intros. unfold Zminus.
     aac_instances <- (Zminus_diag b).
     aac_rewrite <- (Zminus_diag b) at 3.
     unfold Zminus.
-    aac_rewrite Zabs_triangle.
+    aac_rewrite Z.abs_triangle.
     aac_rewrite Zplus_opp_r.
     aac_reflexivity.
   Qed.

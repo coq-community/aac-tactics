@@ -15,7 +15,7 @@
 
 Require Import AAC.
 Require Instances.
-
+Require NArith Minus.
 (** ** Limitations *)
 
 (** *** 1. Dependent parameters
@@ -74,7 +74,7 @@ End parameters.
    type [T] to some other type [T']. *)
 
 Section morphism.
-  Require Import NArith Minus.
+  Import NArith Minus.
   Open Scope nat_scope.
 
   (** Typically, although [N_of_nat] is a proper morphism from
@@ -122,7 +122,7 @@ End morphism.
 
 Section ineq. 
 
-  Require Import ZArith.
+  Import ZArith.
   Import Instances.Z.
   Open Scope Z_scope.
 
@@ -197,7 +197,7 @@ appearing in a goal are considered as constants, they will not be
 instantiated. *)
 
 Section evars.
-  Require Import ZArith.
+  Import ZArith.
   Import Instances.Z.
 
   Variable P: Prop.

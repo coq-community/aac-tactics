@@ -113,7 +113,7 @@ Section copy.
   Qed.
   Lemma copy_xH : forall x, R (copy 1 x) x.
   Proof. intros; unfold copy; rewrite Prect_base. reflexivity. Qed.
-  Lemma copy_Psucc : forall n x, R (copy (Psucc n) x) (plus x (copy n x)).
+  Lemma copy_Psucc : forall n x, R (copy (Pos.succ n) x) (plus x (copy n x)).
   Proof. intros; unfold copy; rewrite Prect_succ. reflexivity. Qed.
 
   Global Instance copy_compat n: Proper (R ==> R) (copy n).
@@ -842,7 +842,7 @@ Section s.
     Qed.
    
    
-    Lemma copy_mset_succ  n (l: mset T):  eval (sum i (copy_mset (Psucc n) l)) == @Bin.value _ _ (e_bin i) (eval (sum i l)) (eval (sum i (copy_mset n l))).
+    Lemma copy_mset_succ  n (l: mset T):  eval (sum i (copy_mset (Pos.succ n) l)) == @Bin.value _ _ (e_bin i) (eval (sum i l)) (eval (sum i (copy_mset n l))).
     Proof.
       rewrite 2 copy_mset'.
      

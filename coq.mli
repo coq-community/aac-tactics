@@ -23,14 +23,14 @@
 
 (** {2 Getting Coq terms from the environment}  *)
 
-val init_constant_constr : string list -> string -> Term.constr
+val init_constant_constr : string list -> string -> Constr.t
 val init_constant : string list -> string -> EConstr.constr
 
 (** {2 General purpose functions} *)
 
-type goal_sigma =  Proof_type.goal Tacmach.sigma
-val resolve_one_typeclass : Proof_type.goal Tacmach.sigma -> EConstr.types -> EConstr.constr * goal_sigma
-val cps_resolve_one_typeclass: ?error:Pp.std_ppcmds -> EConstr.types -> (EConstr.constr  -> Proof_type.tactic) -> Proof_type.tactic
+type goal_sigma =  Proof_type.goal Evd.sigma
+val resolve_one_typeclass : Proof_type.goal Evd.sigma -> EConstr.types -> EConstr.constr * goal_sigma
+val cps_resolve_one_typeclass: ?error:Pp.t -> EConstr.types -> (EConstr.constr  -> Proof_type.tactic) -> Proof_type.tactic
 val nf_evar : goal_sigma -> EConstr.constr -> EConstr.constr
 val evar_unit :goal_sigma ->EConstr.constr ->  EConstr.constr* goal_sigma
 val evar_binary: goal_sigma -> EConstr.constr -> EConstr.constr* goal_sigma
@@ -41,7 +41,7 @@ val cps_mk_letin : string -> EConstr.constr -> ( EConstr.constr -> Proof_type.ta
 
 val retype : EConstr.constr -> Proof_type.tactic
 
-val decomp_term : Evd.evar_map -> EConstr.constr -> (EConstr.constr , EConstr.types, EConstr.ESorts.t, EConstr.EInstance.t) Term.kind_of_term
+val decomp_term : Evd.evar_map -> EConstr.constr -> (EConstr.constr , EConstr.types, EConstr.ESorts.t, EConstr.EInstance.t) Constr.kind_of_term
 val lapp : EConstr.constr lazy_t -> EConstr.constr array -> EConstr.constr
 
 (** {2 Bindings with Coq' Standard Library}  *)
@@ -82,6 +82,7 @@ module Leibniz : sig
 end
 
 module Option : sig
+  val typ : EConstr.constr lazy_t
   val some : EConstr.constr -> EConstr.constr -> EConstr.constr
   val none : EConstr.constr -> EConstr.constr
   val of_option : EConstr.constr -> EConstr.constr option -> EConstr.constr
@@ -165,7 +166,7 @@ val tclPRINT : Proof_type.tactic -> Proof_type.tactic
 (** {2 Error related mechanisms}  *)
 
 val anomaly : string -> 'a
-val user_error : Pp.std_ppcmds -> 'a
+val user_error : Pp.t -> 'a
 val warning : string -> unit
 
 

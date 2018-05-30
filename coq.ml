@@ -42,14 +42,14 @@ let cps_mk_letin
     (k : constr -> Proof_type.tactic)
 : Proof_type.tactic =
   fun goal ->
-    let name = (Names.id_of_string name) in
-    let name =  Tactics.fresh_id [] name goal in
+    let name = (Id.of_string name) in
+    let name =  Tactics.fresh_id Id.Set.empty name goal in
     let letin = (Proofview.V82.of_tactic (Tactics.letin_tac None  (Name name) c None nowhere)) in
       Tacticals.tclTHENLIST [retype c; letin; (k (mkVar name))] goal
 
 (** {1 General functions}  *)
 
-type goal_sigma =  Proof_type.goal Tacmach.sigma
+type goal_sigma =  Proof_type.goal Evd.sigma
 let goal_update (goal : goal_sigma) evar_map : goal_sigma=
   let it = Tacmach.sig_it goal in
   Tacmach.re_sig it evar_map
@@ -96,14 +96,14 @@ let evar_binary (gl: goal_sigma) (x : constr) =
 let evar_relation (gl: goal_sigma) (x: constr) =
   let env = Tacmach.pf_env gl in
   let evar_map = Tacmach.project gl in
-  let ty = mkArrow x (mkArrow x (mkSort prop_sort)) in
+  let ty = mkArrow x (mkArrow x (mkSort Sorts.prop)) in
   let (em,r) = Evarutil.new_evar env evar_map ty in
     r,( goal_update gl em)
 
 let cps_evar_relation (x: constr) k = fun goal -> 
   Tacmach.pf_apply
     (fun env em ->
-      let ty = mkArrow x (mkArrow x (mkSort prop_sort)) in
+      let ty = mkArrow x (mkArrow x (mkSort Sorts.prop)) in
       let (em, r) = Evarutil.new_evar env em ty in
       Tacticals.tclTHENLIST [Refiner.tclEVARS em; k r] goal
     )	goal
@@ -346,8 +346,10 @@ let tclDEBUG msg tac = fun gl ->
   let _ = Feedback.msg_debug (Pp.str msg) in
     tac gl
 
-let tclPRINT  tac = fun gl ->
-  let _ = Feedback.msg_notice (Printer.pr_econstr (Tacmach.pf_concl gl)) in
+let tclPRINT tac = fun gl ->
+  let env = Tacmach.pf_env gl in
+  let sigma = Tacmach.project gl in
+  let _ = Feedback.msg_notice (Printer.pr_econstr_env env sigma (Tacmach.pf_concl gl)) in
     tac gl
 
 

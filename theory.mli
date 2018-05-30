@@ -51,7 +51,7 @@ end
 module Sym:
 sig
   (** mimics the Coq record [Sym.pack] *)
-  type pack = {ar: Term.constr; value: Term.constr ; morph: Term.constr}
+  type pack = {ar: Constr.t; value: Constr.t ; morph: Constr.t}
 
   val typ: EConstr.constr lazy_t
 
@@ -140,7 +140,7 @@ module Trans :  sig
 
   (** [add_symbol] adds a given binary symbol to the environment of
       known stuff. *)
-  val add_symbol : Coq.goal_sigma -> Coq.Relation.t -> envs -> Term.constr -> Coq.goal_sigma
+  val add_symbol : Coq.goal_sigma -> Coq.Relation.t -> envs -> Constr.t -> Coq.goal_sigma
 
   (** {2 Reconstruction: from AST back to Coq terms  }
      

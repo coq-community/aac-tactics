@@ -255,7 +255,7 @@ end
 
 
      (** This function has to deal with the arities *)
-     let rec merge (l : nf_term mset) (l' : nf_term mset) : nf_term mset=
+     let merge (l : nf_term mset) (l' : nf_term mset) : nf_term mset=
        merge_ac nf_term_compare l l'
 
      let extract_A units s t =
@@ -349,7 +349,7 @@ end
      (** {2 Conversion functions} *)
 
      (* rebuilds a tree out of a list, under the assumption that the list is not empty *)
-     let rec binary_of_list f comb l =
+     let binary_of_list f comb l =
        let l = List.rev l in
        let rec aux =    function
        | [] -> assert false
@@ -455,7 +455,7 @@ end
        | Dot (s,l,r) -> Dot (s, aux l, aux r)
        | Var i -> 
 	   begin match find t i  with
-	     | None -> CErrors.error "aac_tactics: instantiate failure"
+	     | None -> CErrors.user_err (Pp.strbrk "aac_tactics: instantiate failure")
 	     | Some x -> t_of_term  x
 	   end
      in aux x
