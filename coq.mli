@@ -29,11 +29,9 @@ val init_constant : string list -> string -> EConstr.constr
 (** {2 General purpose functions} *)
 
 type goal_sigma =  Proof_type.goal Tacmach.sigma
-val goal_update : goal_sigma -> Evd.evar_map -> goal_sigma
 val resolve_one_typeclass : Proof_type.goal Tacmach.sigma -> EConstr.types -> EConstr.constr * goal_sigma
-val cps_resolve_one_typeclass: ?error:string -> EConstr.types -> (EConstr.constr  -> Proof_type.tactic) -> Proof_type.tactic
+val cps_resolve_one_typeclass: ?error:Pp.std_ppcmds -> EConstr.types -> (EConstr.constr  -> Proof_type.tactic) -> Proof_type.tactic
 val nf_evar : goal_sigma -> EConstr.constr -> EConstr.constr
-val fresh_evar :goal_sigma -> EConstr.types ->  EConstr.constr* goal_sigma
 val evar_unit :goal_sigma ->EConstr.constr ->  EConstr.constr* goal_sigma
 val evar_binary: goal_sigma -> EConstr.constr -> EConstr.constr* goal_sigma
 val evar_relation: goal_sigma -> EConstr.constr -> EConstr.constr* goal_sigma
@@ -167,7 +165,7 @@ val tclPRINT : Proof_type.tactic -> Proof_type.tactic
 (** {2 Error related mechanisms}  *)
 
 val anomaly : string -> 'a
-val user_error : string -> 'a
+val user_error : Pp.std_ppcmds -> 'a
 val warning : string -> unit
 
 
