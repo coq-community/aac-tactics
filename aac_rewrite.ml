@@ -389,7 +389,7 @@ let aac_rewrite  ?abort rew ?(l2r=true) ?(show = false) ?(in_left=true) ?strict 
 		let by_aac_reflexivity = (by_aac_reflexivity rewinfo.subject rewinfo.eqt  ir) in
                 let env = Tacmach.pf_env goal in
                 let sigma = Tacmach.project goal in
-                (* I'm not sure whether this is the right env/sigma for tr_step_raw *)
+                (* I'm not sure whether this is the right env/sigma for printing tr_step_raw *)
 		core_aac_rewrite ?abort rewinfo subst by_aac_reflexivity env sigma tr_step_raw tr_step subject
 		 
 	      with
