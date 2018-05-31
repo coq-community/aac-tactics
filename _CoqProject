@@ -1,3 +1,4 @@
+#ATTENTION: The file used to generate the Makefile.coq is Make, not this file!
 -I .
 -R . AAC_tactics
 
