@@ -1,4 +1,24 @@
-#ATTENTION: The file used to generate the Makefile.coq is Make, not this file!
--I .
--R . AAC_tactics
+-I src
+-R theories/ AAC_tactics
 
+src/coq.mli
+src/helper.mli
+src/search_monad.mli
+src/matcher.mli
+src/theory.mli
+src/print.mli
+src/aac_rewrite.mli
+src/coq.ml
+src/helper.ml
+src/search_monad.ml
+src/matcher.ml
+src/theory.ml
+src/print.ml
+src/aac_rewrite.ml
+src/aac.ml4
+src/aac_plugin.mlpack
+
+theories/AAC.v
+theories/Instances.v
+theories/Tutorial.v
+theories/Caveats.v
