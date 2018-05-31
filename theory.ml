@@ -9,7 +9,7 @@
 (** Constr from the theory of this particular development
 
     The inner-working of this module is highly correlated with the
-    particular structure of {b AAC.v}, therefore, it should
+    particular structure of {b AAC_rewrite.v}, therefore, it should
     be of little interest to most readers.
 *)
 open EConstr

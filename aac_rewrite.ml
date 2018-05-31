@@ -37,7 +37,7 @@ open Names
 open Proof_type
 
 
-(** aac_lift : the ideal type beyond AAC.v/Lift
+(** aac_lift : the ideal type beyond AAC_rewrite.v/Lift
 
     A base relation r, together with an equivalence relation, and the
     proof that the former lifts to the later. Howver, we have to

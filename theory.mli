@@ -10,14 +10,14 @@
     reification and translation functions.
    
     Note: this module is highly correlated with the definitions of {i
-    AAC.v}.
+    AAC_rewrite.v}.
 
     This module interfaces with the above Coq module; it provides
     facilities to interpret a term with arbitrary operators as an
     abstract syntax tree, and to convert an AST into a Coq term
     (either using the Coq "raw" terms, as written in the starting
     goal, or using the reified Coq datatypes we define in {i
-    AAC.v}).
+    AAC_rewrite.v}).
 *)
 
 (** Both in OCaml and Coq, we represent finite multisets using
