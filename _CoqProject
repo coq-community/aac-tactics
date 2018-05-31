@@ -18,6 +18,7 @@ src/aac_rewrite.ml
 src/aac.ml4
 src/aac_plugin.mlpack
 
+theories/Utils.v
 theories/AAC.v
 theories/Instances.v
 theories/Tutorial.v
