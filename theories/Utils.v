@@ -20,7 +20,7 @@ Set Asymmetric Patterns.
      - indices for morphisms and symbols
      - multiplicity of terms in sums *)
 
-Local Notation idx := positive.
+Notation idx := positive.
 
 Fixpoint eq_idx_bool i j :=
   match i,j with
@@ -41,7 +41,7 @@ Fixpoint idx_compare i j :=
     | xO _, xI _ => Lt
   end.
 
-Local Notation pos_compare := idx_compare (only parsing).
+Notation pos_compare := idx_compare (only parsing).
 
 (** Specification predicate for boolean binary functions *)
 Inductive decide_spec {A} {B} (R : A -> B -> Prop) (x : A) (y : B) : bool -> Prop :=
@@ -69,7 +69,7 @@ Proof. intros i j. case (pos_compare_weak_spec i j); intros; congruence. Qed.
 
 (** * Dependent types utilities *)
 
-Local Notation cast T H u := (eq_rect _ T u _ H).
+Notation cast T H u := (eq_rect _ T u _ H).
 
 Section dep.
   Variable U: Type.
@@ -103,7 +103,7 @@ Inductive nelist (A : Type) : Type :=
 | nil : A -> nelist A
 | cons : A -> nelist A -> nelist A.
 
-Local Notation "x :: y" := (cons x y).
+Notation "x :: y" := (cons x y).
 
 Fixpoint nelist_map (A B: Type) (f: A -> B) l :=
   match l with
@@ -117,13 +117,13 @@ Fixpoint appne  A l l' : nelist A :=
     | cons t q => cons t (appne A q l')
   end.
 
-Local Notation "x ++ y" := (appne x y).
+Notation "x ++ y" := (appne x y).
 
 (** finite multisets are represented with ordered lists with multiplicities *)
 Definition mset A := nelist (A*positive).
 
 (** lexicographic composition of comparisons (this is a notation to keep it lazy) *)
-Local Notation lex e f := (match e with Eq => f | _ => e end).  
+Notation lex e f := (match e with Eq => f | _ => e end).  
 
 
 Section lists.

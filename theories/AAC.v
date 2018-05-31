@@ -89,15 +89,6 @@ Instance aac_lift_proper {X} {R : relation X} {E} {HE: Equivalence E}
 
 
 Module Internal.
-
-Local Notation idx := positive.
-Local Notation pos_compare := idx_compare (only parsing).
-Local Notation lex e f := (match e with Eq => f | _ => e end).
-Local Notation cast T H u := (eq_rect _ T u _ H).
-Local Notation "x :: y" := (cons x y).
-Local Notation "x ++ y" := (appne x y).
-
-
 (** * Utilities for the evaluation function *)
 
 Section copy.
