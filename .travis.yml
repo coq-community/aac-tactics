@@ -1,0 +1,8 @@
+language: nix
+
+script:
+- nix-build --arg coq-version "\"$COQ_VERSION\"" --extra-substituters https://coq.cachix.org --trusted-public-keys "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= coq.cachix.org-1:Jgt0DwGAUo+wpxCM52k2V+E0hLoOzFPzvg94F65agtI="
+
+env:
+  - COQ_VERSION=master
+  - COQ_VERSION=v8.9
