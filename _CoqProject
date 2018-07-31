@@ -14,6 +14,8 @@ search_monad.ml
 matcher.ml
 theory.ml
 print.ml
+aac_lib.ml
+aac_lib.mli
 aac_rewrite.ml4
 aac.mlpack
 

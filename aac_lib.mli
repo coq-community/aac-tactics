@@ -6,4 +6,14 @@
 (*       Copyright 2009-2010: Thomas Braibant, Damien Pous.                *)
 (***************************************************************************)
 
-(** Definition of the tactics, and corresponding Coq grammar entries.*)
+val aac_rewrite :
+  args:(string * int) list -> ?abort:bool -> EConstr.constr -> ?l2r:bool ->
+  ?show:bool -> ?strict:bool -> ?extra:EConstr.t -> Proof_type.tactic
+
+val aac_reflexivity : Coq.goal_sigma -> Proof_type.goal list Evd.sigma
+
+val aac_normalise : Coq.goal_sigma -> Proof_type.goal list Evd.sigma
+
+val add : string -> 'a -> (string * 'a) list -> (string * 'a) list
+
+val pr_aac_args : 'a -> 'b -> 'c -> (string * int) list -> Pp.t

@@ -1,0 +1,11 @@
+*~
+*.a
+*.aux
+*.cm*
+*.d
+*.glob
+*.o
+*.vo
+.merlin
+Makefile.coq
+Makefile.coq.conf
