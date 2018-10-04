@@ -19,27 +19,6 @@ open Aac_rewrite
 open Extraargs
 open Genarg
 
-let rec add k x = function
-  | [] -> [k,x]
-  | k',_ as ky::q ->
-      if k'=k then Coq.user_error @@ Pp.strbrk ("redondant argument ("^k^")")
-      else ky::add k x q
-
-let get k l = try Some (List.assoc k l) with Not_found -> None
-
-let get_lhs l = try List.assoc "in_right" l; false with Not_found -> true
-
-let aac_rewrite ~args =
-  Aac_rewrite.aac_rewrite ~occ_subterm:(get "at" args) ~occ_sol:(get "subst" args) ~in_left:(get_lhs args)
-
-
-let pr_aac_args _ _ _ l =
-  List.fold_left
-    (fun acc -> function
-       | ("in_right" as s,_) -> Pp.(++) (Pp.str s) acc
-       | (k,i) -> Pp.(++) (Pp.(++) (Pp.str k)  (Pp.int i)) acc
-    ) (Pp.str "") l
-
 ARGUMENT EXTEND aac_args  
 TYPED AS ((string * int) list ) 
 PRINTED BY pr_aac_args
