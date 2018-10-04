@@ -6,19 +6,18 @@
 (*       Copyright 2009-2010: Thomas Braibant, Damien Pous.                *)
 (***************************************************************************)
 
-(** aac_rewrite -- rewriting modulo  *)
+(** aac -- Reasoning modulo associativity and commutativity *)
 
+DECLARE PLUGIN "aac_plugin"
+
+      
+open Ltac_plugin
 open Pcoq.Prim
 open Pcoq.Constr
-open Ltac_plugin
 open Stdarg
+open Aac_rewrite
 open Extraargs
 open Genarg
-
-open Aac_lib
-
-DECLARE PLUGIN "aac"
-
 
 ARGUMENT EXTEND aac_args  
 TYPED AS ((string * int) list ) 

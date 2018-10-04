@@ -9,7 +9,7 @@
 (** Constr from the theory of this particular development
 
     The inner-working of this module is highly correlated with the
-    particular structure of {b AAC.v}, therefore, it should
+    particular structure of {b AAC_rewrite.v}, therefore, it should
     be of little interest to most readers.
 *)
 open EConstr
@@ -30,6 +30,7 @@ open Debug
 module HMap = Hashtbl.Make(Constr)
 
 let ac_theory_path = ["AAC_tactics"; "AAC"]
+let ac_util_path = ["AAC_tactics"; "Utils"]
 
 module Stubs = struct
   let path = ac_theory_path@["Internal"]
@@ -123,7 +124,7 @@ end
 
 (* Non empty lists *)
 module NEList = struct
-  let path = ac_theory_path @ ["Internal"]
+  let path = ac_util_path 
   let typ = lazy (Coq.init_constant path "list")
   let nil = lazy (Coq.init_constant path "nil")
   let cons = lazy (Coq.init_constant path "cons")
