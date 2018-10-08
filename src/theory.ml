@@ -583,7 +583,7 @@ module Trans = struct
     let gather goal (rlt : Coq.Relation.t ) envs t : Coq.goal_sigma =
       let rec aux goal x = 
 	match Coq.decomp_term (Tacmach.project goal) x with
-	  | Term.App (t,ca) ->
+	  | Constr.App (t,ca) ->
 	      fold goal rlt envs t ca (aux )
 	  | _ ->  goal
       in
@@ -622,9 +622,9 @@ module Trans = struct
 	let m = Coq.Classes.mk_morphism  typeof relof  papp in
 	try
 	  let m,goal = Coq.resolve_one_typeclass goal m in
-	  let pack = {Sym.ar = EConstr.to_constr (Tacmach.project goal) (Coq.Nat.of_int ar);
-                      Sym.value= EConstr.to_constr (Tacmach.project goal) papp;
-                      Sym.morph= EConstr.to_constr (Tacmach.project goal) m} in
+	  let pack = {Sym.ar = EConstr.to_constr ~abort_on_undefined_evars:(false)(Tacmach.project goal) (Coq.Nat.of_int ar);
+                      Sym.value= EConstr.to_constr ~abort_on_undefined_evars:(false)(Tacmach.project goal) papp;
+                      Sym.morph= EConstr.to_constr ~abort_on_undefined_evars:(false)(Tacmach.project goal) m} in
 	  Some (goal, Sym pack)
 	with
 	  | e ->  None
@@ -638,7 +638,7 @@ module Trans = struct
 	    let p_app = mkApp (t, Array.sub ca 0 (nb_params - ar)) in
 	    begin	
 	      try
-		begin match HMap.find envs.discr (EConstr.to_constr (Tacmach.project goal) p_app) with
+		begin match HMap.find envs.discr (EConstr.to_constr ~abort_on_undefined_evars:(false) (Tacmach.project goal) p_app) with
 		  | None -> 
 		    fold goal (ar-1)
 		  | Some pack ->
@@ -653,7 +653,7 @@ module Trans = struct
 	  assert (0 <= ar && ar <= nb_params);
 	  match x with
 	    | Some (goal, pack) ->
-	      HMap.add envs.discr (EConstr.to_constr (Tacmach.project goal) p_app) (Some pack);
+	      HMap.add envs.discr (EConstr.to_constr ~abort_on_undefined_evars:(false) (Tacmach.project goal) p_app) (Some pack);
 	      add_bloom envs pack;
 	      (goal, pack, p_app, Array.sub ca (nb_params-ar) ar)
 	    | None ->
@@ -661,13 +661,13 @@ module Trans = struct
 	      if ar = 0 then raise NotReflexive;
 	      begin
 		(* to memoise the failures *)
-		HMap.add envs.discr (EConstr.to_constr (Tacmach.project goal) p_app) None;
+		HMap.add envs.discr (EConstr.to_constr ~abort_on_undefined_evars:(false) (Tacmach.project goal) p_app) None;
 		(* will terminate, since [const] is capped, and it is
 		   easy to find an instance of a constant *)
 		fold goal (ar-1)
 	      end
 	in
-	try match HMap.find envs.discr (EConstr.to_constr (Tacmach.project goal) (mkApp (t,ca))) with
+	try match HMap.find envs.discr (EConstr.to_constr ~abort_on_undefined_evars:(false) (Tacmach.project goal) (mkApp (t,ca))) with
 	  | None -> fold goal (nb_params)
 	  | Some pack -> goal, pack, (mkApp (t,ca)), [| |]
 	with Not_found -> fold goal (nb_params)
@@ -675,7 +675,7 @@ module Trans = struct
       let discriminate goal envs rlt  x =
 	try
 	  match Coq.decomp_term (Tacmach.project goal) x with
-	    | Term.App (t,ca) ->
+	    | Constr.App (t,ca) ->
 	      discriminate goal envs rlt   t ca
 	    | _ -> discriminate goal envs rlt x [| |]
 	with
@@ -693,7 +693,7 @@ module Trans = struct
 	let r_goal = ref (goal) in
 	let rec aux x =
 	  match Coq.decomp_term (Tacmach.project goal) x with
-	    | Term.Rel i -> Matcher.Terms.Var i
+	    | Constr.Rel i -> Matcher.Terms.Var i
 	    | _ ->
 		let goal, pack , p_app, ca = discriminate (!r_goal) envs rlt   x in
 		  r_goal := goal;

@@ -394,7 +394,7 @@ let get_hypinfo c ~l2r ?check_type  (k : hypinfo -> Proof_type.tactic) :    Proo
   let (rel_context, body_type) = decompose_prod_assum evar_map ctype in
   let rec check f e =
     match decomp_term evar_map e with
-      | Term.Rel i -> f (get_type (Context.Rel.lookup i rel_context))
+      | Constr.Rel i -> f (get_type (Context.Rel.lookup i rel_context))
       | _ -> fold evar_map (fun acc x -> acc && check f x) true e
   in
   begin match check_type with
