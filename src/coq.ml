@@ -8,7 +8,7 @@
 
 (** Interface with Coq *)
 
-open Term
+open Constr
 open EConstr
 open Names
 open Context.Rel.Declaration
@@ -19,7 +19,7 @@ let contrib_name = "aac_tactics"
 (* Getting constrs (primitive Coq terms) from existing Coq
    libraries. *)
 let find_constant contrib dir s =
-  Universes.constr_of_global (Coqlib.find_reference contrib dir s)
+  UnivGen.constr_of_global (Coqlib.find_reference contrib dir s)
 
 let init_constant_constr dir s = find_constant contrib_name dir s
 
@@ -394,7 +394,7 @@ let get_hypinfo c ~l2r ?check_type  (k : hypinfo -> Proof_type.tactic) :    Proo
   let (rel_context, body_type) = decompose_prod_assum evar_map ctype in
   let rec check f e =
     match decomp_term evar_map e with
-      | Constr.Rel i -> f (get_type (Context.Rel.lookup i rel_context))
+      | Rel i -> f (get_type (Context.Rel.lookup i rel_context))
       | _ -> fold evar_map (fun acc x -> acc && check f x) true e
   in
   begin match check_type with
@@ -580,7 +580,7 @@ let rewrite ?(abort=false)hypinfo subst k =
 	    Locus.AllOccurrences
 	    true (* tell if existing evars must be frozen for instantiation *)
 	    false
-	    (rew,Misctypes.NoBindings)
+	    (rew,Tactypes.NoBindings)
 	    true
           end
 	else
