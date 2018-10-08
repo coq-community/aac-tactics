@@ -223,7 +223,7 @@ let aac_normalise = fun goal ->
   let ids = Tacmach.pf_ids_of_hyps goal in
   let mp = MPfile (DirPath.make (List.map Id.of_string ["AAC"; "AAC_tactics"])) in
   let norm_tac = KerName.make2 mp (Label.make "internal_normalize") in
-  let norm_tac = Misctypes.ArgArg (None, norm_tac) in
+  let norm_tac = Locus.ArgArg (None, norm_tac) in
   Tacticals.tclTHENLIST
     [
       aac_conclude by_aac_normalise;
