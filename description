@@ -1,6 +1,6 @@
 Name: AACTactics
 Title: AAC tactics
-Description: This Coq plugin provides tactics for rewriting universally quantified equations, modulo associative (and possibly commutative) operators
+Description: This Coq plugin provides tactics for rewriting universally quantified equations, modulo associative (and possibly commutative) operators.
 Keywords: reflexive tactic, rewriting, rewriting modulo associativity and commutativity, rewriting modulo AC, reflexive decision procedure
 Category: Miscellaneous/Coq Extensions
 Author: Thomas Braibant
