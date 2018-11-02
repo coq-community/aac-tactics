@@ -5,4 +5,3 @@ script:
 
 env:
   - COQ_VERSION=master
-  - COQ_VERSION=v8.9
