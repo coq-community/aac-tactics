@@ -15,7 +15,7 @@ src/matcher.ml
 src/theory.ml
 src/print.ml
 src/aac_rewrite.ml
-src/aac.ml4
+src/aac.mlg
 src/aac_plugin.mlpack
 
 theories/Utils.v
