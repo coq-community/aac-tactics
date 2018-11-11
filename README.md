@@ -18,7 +18,11 @@
 [gitter-link]: https://gitter.im/coq-community/Lobby
 
 This Coq plugin provides tactics for rewriting universally quantified
-equations, modulo associativity and commutativity of some given operator.
+equations, modulo associativity and commutativity of some operator.
+
+The tactics can be applied for custom operators by registering the operators and their
+properties as type class instances. Many common operator instances, such as for
+Z binary arithmetic and booleans, are provided with the plugin.
 
 The implementation and underlying theory is decribed in the paper
 [Tactics for Reasoning modulo AC in Coq](https://arxiv.org/abs/1106.4448).
@@ -33,7 +37,7 @@ The implementation and underlying theory is decribed in the paper
 ## Building and installation instructions
 
 The easiest way to install the latest released version is via
-[OPAM}(https://opam.ocaml.org/doc/Install.html):
+[OPAM](https://opam.ocaml.org/doc/Install.html):
 ```shell
 opam repo add coq-released https://coq.inria.fr/opam/released
 opam install coq-aac-tactics
@@ -78,15 +82,15 @@ The file [Instances.v](theories/Instances.v) defines several type class instance
 for frequent use-cases of this plugin, that should allow you to use it off-the-shelf.
 Namely, it contains instances for:
 
-- Peano naturals	(`Import Instances.Peano`)
-- Z binary numbers	(`Import Instances.Z`)
-- N binary numbers	(`Import Instances.N`)
-- P binary numbers	(`Import Instances.P)
-- Rational numbers	(`Import Instances.Q`)
-- Prop			(`Import Instances.Prop_ops`)
-- Booleans		(`Import Instances.Bool`)
-- Relations		(`Import Instances.Relations`)
-- all of the above	(`Import Instances.All`)
+- Peano naturals	(`Import Instances.Peano.`)
+- Z binary numbers	(`Import Instances.Z.`)
+- N binary numbers	(`Import Instances.N.`)
+- P binary numbers	(`Import Instances.P.`)
+- Rational numbers	(`Import Instances.Q.`)
+- Prop			(`Import Instances.Prop_ops.`)
+- Booleans		(`Import Instances.Bool.`)
+- Relations		(`Import Instances.Relations.`)
+- all of the above	(`Import Instances.All.`)
 
 To understand the inner workings of the tactics, please refer to
 the `.mli` files as the main source of information on each `.ml` file.
@@ -95,6 +99,5 @@ the `.mli` files as the main source of information on each `.ml` file.
 
 The initial authors are grateful to Evelyne Contejean, Hugo Herbelin,
 Assia Mahboubi, and Matthieu Sozeau for highly instructive discussions.
-
 The plugin took inspiration from the plugin tutorial "constructors" by
 Matthieu Sozeau, distributed under the LGPL 2.1.
