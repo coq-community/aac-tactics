@@ -18,7 +18,6 @@ open Pcoq.Constr
 open Stdarg
 open Aac_rewrite
 open Extraargs
-open Genarg
 
 }
 

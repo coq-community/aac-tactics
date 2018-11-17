@@ -1,4 +1,3 @@
-
 .*.aux
 *.a
 *.cma
@@ -7,6 +6,8 @@
 *.cmx
 *.cmxa
 *.cmxs
+*.cmt
+*.cmti
 *.glob
 *.ml.d
 *.ml4.d
@@ -16,10 +17,12 @@
 *.native
 *.o
 *.v.d
+*.mlg.d
 *.vio
 *.vo
 .coq-native/
 
+src/aac.ml
 /.merlin
 /.coqdeps.d
 /Makefile.coq
