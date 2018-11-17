@@ -188,7 +188,7 @@ module Trans :  sig
       reify each term successively.*)
   type reifier
 
-  val mk_reifier :   Coq.Relation.t -> EConstr.constr -> ir -> (sigmas * reifier -> Proof_type.tactic) -> Proof_type.tactic
+  val mk_reifier :   Coq.Relation.t -> EConstr.constr -> ir -> (sigmas * reifier -> Proofview.V82.tac) -> Proofview.V82.tac
 
   (** [reif_constr_of_t  reifier t] rebuilds the term [t] in the
       reified form. *)

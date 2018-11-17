@@ -1,0 +1,10 @@
+(library
+ (name aac_plugin)
+ (public_name coq.plugins.aac)
+ (flags :standard -warn-error -3-32)
+ (libraries coq.plugins.ltac))
+
+(rule
+ (targets aac.ml)
+ (deps (:pp-file aac.mlg))
+ (action (run coqpp %{pp-file})))

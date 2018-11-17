@@ -39,8 +39,8 @@ let retype c gl =
 let cps_mk_letin
     (name:string)
     (c: constr)
-    (k : constr -> Proof_type.tactic)
-: Proof_type.tactic =
+    (k : constr -> Proofview.V82.tac)
+: Proofview.V82.tac =
   fun goal ->
     let name = (Id.of_string name) in
     let name =  Tactics.fresh_id Id.Set.empty name goal in
@@ -49,8 +49,8 @@ let cps_mk_letin
 
 (** {1 General functions}  *)
 
-type goal_sigma =  Proof_type.goal Evd.sigma
-let goal_update (goal : goal_sigma) evar_map : goal_sigma=
+type goal_sigma =  Goal.goal Evd.sigma
+let goal_update (goal : goal_sigma) evar_map : goal_sigma =
   let it = Tacmach.sig_it goal in
   Tacmach.re_sig it evar_map
      
@@ -60,7 +60,7 @@ let resolve_one_typeclass goal ty : constr*goal_sigma=
   let em,c = Typeclasses.resolve_one_typeclass env evar_map ty in
     c, (goal_update goal em)
 
-let cps_resolve_one_typeclass ?error : types -> (constr  -> Proof_type.tactic) -> Proof_type.tactic = fun t k  goal  ->
+let cps_resolve_one_typeclass ?error : types -> (constr  -> Proofview.V82.tac) -> Proofview.V82.tac = fun t k  goal  ->
   Tacmach.pf_apply
     (fun env em -> let em ,c =  
 		  try Typeclasses.resolve_one_typeclass env em t
@@ -365,7 +365,6 @@ let user_error msg =
 let warning msg =
   Feedback.msg_warning (Pp.str ("[aac_tactics]" ^ msg))
 
-     
 (** {1 Rewriting tactics used in aac_rewrite}  *)
 module Rewrite = struct
 (** Some informations about the hypothesis, with an (informal)
@@ -388,7 +387,7 @@ type hypinfo =
       l2r : bool; 			(** rewriting from left to right  *)
     }
 
-let get_hypinfo c ~l2r ?check_type  (k : hypinfo -> Proof_type.tactic) :    Proof_type.tactic = fun goal ->
+let get_hypinfo c ~l2r ?check_type  (k : hypinfo -> Proofview.V82.tac) :    Proofview.V82.tac = fun goal ->
   let ctype =  Tacmach.pf_unsafe_type_of goal c in 
   let evar_map = Tacmach.project goal in
   let (rel_context, body_type) = decompose_prod_assum evar_map ctype in
@@ -550,16 +549,16 @@ let recompose_prod' context subst c =
 let build
     (h : hypinfo)
     (subst : (int *constr) list)
-    (k :constr -> Proof_type.tactic)
-    : Proof_type.tactic = fun goal ->
+    (k :constr -> Proofview.V82.tac)
+    : Proofview.V82.tac = fun goal ->
       let c = recompose_prod' h.context subst h.hyp in
       Tacticals.tclTHENLIST [k c] goal
 
 let build_with_evar
     (h : hypinfo)
     (subst : (int *constr) list)
-    (k :constr -> Proof_type.tactic)
-    : Proof_type.tactic
+    (k :constr -> Proofview.V82.tac)
+    : Proofview.V82.tac
     = fun goal ->
       Tacmach.pf_apply
 	(fun env em ->

@@ -38,7 +38,7 @@ module Stubs = struct
   (** The constants from the inductive type *)
   let _Tty = lazy (Coq.init_constant path "T")
   let vTty = lazy (Coq.init_constant path "vT")
- 
+
   let rsum = lazy (Coq.init_constant path "sum")
   let rprd = lazy (Coq.init_constant path "prd")
   let rsym = lazy (Coq.init_constant path "sym")
@@ -52,9 +52,9 @@ module Stubs = struct
   let decide_thm = lazy (Coq.init_constant path "decide")
   let lift_normalise_thm = lazy (Coq.init_constant path "lift_normalise")
 
-  let lift = 
+  let lift =
     lazy (Coq.init_constant ac_theory_path "AAC_lift")
-  let lift_proj_equivalence= 
+  let lift_proj_equivalence=
     lazy (Coq.init_constant ac_theory_path "aac_lift_equivalence")
   let lift_transitivity_left =
     lazy(Coq.init_constant ac_theory_path "lift_transitivity_left")
@@ -64,7 +64,7 @@ module Stubs = struct
     lazy(Coq.init_constant ac_theory_path "lift_reflexivity")
 end
 
-module Classes = struct 
+module Classes = struct
   module Associative = struct
     let path = ac_theory_path
     let typ = lazy (Coq.init_constant path "Associative")
@@ -77,7 +77,7 @@ module Classes = struct
       let ty = ty rlt value in
 	Coq.resolve_one_typeclass  goal ty
   end
-   
+
   module Commutative = struct
     let path = ac_theory_path
     let typ = lazy (Coq.init_constant path "Commutative")
@@ -86,9 +86,9 @@ module Classes = struct
 				rlt.Coq.Relation.r;
 				value
 			     |] )
-	
+
   end
-   
+
   module Proper = struct
     let path = ac_theory_path @ ["Internal";"Sym"]
     let typeof = lazy (Coq.init_constant path "type_of")
@@ -97,7 +97,7 @@ module Classes = struct
       let x = rlt.Coq.Relation.carrier in
 	mkApp (Lazy.force typeof, [| x ; Coq.Nat.of_int n |])
     let mk_relof :  Coq.Relation.t -> int -> constr = fun rlt n ->
-      let (x,r) = Coq.Relation.split rlt in      
+      let (x,r) = Coq.Relation.split rlt in
       mkApp (Lazy.force relof, [| x;r ; Coq.Nat.of_int n |])
 
     let ty rlt op ar  =
@@ -108,7 +108,7 @@ module Classes = struct
       let ty = ty rlt op ar in
 	Coq.resolve_one_typeclass goal ty
   end
-    
+
   module Unit = struct
     let path = ac_theory_path
     let typ = lazy (Coq.init_constant path "Unit")
@@ -124,7 +124,7 @@ end
 
 (* Non empty lists *)
 module NEList = struct
-  let path = ac_util_path 
+  let path = ac_util_path
   let typ = lazy (Coq.init_constant path "list")
   let nil = lazy (Coq.init_constant path "nil")
   let cons = lazy (Coq.init_constant path "cons")
@@ -151,7 +151,7 @@ let mk_mset ty (l : (constr * int) list) =
   let rec aux = function
     | [ ] -> assert false
     | [x,ar] -> NEList.nil pair_ty (pair x ar)
-    | (t,ar)::q -> NEList.cons pair_ty (pair t ar) (aux q)  
+    | (t,ar)::q -> NEList.cons pair_ty (pair t ar) (aux q)
   in
     aux l
 
@@ -160,7 +160,7 @@ module Sigma = struct
   let sigma_empty = lazy (Coq.init_constant ac_theory_path "sigma_empty")
   let sigma_add = lazy (Coq.init_constant ac_theory_path "sigma_add")
   let sigma_get = lazy (Coq.init_constant ac_theory_path "sigma_get")
-   
+
   let add ty n x map =
     mkApp (Lazy.force sigma_add,[|ty; n; x ;  map|])
   let empty ty =
@@ -183,8 +183,8 @@ module Sigma = struct
 	      q
 	  in to_fun ty (t) map
       | [] -> debug "of_list empty" ; to_fun ty (null) (empty ty)
- 
-   
+
+
 end
 
 
@@ -218,7 +218,7 @@ module Bin =struct
   let path = ac_theory_path @ ["Internal";"Bin"]
   let typ = lazy (Coq.init_constant path "pack")
   let mkPack = lazy (Coq.init_constant path "mk_pack")
-   
+
   let mk_pack: Coq.Relation.t -> pack -> constr = fun (rlt) s ->
     let (x,r) = Coq.Relation.split rlt in
     let comm_ty = Classes.Commutative.ty rlt (EConstr.of_constr s.value) in
@@ -232,21 +232,21 @@ module Bin =struct
    let (x,r) = Coq.Relation.split rlt in
       mkApp (Lazy.force typ, [| x; r|] )
 end
- 
+
 module Unit = struct
   let path = ac_theory_path @ ["Internal"]
   let unit_of_ty = lazy (Coq.init_constant path "unit_of")
   let unit_pack_ty = lazy (Coq.init_constant path "unit_pack")
   let mk_unit_of = lazy (Coq.init_constant path "mk_unit_for")
   let mk_unit_pack = lazy (Coq.init_constant path "mk_unit_pack")
- 
+
   type unit_of =
       {
 	uf_u : Constr.t; 		(* u *)
 	uf_idx : Constr.t;
 	uf_desc : Constr.t; (* Unit R (e_bin uf_idx) u *)
       }
-	
+
   type pack = {
     u_value : constr;	(* X *)
     u_desc : (unit_of) list (* unit_of u_value *)
@@ -255,13 +255,13 @@ module Unit = struct
   let ty_unit_of rlt  e_bin u =
     let (x,r) = Coq.Relation.split rlt in
       mkApp ( Lazy.force unit_of_ty, [| x; r; e_bin; u |])
-	
+
   let ty_unit_pack rlt e_bin =
     let (x,r) = Coq.Relation.split rlt in
       mkApp (Lazy.force unit_pack_ty, [| x; r; e_bin |])
-   
+
   let mk_unit_of rlt e_bin u unit_of =
-    let (x,r) = Coq.Relation.split rlt in  
+    let (x,r) = Coq.Relation.split rlt in
     mkApp (Lazy.force mk_unit_of , [| x;
 				      r;
 				      e_bin ;
@@ -269,7 +269,7 @@ module Unit = struct
 				      EConstr.of_constr unit_of.uf_idx;
 				      EConstr.of_constr unit_of.uf_desc
 				   |])
-   
+
   let mk_pack rlt e_bin pack : constr =
     let (x,r) = Coq.Relation.split rlt in
     let ty = ty_unit_of rlt e_bin pack.u_value in
@@ -295,18 +295,18 @@ let user_error msg =
   CErrors.user_err Pp.(strbrk "aac_tactics: " ++ msg)
 
 module Trans = struct
- 
+
   (** {1 From Coq to Abstract Syntax Trees (AST)}
-     
+
       This module provides facilities to interpret a Coq term with
       arbitrary operators as an abstract syntax tree. Considering an
       application, we try to infer instances of our classes.
-     
+
       We consider that [A] operators are coarser than [AC] operators,
       which in turn are coarser than raw morphisms. That means that
       [List.append], of type [(A : Type) -> list A -> list A -> list
       A] can be understood as an [A] operator.
-     
+
       During this reification, we gather some informations that will
       be used to rebuild Coq terms from AST ( type {!envs})
 
@@ -320,7 +320,7 @@ module Trans = struct
     (*  used to infer the AC/A structure in the first pass {!Gather} *)
     | Bin of Bin.pack with_unit
     (* will only be used in the second pass : {!Parse}*)
-    | Sym of Sym.pack 		
+    | Sym of Sym.pack
     | Unit of Constr.t  			(* to avoid confusion in bloom *)
 
   module PackHash =
@@ -382,16 +382,16 @@ module Trans = struct
   module PackTable = Hashtbl.Make(PackHash)
 
   (** discr is a map from {!constr} to {!pack}.
-     
+
       [None] means that it is not possible to instantiate this partial
       application to an interesting class.
 
       [Some x] means that we found something in the past. This means
       in particular that a single [constr] cannot be two things at the
       same time.
-     
+
       The field [bloom] allows to give a unique number to each class we
-      found.  *)	
+      found.  *)
   type envs =
       {
 	discr : (pack option) HMap.t ;
@@ -404,11 +404,11 @@ module Trans = struct
     {
       discr = HMap.create 17;
       bloom  =  PackTable.create 17;
-      bloom_back  =  Hashtbl.create 17; 
+      bloom_back  =  Hashtbl.create 17;
       bloom_next = ref 1;
     }
 
-          
+
 
   let add_bloom envs pack =
     if PackTable.mem envs.bloom pack
@@ -433,14 +433,14 @@ module Trans = struct
       morphisms. Moreover, for each AC/A operators, we need to try to
       infer units. Otherwise, we do not have [x * y * x <= a * a] since 1
       does not occur.
-     
+
       But, do  we also need to check whether constants are
       units. Otherwise, we do not have the ability to rewrite [0 = a +
       a] in [a = ...]*)
   module Gather : sig
     val gather : Coq.goal_sigma -> Coq.Relation.t -> envs -> constr -> Coq.goal_sigma
   end
-    = struct   
+    = struct
 
       let memoize  envs t pack : unit =
 	begin
@@ -472,7 +472,7 @@ module Trans = struct
 	  | Some (goal,s,unit) ->
 	    let unit = Coq.nf_evar goal unit  in
 	    Some (goal, unit, s)
-		
+
 
 
       (** gives back the class and the operator *)
@@ -499,7 +499,7 @@ module Trans = struct
 	  in
 	  Some (goal,bin)
 	with |Not_found -> None
-	 
+
       let is_bin (rlt : Coq.Relation.t) (op : constr) (goal : Coq.goal_sigma)=
 	match is_bin rlt op goal with
 	  | None -> None
@@ -517,7 +517,7 @@ module Trans = struct
 		    Unit.uf_desc = EConstr.to_constr (Tacmach.project goal) s;
 		  }
 		in Some (gl,Bin (bin_pack, Some (unit_of)))
-		
+
 
     (** {is_morphism} try to infer the kind of operator we are
 	dealing with *)
@@ -533,10 +533,10 @@ module Trans = struct
 	    Some (goal, Sym pack)
 	with
 	  | Not_found -> None
-	     
-	     
+
+
     (* [crop_app f [| a_0 ; ... ; a_n |]]
-       returns Some (f a_0 ... a_(n-2), [|a_(n-1); a_n |] ) 
+       returns Some (f a_0 ... a_(n-2), [|a_(n-1); a_n |] )
     *)
     let crop_app t ca : (constr * constr array) option=
       let n = Array.length ca in
@@ -546,7 +546,7 @@ module Trans = struct
 	  let papp = mkApp (t, Array.sub ca 0 (n-2) ) in
 	  let args = Array.sub ca (n-2) 2 in
 	  Some (papp, args )
-	     
+
     let fold goal (rlt : Coq.Relation.t) envs t ca cont =
       let fold_morphism t ca  =
 	let nb_params = Array.length ca in
@@ -575,13 +575,13 @@ module Trans = struct
 		| None -> fold_morphism t ca
 		| Some (goal, pack) ->
 		    memoize envs (EConstr.to_constr (Tacmach.project goal) papp) pack;
-		    Array.fold_left cont goal args 	     
+		    Array.fold_left cont goal args
 	      end
-	  	
+
     (* update in place the envs of known stuff, using memoization. We
        have to memoize failures, here. *)
     let gather goal (rlt : Coq.Relation.t ) envs t : Coq.goal_sigma =
-      let rec aux goal x = 
+      let rec aux goal x =
 	match Coq.decomp_term (Tacmach.project goal) x with
 	  | Constr.App (t,ca) ->
 	      fold goal rlt envs t ca (aux )
@@ -598,7 +598,7 @@ module Trans = struct
     val  t_of_constr : Coq.goal_sigma -> Coq.Relation.t -> envs  -> constr -> Matcher.Terms.t * Coq.goal_sigma
   end
     = struct
-     
+
       (** [discriminates goal envs rlt t ca] infer :
 
 	  - its {! pack } (is it an AC operator, or an A operator, or a
@@ -628,24 +628,24 @@ module Trans = struct
 	  Some (goal, Sym pack)
 	with
 	  | e ->  None
-	
-      exception NotReflexive	
-      let discriminate goal envs (rlt : Coq.Relation.t) t ca : Coq.goal_sigma * pack * constr * constr array =  
+
+      exception NotReflexive
+      let discriminate goal envs (rlt : Coq.Relation.t) t ca : Coq.goal_sigma * pack * constr * constr array =
 	let nb_params = Array.length ca in
 	let rec fold goal ar :Coq.goal_sigma  * pack * constr * constr array =
 	  begin
 	    assert (0 <= ar && ar <= nb_params);
 	    let p_app = mkApp (t, Array.sub ca 0 (nb_params - ar)) in
-	    begin	
+	    begin
 	      try
 		begin match HMap.find envs.discr (EConstr.to_constr ~abort_on_undefined_evars:(false) (Tacmach.project goal) p_app) with
-		  | None -> 
+		  | None ->
 		    fold goal (ar-1)
 		  | Some pack ->
 		    (goal, pack, p_app,  Array.sub ca (nb_params -ar ) ar)
 		end
 	      with
-		  Not_found -> (* Could not find this constr *)	
+		  Not_found -> (* Could not find this constr *)
 		    memoize (is_morphism goal rlt p_app ar) p_app ar
 	    end
 	  end
@@ -657,7 +657,7 @@ module Trans = struct
 	      add_bloom envs pack;
 	      (goal, pack, p_app, Array.sub ca (nb_params-ar) ar)
 	    | None ->
-	     
+
 	      if ar = 0 then raise NotReflexive;
 	      begin
 		(* to memoise the failures *)
@@ -671,7 +671,7 @@ module Trans = struct
 	  | None -> fold goal (nb_params)
 	  | Some pack -> goal, pack, (mkApp (t,ca)), [| |]
 	with Not_found -> fold goal (nb_params)
-	 
+
       let discriminate goal envs rlt  x =
 	try
 	  match Coq.decomp_term (Tacmach.project goal) x with
@@ -682,7 +682,7 @@ module Trans = struct
 	  | NotReflexive -> user_error @@ Pp.strbrk "The relation to which the goal was lifted is not Reflexive"
 	    (* TODO: is it the only source of invalid use that fall
 	       into this catch_all ? *)
-	  |  e -> 
+	  |  e ->
 	    user_error @@ Pp.strbrk "Cannot handle this kind of hypotheses (variables occurring under a function symbol which is not a proper morphism)."
 
       (** [t_of_constr goal rlt envs cstr] builds the abstract syntax tree
@@ -713,18 +713,18 @@ module Trans = struct
 			  assert (Array.length ca = 0);
 			  Matcher.Terms.Unit ( k)
 		      | Sym _  ->
-			  Matcher.Terms.Sym ( k, Array.map aux ca)		
+			  Matcher.Terms.Sym ( k, Array.map aux ca)
 	in
 	  (
 	    fun x -> let r = aux x in r,  !r_goal
 	  )
-	   
+
     end (* Parse *)
 
   let add_symbol goal rlt envs l =
     let goal = Gather.gather goal rlt envs (EConstr.of_constr (Constr.mkApp (l, [| Constr.mkRel 0;Constr.mkRel 0|]))) in
     goal
-   
+
   (* [t_of_constr] buils a the abstract syntax tree of a constr,
      updating in place the environment. Doing so, we infer all the
      morphisms and the AC/A operators. It is mandatory to do so both
@@ -736,9 +736,9 @@ module Trans = struct
     let l,goal = Parse.t_of_constr goal rlt envs l in
     let r, goal = Parse.t_of_constr goal rlt envs r in
     l, r, goal
-	
+
   (* An intermediate representation of the environment, with association lists for AC/A operators, and also the raw [packer] information *)
-	
+
   type ir =
       {
 	packer : (int, pack) Hashtbl.t; (* = bloom_back *)
@@ -747,9 +747,9 @@ module Trans = struct
 	sym : (int * constr) list  ;
 	matcher_units : Matcher.ext_units
       }
-	
+
   let ir_to_units ir = ir.matcher_units
-   
+
   let ir_of_envs goal (rlt : Coq.Relation.t) envs =
     let add x y l = (x,y)::l in
     let  nil = [] in
@@ -765,8 +765,8 @@ module Trans = struct
 	      add (int) s sym, bin, units
 	    | Unit s ->
 	      sym, bin, add int s units
-	) 
-	envs.bloom_back 
+	)
+	envs.bloom_back
 	(nil,nil,nil)
     in
     let matcher_units =
@@ -781,7 +781,7 @@ module Trans = struct
 		in
 		( n,  unit_n)::unit_for,
 		(n, bp.Bin.comm <> None )::is_ac
-		 
+
 	  )
 	  ([],[]) bin
       in
@@ -810,23 +810,23 @@ module Trans = struct
 	  (n,{
 	    Unit.u_value = EConstr.of_constr u;
 	    Unit.u_desc = all_bin
-	  })::acc			    
+	  })::acc
 	)
 	[] units
-	
+
     in
     goal, {
-      packer = envs.bloom_back; 	
-      bin =  (List.map (fun (n,(s,_)) -> n, s) bin);	
+      packer = envs.bloom_back;
+      bin =  (List.map (fun (n,(s,_)) -> n, s) bin);
       units = units;
       sym = (List.map (fun (n,s) -> n,(Sym.mk_pack rlt s)) sym);
       matcher_units = matcher_units
     }
 
- 
+
 
   (** {1 From AST back to Coq }
-     
+
       The next functions allow one to map OCaml abstract syntax trees
       to Coq terms *)
 
@@ -884,27 +884,27 @@ module Trans = struct
   let raw_constr_of_t ir rlt (context:rel_context) t =
       (** cap rebuilds the products in front of the constr *)
     let rec cap c = function [] -> c
-      | t::q -> 
+      | t::q ->
 	  let i = Context.Rel.lookup t context in
 	  cap (mkProd_or_LetIn i c) q
     in
     let t,indices = raw_constr_of_t_debruijn ir t in
       cap t (List.sort (Pervasives.compare) indices)
 
-   
+
   (** {2 Building reified terms} *)
-	
+
   (* Some informations to be able to build the maps  *)
   type reif_params =
       {
 	bin_null : Bin.pack; 		(* the default A operator *)
-	sym_null : constr;            
+	sym_null : constr;
 	unit_null : Unit.pack;
 	sym_ty : constr;                (* the type, as it appears in e_sym *)
 	bin_ty : constr
       }
 
-    
+
   (** A record containing the environments that will be needed by the
       decision procedure, as a Coq constr. Contains the functions
       from the symbols (as ints) to indexes (as constr) *)
@@ -914,7 +914,7 @@ module Trans = struct
     env_bin : constr;
     env_units : constr; 		(* the [idx -> X:constr] *)
   }
-    
+
 
   type sigma_maps = {
     sym_to_pos : int -> constr;
@@ -953,13 +953,13 @@ module Trans = struct
 	let query = Classes.Unit.ty rlt evar_op evar_unit in
 	let _, goal = Coq.resolve_one_typeclass goal query in
 	  Coq.nf_evar goal evar_unit, goal
-      with _ -> 	zero, goal in 		
+      with _ -> 	zero, goal in
     let sym_null = Sym.null rlt in
     let unit_null = Unit.default zero in
     let record =
       {
 	bin_null = bin_null;
-	sym_null = sym_null;            
+	sym_null = sym_null;
 	unit_null = unit_null;
 	sym_ty = Sym.mk_ty rlt ;
 	bin_ty = Bin.mk_ty rlt
@@ -988,7 +988,7 @@ module Trans = struct
 
   (** [build_sigma_maps] given a envs and some reif_params, we are
       able to build the sigmas *)
-  let build_sigma_maps  (rlt : Coq.Relation.t) zero ir (k : sigmas * sigma_maps -> Proof_type.tactic ) : Proof_type.tactic = fun goal ->
+  let build_sigma_maps  (rlt : Coq.Relation.t) zero ir (k : sigmas * sigma_maps -> Proofview.V82.tac ) : Proofview.V82.tac = fun goal ->
     let rp,goal = build_reif_params goal rlt zero  in
     let renumbered_sym, to_local, to_global = renumber ir.sym  in
     let env_sym = Sigma.of_list
@@ -1007,7 +1007,7 @@ module Trans = struct
 	   in
 	     Coq.cps_mk_letin "env_bin" env_bin
 	       (fun env_bin ->
-		  let units = (List.map (fun (n,s) -> n, Unit.mk_pack rlt env_bin s)ir.units) in 	     		   
+		  let units = (List.map (fun (n,s) -> n, Unit.mk_pack rlt env_bin s)ir.units) in
 		  let env_units =
 		    Sigma.of_list
 		      (Unit.ty_unit_pack rlt env_bin)
@@ -1016,7 +1016,7 @@ module Trans = struct
 		  in
 
 		    Coq.cps_mk_letin "env_units" env_units
-		      (fun env_units -> 		   
+		      (fun env_units ->
 			 let sigmas =
 			   {
 			     env_sym =   env_sym ;
@@ -1034,7 +1034,7 @@ module Trans = struct
 			   k (sigmas, sigma_maps )
 		      )
 	       )
-	) goal	
+	) goal
 
   (** builders for the reification *)
   type reif_builders =
@@ -1042,19 +1042,19 @@ module Trans = struct
 	rsum: constr -> constr -> constr -> constr;
 	rprd: constr -> constr -> constr -> constr;
 	rsym: constr -> constr array -> constr;
-	runit : constr -> constr			
+	runit : constr -> constr
       }
 
   (* donne moi une tactique, je rajoute ma part.  Potentiellement, il
      est possible d'utiliser la notation 'do' a la Haskell:
      http://www.cas.mcmaster.ca/~carette/pa_monad/ *)
-  let (>>) : 'a * Proof_type.tactic -> ('a -> 'b * Proof_type.tactic) -> 'b * Proof_type.tactic =
+  let (>>) : 'a * Proofview.V82.tac -> ('a -> 'b * Proofview.V82.tac) -> 'b * Proofview.V82.tac =
     fun (x,t) f ->
       let b,t' = f x in
 	b, Tacticals.tclTHEN t t'
-	 
+
   let return x = x, Tacticals.tclIDTAC
-   
+
   let mk_vect vnil vcons v =
     let ar = Array.length v in
     let rec aux = function
@@ -1065,12 +1065,12 @@ module Trans = struct
 		   (Coq.Nat.of_int n);
 		   v.(ar - 1 - n);
 		   (aux (n))
-		 |]	
+		 |]
 	       )
     in aux ar
-	
+
   (* TODO: use a do notation *)
-  let mk_reif_builders  (rlt: Coq.Relation.t)   (env_sym:constr)  (k: reif_builders -> Proof_type.tactic) =
+  let mk_reif_builders  (rlt: Coq.Relation.t)   (env_sym:constr)  (k: reif_builders -> Proofview.V82.tac) =
     let x = (rlt.Coq.Relation.carrier) in
     let r = (rlt.Coq.Relation.r) in
 
@@ -1113,20 +1113,20 @@ module Trans = struct
 	 }
 	 in k r
       ))))))
-     
+
 
 
   type reifier = sigma_maps * reif_builders
-    
-     
-  let  mk_reifier rlt zero envs (k : sigmas *reifier -> Proof_type.tactic) =
+
+
+  let  mk_reifier rlt zero envs (k : sigmas *reifier -> Proofview.V82.tac) =
     build_sigma_maps rlt zero envs
       (fun (s,sm) ->
 	   mk_reif_builders rlt s.env_sym
 	     (fun rb ->k (s,(sm,rb)) )
-	    
+
       )
-      	
+
   (** [reif_constr_of_t reifier t] rebuilds the term [t] in the
       reified form. We use the [reifier] to minimise the size of the
       terms (we make as much lets as possible)*)
@@ -1148,6 +1148,3 @@ module Trans = struct
 	  anomaly "call to reif_constr_of_t on a term with variables."
     in aux t
 end
-
-
-
