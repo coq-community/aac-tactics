@@ -30,9 +30,9 @@ The implementation and underlying theory is decribed in the paper
 ## Meta
 
 - Initial author(s): Thomas Braibant and Damien Pous
-- Coq-community maintainer(s): Fabian Kunze
+- Coq-community maintainer(s): [Fabian Kunze](https://github.com/fakusb) and [Karl Palmskog](https://github.com/palmskog)
 - License: [GNU Lesser General Public License v3](COPYING.LESSER)
-- Compatible Coq versions: Coq 8.3 or greater
+- Compatible Coq versions: [Coq master](https://github.com/coq/coq) (use the corresponding branch or release for other Coq versions)
 
 ## Building and installation instructions
 
