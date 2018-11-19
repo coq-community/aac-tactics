@@ -7,9 +7,9 @@
 (***************************************************************************)
 
 (** aac_rewrite -- rewriting modulo A or AC*)
-    
+
 open Ltac_plugin
-   
+
 module Control =   struct
     let debug = false
     let printing = false
@@ -34,8 +34,6 @@ let retype = Coq.retype
 
 open EConstr
 open Names
-open Proof_type
-
 
 (** aac_lift : the ideal type beyond AAC_rewrite.v/Lift
 
@@ -49,11 +47,11 @@ type aac_lift =
       e : Coq.Equivalence.t;
       lift : constr
     }
-     
+
 type rewinfo =
     {
       hypinfo : Coq.Rewrite.hypinfo;
-     
+
       in_left : bool; 	     		(** are we rewriting in the left hand-sie of the goal *)
       pattern : constr;
       subject : constr;
@@ -63,7 +61,7 @@ type rewinfo =
       lifting: aac_lift
     }
 
-let infer_lifting (rlt: Coq.Relation.t) (k : lift:aac_lift -> Proof_type.tactic) : Proof_type.tactic =
+let infer_lifting (rlt: Coq.Relation.t) (k : lift:aac_lift -> Proofview.V82.tac) : Proofview.V82.tac =
   Coq.cps_evar_relation rlt.Coq.Relation.carrier (fun e ->
     let lift_ty =
       mkApp (Lazy.force Theory.Stubs.lift,
@@ -77,7 +75,7 @@ let infer_lifting (rlt: Coq.Relation.t) (k : lift:aac_lift -> Proof_type.tactic)
       lift_ty (fun lift goal ->
       let x = rlt.Coq.Relation.carrier in
       let r = rlt.Coq.Relation.r in
-      let eq =  (Coq.nf_evar goal e) in 
+      let eq =  (Coq.nf_evar goal e) in
       let equiv = Coq.lapp Theory.Stubs.lift_proj_equivalence [| x;r;eq; lift |] in
       let lift =
 	{
@@ -88,9 +86,9 @@ let infer_lifting (rlt: Coq.Relation.t) (k : lift:aac_lift -> Proof_type.tactic)
       in
       k ~lift:lift  goal
     ))
-     
+
 (** Builds a rewinfo, once and for all *)
-let dispatch in_left (left,right,rlt) hypinfo (k: rewinfo -> Proof_type.tactic ) : Proof_type.tactic=
+let dispatch in_left (left,right,rlt) hypinfo (k: rewinfo -> Proofview.V82.tac ) : Proofview.V82.tac=
   let l2r = hypinfo.Coq.Rewrite.l2r in
   infer_lifting rlt
     (fun ~lift ->
@@ -106,8 +104,8 @@ let dispatch in_left (left,right,rlt) hypinfo (k: rewinfo -> Proof_type.tactic )
 	rlt = rlt
       }
     )
-   
-   
+
+
 
 (** {1 Tactics} *)
 
@@ -116,23 +114,23 @@ let dispatch in_left (left,right,rlt) hypinfo (k: rewinfo -> Proof_type.tactic )
 let handle eqt zero envs (t : Matcher.Terms.t) (t' : Matcher.Terms.t) k =
 
   let (x,r,_) = Coq.Equivalence.split eqt  in
-  Theory.Trans.mk_reifier (Coq.Equivalence.to_relation eqt) zero envs 
+  Theory.Trans.mk_reifier (Coq.Equivalence.to_relation eqt) zero envs
     (fun (maps, reifier) ->
       (* fold through a term and reify *)
       let t = Theory.Trans.reif_constr_of_t reifier t in
       let t' = Theory.Trans.reif_constr_of_t reifier  t' in
       (* Some letins  *)
       let eval = (mkApp (Lazy.force Theory.Stubs.eval, [|x;r; maps.Theory.Trans.env_sym; maps.Theory.Trans.env_bin; maps.Theory.Trans.env_units|])) in
-     
+
       Coq.cps_mk_letin "eval" eval (fun eval ->
 	Coq.cps_mk_letin "left" t (fun t ->
 	  Coq.cps_mk_letin "right" t' (fun t' ->
 	    k maps eval t t'))))
 
 (** [by_aac_reflexivity] is a sub-tactic that closes a sub-goal that
-      is merely a proof of equality of two terms modulo AAC *) 
+      is merely a proof of equality of two terms modulo AAC *)
 let by_aac_reflexivity zero
-    eqt envs (t : Matcher.Terms.t) (t' : Matcher.Terms.t) : Proof_type.tactic =
+    eqt envs (t : Matcher.Terms.t) (t' : Matcher.Terms.t) : Proofview.V82.tac =
   handle eqt zero envs t t'
     (fun maps eval t t' ->
       let (x,r,e) = Coq.Equivalence.split eqt in
@@ -185,20 +183,20 @@ let by_aac_normalise zero lift ir t t' =
 	   convert ;
 	   apply_tac;
 	 ])
-	
+
     )
 
 (** A handler tactic, that reifies the goal, and infer the liftings,
     and then call its continuation *)
 let aac_conclude
-    (k : constr -> aac_lift -> Theory.Trans.ir -> Matcher.Terms.t -> Matcher.Terms.t -> Proof_type.tactic) = fun goal ->
+    (k : constr -> aac_lift -> Theory.Trans.ir -> Matcher.Terms.t -> Matcher.Terms.t -> Proofview.V82.tac) = fun goal ->
 
     let (equation : types) = Tacmach.pf_concl goal in
     let envs = Theory.Trans.empty_envs () in
     let left, right,r =
       match Coq.match_as_equation goal equation with
 	| None -> Coq.user_error @@ Pp.strbrk "The goal is not an applied relation"
-	| Some x -> x in    
+	| Some x -> x in
     try infer_lifting r
       (fun ~lift  goal ->
 	let eq = Coq.Equivalence.to_relation lift.e in
@@ -207,7 +205,7 @@ let aac_conclude
 	let concl = Tacmach.pf_concl goal in
         let env = Tacmach.pf_env goal in
         let sigma = Tacmach.project goal in
-        let _ = pr_constr env sigma "concl "concl in 	     
+        let _ = pr_constr env sigma "concl "concl in
 	let evar_map = Tacmach.project goal in
 	Tacticals.tclTHEN
 	  (Refiner.tclEVARS evar_map)
@@ -250,19 +248,19 @@ let aac_reflexivity = fun goal ->
 		   |])
 	  in
 	  Tacticals.tclTHEN
-	  
+
 	  (Tacticals.tclTHEN (retype lift_reflexivity) (Proofview.V82.of_tactic (Tactics.apply lift_reflexivity)))
 	    (fun goal ->
 	      let concl = Tacmach.pf_concl goal in
               let env = Tacmach.pf_env goal in
               let sigma = Tacmach.project goal in
-	      let _ = pr_constr env sigma "concl "concl in 	     
+	      let _ = pr_constr env sigma "concl "concl in
 	      by_aac_reflexivity zero lift.e ir t t' goal)
 	)
     ) goal
 
 (** A sub-tactic to lift the rewriting using Lift  *)
-let lift_transitivity in_left (step:constr) preorder lifting (using_eq : Coq.Equivalence.t): tactic =
+let lift_transitivity in_left (step:constr) preorder lifting (using_eq : Coq.Equivalence.t): Proofview.V82.tac =
   fun goal ->
     (* catch the equation and the two members*)
     let concl = Tacmach.pf_concl goal in
@@ -271,7 +269,7 @@ let lift_transitivity in_left (step:constr) preorder lifting (using_eq : Coq.Equ
       | None -> Coq.user_error @@ Pp.strbrk "The goal is not an equation"
     in
     let lift_transitivity =
-      let thm = 
+      let thm =
 	if in_left
 	then
 	  Lazy.force Theory.Stubs.lift_transitivity_left
@@ -299,13 +297,13 @@ let lift_transitivity in_left (step:constr) preorder lifting (using_eq : Coq.Equ
 let core_aac_rewrite ?abort
     rewinfo
     subst
-    (by_aac_reflexivity : Matcher.Terms.t -> Matcher.Terms.t -> Proof_type.tactic)
-    env sigma (tr : constr) t left : tactic =
-  pr_constr env sigma "transitivity through" tr;   
+    (by_aac_reflexivity : Matcher.Terms.t -> Matcher.Terms.t -> Proofview.V82.tac)
+    env sigma (tr : constr) t left : Proofview.V82.tac =
+  pr_constr env sigma "transitivity through" tr;
   let tran_tac =
     lift_transitivity rewinfo.in_left tr rewinfo.rlt rewinfo.lifting.lift rewinfo.eqt
   in
-  Coq.Rewrite.rewrite ?abort rewinfo.hypinfo subst (fun rew -> 
+  Coq.Rewrite.rewrite ?abort rewinfo.hypinfo subst (fun rew ->
     Tacticals.tclTHENSV
       (tac_or_exn (tran_tac) Coq.anomaly "Unable to make the transitivity step")
       (
@@ -331,17 +329,17 @@ let choose_subst  subterm sol m=
 	List.nth ( List.rev (Search_monad.to_list m)) x
     in
     let env = match sol with
-	None -> 	
+	None ->
 	  List.nth ( (Search_monad.to_list envm)) 0
       | Some x ->  List.nth ( (Search_monad.to_list envm)) x
     in
     pat, env
   with
     | _ -> raise NoSolutions
-	
+
 (** rewrite the constr modulo AC from left to right in the left member
     of the goal *)
-let aac_rewrite_wrap  ?abort rew ?(l2r=true) ?(show = false) ?(in_left=true) ?strict ~occ_subterm ~occ_sol ?extra : Proof_type.tactic  = fun goal ->
+let aac_rewrite_wrap  ?abort rew ?(l2r=true) ?(show = false) ?(in_left=true) ?strict ~occ_subterm ~occ_sol ?extra : Proofview.V82.tac  = fun goal ->
   let envs = Theory.Trans.empty_envs () in
   let (concl : types) = Tacmach.pf_concl goal in
   let (_,_,rlt) as concl =
@@ -355,7 +353,7 @@ let aac_rewrite_wrap  ?abort rew ?(l2r=true) ?(show = false) ?(in_left=true) ?st
   Coq.Rewrite.get_hypinfo rew ~l2r ?check_type:(Some check_type)
     (fun hypinfo ->
       dispatch in_left concl hypinfo
-	(	
+	(
 	  fun rewinfo ->
 	    let goal =
 	      match extra with
@@ -364,7 +362,7 @@ let aac_rewrite_wrap  ?abort rew ?(l2r=true) ?(show = false) ?(in_left=true) ?st
 	    in
 	    let pattern, subject, goal =
 	      Theory.Trans.t_of_constr goal rewinfo.morph_rlt envs
-		(rewinfo.pattern , rewinfo.subject)  
+		(rewinfo.pattern , rewinfo.subject)
 	    in
 	    let goal, ir = Theory.Trans.ir_of_envs goal rewinfo.morph_rlt envs in
 
@@ -372,17 +370,17 @@ let aac_rewrite_wrap  ?abort rew ?(l2r=true) ?(show = false) ?(in_left=true) ?st
 	    let m =  Matcher.subterm ?strict units pattern subject in
 	    (* We sort the monad in increasing size of contet *)
 	    let m = Search_monad.sort (fun (x,_,_) (y,_,_) -> x -  y) m in
-	   
+
 	    if show
-	    then	      
-	      Print.print rewinfo.morph_rlt ir m (hypinfo.Coq.Rewrite.context) 
+	    then
+	      Print.print rewinfo.morph_rlt ir m (hypinfo.Coq.Rewrite.context)
 
 	    else
 	      try
 		let pat,subst = choose_subst occ_subterm occ_sol m in
 		let tr_step = Matcher.Subst.instantiate subst pat in
 		let tr_step_raw = Theory.Trans.raw_constr_of_t ir rewinfo.morph_rlt [] tr_step in
-		
+
 		let conv = (Theory.Trans.raw_constr_of_t ir rewinfo.morph_rlt (hypinfo.Coq.Rewrite.context)) in
 		let subst  = Matcher.Subst.to_list subst in
 		let subst = List.map (fun (x,y) -> x, conv y) subst in
@@ -391,20 +389,20 @@ let aac_rewrite_wrap  ?abort rew ?(l2r=true) ?(show = false) ?(in_left=true) ?st
                 let sigma = Tacmach.project goal in
                 (* I'm not sure whether this is the right env/sigma for printing tr_step_raw *)
 		core_aac_rewrite ?abort rewinfo subst by_aac_reflexivity env sigma tr_step_raw tr_step subject
-		 
+
 	      with
 		| NoSolutions ->
 		  Tacticals.tclFAIL 0
 		    (Pp.str (if occ_subterm = None && occ_sol = None
 		      then "No matching occurrence modulo AC found"
 		      else "No such solution"))
-	)   
+	)
     ) goal
 
 let get k l = try Some (List.assoc k l) with Not_found -> None
 
 let get_lhs l = try ignore (List.assoc "in_right" l); false with Not_found -> true
-  
+
 let aac_rewrite ~args =
   aac_rewrite_wrap ~occ_subterm:(get "at" args) ~occ_sol:(get "subst" args) ~in_left:(get_lhs args)
 
@@ -422,4 +420,3 @@ let pr_aac_args _ _ _ l =
        | ("in_right" as s,_) -> Pp.(++) (Pp.str s) acc
        | (k,i) -> Pp.(++) (Pp.(++) (Pp.str k)  (Pp.int i)) acc
     ) (Pp.str "") l
-
