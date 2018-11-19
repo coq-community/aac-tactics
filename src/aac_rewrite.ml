@@ -225,7 +225,7 @@ let aac_normalise = fun goal ->
   Tacticals.tclTHENLIST
     [
       aac_conclude by_aac_normalise;
-      Proofview.V82.of_tactic (Tacinterp.eval_tactic (TacArg (None, TacCall (None, (norm_tac, [])))));
+      Proofview.V82.of_tactic (Tacinterp.eval_tactic (TacArg (CAst.(make @@ TacCall (make (norm_tac, []))))));
       Proofview.V82.of_tactic (Tactics.keep ids)
     ] goal
 
