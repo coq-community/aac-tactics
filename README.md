@@ -31,7 +31,7 @@ The implementation and underlying theory is decribed in the paper
 
 - Initial author(s): Thomas Braibant and Damien Pous
 - Coq-community maintainer(s): [Fabian Kunze](https://github.com/fakusb) and [Karl Palmskog](https://github.com/palmskog)
-- License: [GNU Lesser General Public License v3](COPYING.LESSER)
+- License: [GNU Lesser General Public License v3](LICENSE)
 - Compatible Coq versions: [Coq 8.9](https://github.com/coq/coq/tree/v8.9) (use the corresponding branch or release for other Coq versions)
 
 ## Building and installation instructions
