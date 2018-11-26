@@ -1,5 +1,5 @@
 -I src
--R theories AAC_tactics
+-Q theories AAC_tactics
 
 -arg -w -arg +default
 
