@@ -18,7 +18,9 @@ pkgs.stdenv.mkDerivation {
   buildInputs = with coq.ocamlPackages; [ ocaml findlib ]
     ++ pkgs.lib.optionals shell [ merlin ocp-indent ocp-index ];
 
-  propagatedBuildInputs = [ coq ];
+  propagatedBuildInputs = [
+    coq
+  ];
 
   src = if shell then null else ./.;
 
