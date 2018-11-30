@@ -1,23 +1,28 @@
-{ pkgs ? (import <nixpkgs> {}), coq-version ? "master" }:
+{ pkgs ? (import <nixpkgs> {}), coq-version-or-url, shell ? false }:
 
 let
- coq =
-   let coq-version-parts = builtins.match "([0-9]+).([0-9]+)" coq-version; in
-   if coq-version-parts == null then
-     import (fetchTarball "https://github.com/coq/coq/tarball/${coq-version}") {}
-   else
-     pkgs."coq_${builtins.concatStringsSep "_" coq-version-parts}";
+  coq-version-parts = builtins.match "([0-9]+).([0-9]+)" coq-version-or-url;
+  coqPackages =
+    if coq-version-parts == null then
+      pkgs.mkCoqPackages (import (fetchTarball coq-version-or-url) {})
+    else
+      pkgs."coqPackages_${builtins.concatStringsSep "_" coq-version-parts}";
 in
+
+with coqPackages;
 
 pkgs.stdenv.mkDerivation {
 
-  name = "aac_tactics";
+  name = "aac-tactics";
 
-  buildInputs = with coq.ocamlPackages;
-    [ coq ocaml findlib camlp5_strict ]
-    ++ pkgs.lib.optionals pkgs.lib.inNixShell [ merlin ocp-indent ocp-index ];
+  buildInputs = with coq.ocamlPackages; [ ocaml findlib ]
+    ++ pkgs.lib.optionals shell [ merlin ocp-indent ocp-index ];
 
-  src = if pkgs.lib.inNixShell then null else ./.;
+  propagatedBuildInputs = [
+    coq
+  ];
 
-  installFlags = "COQLIB=$(out)/lib/coq/";
+  src = if shell then null else ./.;
+
+  installFlags = "COQLIB=$(out)/lib/coq/${coq.coq-version}/";
 }
