@@ -20,40 +20,52 @@
 This Coq plugin provides tactics for rewriting universally quantified
 equations, modulo associativity and commutativity of some operator.
 
-The tactics can be applied for custom operators by registering the operators and their
-properties as type class instances. Many common operator instances, such as for
-Z binary arithmetic and booleans, are provided with the plugin.
+The tactics can be applied for custom operators by registering the
+operators and their properties as type class instances. Many common
+operator instances, such as for Z binary arithmetic and booleans, are
+provided with the plugin.
 
 The implementation and underlying theory is decribed in the paper
 [Tactics for Reasoning modulo AC in Coq](https://arxiv.org/abs/1106.4448).
 
+
 ## Meta
 
-- Initial author(s): Thomas Braibant and Damien Pous
-- Coq-community maintainer(s): [Fabian Kunze](https://github.com/fakusb) and [Karl Palmskog](https://github.com/palmskog)
+- Author(s):
+  - Thomas Braibant (initial)
+  - Damien Pous (initial)
+  - Fabian Kunze
+- Coq-community maintainer(s):
+  - Fabian Kunze ([**@fakusb**](https://github.com/fakusb))
+  - Karl Palmskog ([**@palmskog**](https://github.com/palmskog))
 - License: [GNU Lesser General Public License v3](LICENSE)
-- Compatible Coq versions: [Coq 8.9](https://github.com/coq/coq/tree/v8.9) (use the corresponding branch or release for other Coq versions)
+- Compatible Coq versions: Coq 8.9 (use the corresponding branch or release for other Coq versions)
+- Compatible OCaml versions: all versions supported by Coq
+- Additional dependencies: none
 
 ## Building and installation instructions
 
 The easiest way to install the latest released version is via
 [OPAM](https://opam.ocaml.org/doc/Install.html):
+
 ```shell
 opam repo add coq-released https://coq.inria.fr/opam/released
 opam install coq-aac-tactics
 ```
 
-To instead build and install the plugin manually, do:
-```shell
-git clone https://github.com/coq-community/aac-tactics.git -b v8.9
+To instead build and install manually, do:
+
+``` shell
+git clone https://github.com/coq-community/aac-tactics
 cd aac-tactics
 make   # or make -j <number-of-cores-on-your-machine>
 make install
 ```
 
-## Documentation
+After installation, the included modules are available under
+the `AAC_tactics` namespace.
 
-After installation, definitions and tactics can be found under the `AAC_tactics` namespace.
+## Documentation
 
 The following example shows an application of the tactics for reasoning over Z binary numbers:
 ```coq
@@ -63,9 +75,9 @@ Require Import ZArith.
 
 Section ZOpp.
   Import Instances.Z.
-  Variables a b c : Z.  
+  Variables a b c : Z.
   Hypothesis H: forall x, x + Z.opp x = 0.
-  
+
   Goal a + b + c + Z.opp (c + a) = b.
     aac_rewrite H.
     aac_reflexivity.
@@ -99,3 +111,4 @@ The initial authors are grateful to Evelyne Contejean, Hugo Herbelin,
 Assia Mahboubi, and Matthieu Sozeau for highly instructive discussions.
 The plugin took inspiration from the plugin tutorial "constructors" by
 Matthieu Sozeau, distributed under the LGPL 2.1.
+
