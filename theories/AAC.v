@@ -491,11 +491,11 @@ Section s.
   Proof.
     destruct ((e_bin i)); auto.
   Qed.
-  Hint Resolve Binvalue_Proper Binvalue_Associative Binvalue_Commutative.
+  Hint Resolve Binvalue_Proper Binvalue_Associative Binvalue_Commutative : core.
 
   (** auxiliary lemmas about sums  *)
 
-  Hint Resolve is_unit_of_Unit.
+  Hint Resolve is_unit_of_Unit : core.
   Section sum_correctness.
     Variable i : idx.
     Variable is_unit : idx -> bool.
