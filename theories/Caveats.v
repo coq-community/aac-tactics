@@ -13,9 +13,13 @@
    with the path to the [aac_tactics] library
 *)
 
-Require Import AAC.
-Require Instances.
 Require NArith Minus.
+
+From AAC_tactics
+Require Import AAC.
+From AAC_tactics
+Require Instances.
+
 (** ** Limitations *)
 
 (** *** 1. Dependent parameters

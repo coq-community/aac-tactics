@@ -30,8 +30,10 @@ Require Import Arith NArith.
 Require Import List.
 Require Import FMapPositive FMapFacts.
 Require Import RelationClasses Equality.
-Require Import Utils.
 Require Export Morphisms.
+
+From AAC_tactics
+Require Import Utils.
 
 Set Implicit Arguments.
 Set Asymmetric Patterns.

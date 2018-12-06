@@ -12,9 +12,12 @@
    lines, or add them to your .coqrc files, replacing "."  with the
    path to the [aac_tactics] library. *)
 
-Require Import AAC.
-Require Instances.
 Require Arith ZArith.
+
+From AAC_tactics
+Require Import AAC.
+From AAC_tactics
+Require Instances.
 
 (** ** Introductory example 
 
