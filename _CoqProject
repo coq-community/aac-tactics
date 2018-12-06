@@ -1,5 +1,8 @@
+-Q theories AAC_tactics
+-Q src AAC_tactics
 -I src
--R theories/ AAC_tactics
+
+-arg -w -arg +default
 
 src/coq.mli
 src/helper.mli

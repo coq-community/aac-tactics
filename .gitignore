@@ -1,4 +1,4 @@
-.*.aux
+*.aux
 *.a
 *.cma
 *.cmi
@@ -9,22 +9,14 @@
 *.cmt
 *.cmti
 *.glob
-*.ml.d
-*.ml4.d
-*.mli.d
-*.mllib.d
-*.mlpack.d
 *.native
 *.o
-*.v.d
-*.mlg.d
+*.d
 *.vio
 *.vo
-.coq-native/
+.coq-native
 
 src/aac.ml
-/.merlin
-/.coqdeps.d
-/Makefile.coq
-/Makefile.coq.conf
-
+.merlin
+Makefile.coq
+Makefile.coq.conf

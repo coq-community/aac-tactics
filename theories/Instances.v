@@ -12,6 +12,7 @@ Require ZArith Zminmax.
 Require QArith Qminmax.
 Require Relations.
 
+From AAC_tactics
 Require Export AAC.
 
 (** Instances for aac_rewrite.*)

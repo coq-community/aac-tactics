@@ -30,8 +30,10 @@ Require Import Arith NArith.
 Require Import List.
 Require Import FMapPositive FMapFacts.
 Require Import RelationClasses Equality.
-Require Import Utils.
 Require Export Morphisms.
+
+From AAC_tactics
+Require Import Utils.
 
 Set Implicit Arguments.
 Set Asymmetric Patterns.
@@ -489,11 +491,11 @@ Section s.
   Proof.
     destruct ((e_bin i)); auto.
   Qed.
-  Hint Resolve Binvalue_Proper Binvalue_Associative Binvalue_Commutative.
+  Hint Resolve Binvalue_Proper Binvalue_Associative Binvalue_Commutative : core.
 
   (** auxiliary lemmas about sums  *)
 
-  Hint Resolve is_unit_of_Unit.
+  Hint Resolve is_unit_of_Unit : core.
   Section sum_correctness.
     Variable i : idx.
     Variable is_unit : idx -> bool.
@@ -561,9 +563,9 @@ Section s.
     Qed.
 
     (* Hint Resolve copy_plus. : this lags because of  the inference of the implicit arguments *)
-    Hint Extern 5 (copy (?n + ?m) (eval ?a) == Bin.value (copy ?n (eval ?a)) (copy ?m (eval ?a))) => apply copy_plus.
-    Hint Extern 5 (?x == ?x) => reflexivity.
-    Hint Extern 5 ( Bin.value ?x ?y == Bin.value ?y ?x) => apply Bin.comm.
+    Hint Extern 5 (copy (?n + ?m) (eval ?a) == Bin.value (copy ?n (eval ?a)) (copy ?m (eval ?a))) => apply copy_plus : core.
+    Hint Extern 5 (?x == ?x) => reflexivity : core.
+    Hint Extern 5 ( Bin.value ?x ?y == Bin.value ?y ?x) => apply Bin.comm : core.
    
     Lemma eval_merge_bin : forall (h k: mset T),
       eval (sum i (merge_msets compare h k)) == @Bin.value _ _ (e_bin i) (eval (sum i h)) (eval (sum i k)).
