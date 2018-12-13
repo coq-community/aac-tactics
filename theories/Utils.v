@@ -99,6 +99,7 @@ End dep.
 
 (** * Utilities about (non-empty) lists and multisets  *)
 
+#[universes(template)]
 Inductive nelist (A : Type) : Type :=
 | nil : A -> nelist A
 | cons : A -> nelist A -> nelist A.

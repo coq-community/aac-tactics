@@ -153,6 +153,7 @@ Module Sym.
   (** a symbol package contains an arity,
      a value of the corresponding type,
      and a proof that the value is a proper morphism *)
+  #[universes(template)]
   Record pack  : Type := mkPack {
     ar : nat;
     value :> type_of  ar;
@@ -172,6 +173,7 @@ Module Bin.
   Section t.
     Context {X} {R: relation X}.
 
+    #[universes(template)]
     Record pack := mk_pack {
       value:> X -> X -> X;
       compat: Proper (R ==> R ==> R) value;
@@ -204,6 +206,7 @@ Section s.
     uf_desc: Unit R (Bin.value (e_bin uf_idx)) u
   }.
 
+  #[universes(template)]
   Record unit_pack := mk_unit_pack {
     u_value:> X;
     u_desc: list (unit_of u_value)
@@ -225,6 +228,7 @@ Section s.
      contains, among other things, the arity of symbols)
      *)
 
+  #[universes(template)]
   Inductive T: Type :=
   | sum: idx -> mset T -> T
   | prd: idx -> nelist T -> T
@@ -325,12 +329,14 @@ Section s.
 
   (** ** Normalisation *)
 
+  #[universes(template)]
   Inductive discr {A} : Type :=
   | Is_op : A -> discr
   | Is_unit : idx -> discr
   | Is_nothing : discr .
  
   (* This is called sum in the std lib *)
+  #[universes(template)]
   Inductive m {A} {B} :=
   | left : A -> m
   | right : B -> m.
