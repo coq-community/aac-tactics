@@ -38,7 +38,7 @@ The implementation and underlying theory is decribed in the paper
 - Coq-community maintainer(s):
   - Fabian Kunze ([**@fakusb**](https://github.com/fakusb))
   - Karl Palmskog ([**@palmskog**](https://github.com/palmskog))
-- License: [GNU Lesser General Public License v3](LICENSE)
+- License: [GNU Lesser General Public License v3.0 or later](LICENSE)
 - Compatible Coq versions: Coq master (use the corresponding branch or release for other Coq versions)
 - Compatible OCaml versions: all versions supported by Coq
 - Additional dependencies: none
