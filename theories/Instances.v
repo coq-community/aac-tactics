@@ -126,9 +126,12 @@ Module P.
 
   Instance aac_Pmax_Comm : Commutative eq Pos.max :=  Pos.max_comm.
   Instance aac_Pmax_Assoc : Associative eq Pos.max :=  Pos.max_assoc.
- 
-  Instance aac_one  : Unit eq Pmult 1 := Build_Unit eq Pmult 1 _ Pmult_1_r. 
-  intros; reflexivity. Qed.          (*  TODO : add this lemma in the stdlib *)
+
+  (*  TODO : add this lemma in the stdlib *)
+  Lemma Pmult_1_l (x : positive) : 1 * x = x.
+  Proof. reflexivity. Qed.
+
+  Instance aac_one  : Unit eq Pmult 1 := Build_Unit eq Pmult 1 Pmult_1_l Pmult_1_r.
   Instance aac_one_max  :  Unit eq Pos.max 1 := Build_Unit eq Pos.max 1 Pos.max_1_l Pos.max_1_r. 
 
   (* We also provide liftings from le to eq *)
@@ -240,9 +243,9 @@ Module Relations.
   Instance preorder_inclusion T : PreOrder (inclusion T).
   Proof. constructor; unfold Reflexive, Transitive, inclusion; intuition.   Qed.
 
-  Instance lift_inclusion_same_relation T: AAC_lift (inclusion T) (same_relation T) :=
+  Program Instance lift_inclusion_same_relation T: AAC_lift (inclusion T) (same_relation T) :=
     Build_AAC_lift (eq_same_relation T) _.
-  Proof.  firstorder. Qed.
+  Next Obligation. firstorder. Qed.
 
 End Relations.
 
