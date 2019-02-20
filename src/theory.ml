@@ -37,7 +37,6 @@ module Stubs = struct
 
   (** The constants from the inductive type *)
   let _Tty = lazy (Coq.init_constant path "T")
-  let vTty = lazy (Coq.init_constant path "vT")
 
   let rsum = lazy (Coq.init_constant path "sum")
   let rprd = lazy (Coq.init_constant path "prd")
@@ -125,7 +124,6 @@ end
 (* Non empty lists *)
 module NEList = struct
   let path = ac_util_path
-  let typ = lazy (Coq.init_constant path "list")
   let nil = lazy (Coq.init_constant path "nil")
   let cons = lazy (Coq.init_constant path "cons")
   let cons ty h t =
@@ -137,8 +135,6 @@ module NEList = struct
     | [x] -> nil ty x
     | t::q -> cons ty t (of_list  ty q)
 
-  let type_of_list ty =
-    mkApp (Lazy.force typ, [|ty|])
 end
 
 (** a [mset] is a ('a * pos) list *)
@@ -156,7 +152,6 @@ let mk_mset ty (l : (constr * int) list) =
     aux l
 
 module Sigma = struct
-  let sigma = lazy (Coq.init_constant ac_theory_path "sigma")
   let sigma_empty = lazy (Coq.init_constant ac_theory_path "sigma_empty")
   let sigma_add = lazy (Coq.init_constant ac_theory_path "sigma_add")
   let sigma_get = lazy (Coq.init_constant ac_theory_path "sigma_get")
@@ -165,8 +160,6 @@ module Sigma = struct
     mkApp (Lazy.force sigma_add,[|ty; n; x ;  map|])
   let empty ty =
     mkApp (Lazy.force sigma_empty,[|ty |])
-  let typ ty =
-    mkApp (Lazy.force sigma, [|ty|])
 
   let to_fun ty null map =
     mkApp (Lazy.force sigma_get, [|ty;null;map|])
@@ -193,7 +186,6 @@ module Sym = struct
   let path = ac_theory_path @ ["Internal";"Sym"]
   let typ = lazy (Coq.init_constant path "pack")
   let mkPack = lazy (Coq.init_constant path "mkPack")
-  let value = lazy (Coq.init_constant path "value")
   let null = lazy (Coq.init_constant path "null")
   let mk_pack (rlt: Coq.Relation.t) s =
     let (x,r) = Coq.Relation.split rlt in
@@ -882,7 +874,8 @@ module Trans = struct
 
   (** [raw_constr_of_t] rebuilds a term in the raw representation *)
   let raw_constr_of_t ir rlt (context:rel_context) t =
-      (** cap rebuilds the products in front of the constr *)
+
+    (* cap rebuilds the products in front of the constr *)
     let rec cap c = function [] -> c
       | t::q ->
 	  let i = Context.Rel.lookup t context in
@@ -1048,12 +1041,6 @@ module Trans = struct
   (* donne moi une tactique, je rajoute ma part.  Potentiellement, il
      est possible d'utiliser la notation 'do' a la Haskell:
      http://www.cas.mcmaster.ca/~carette/pa_monad/ *)
-  let (>>) : 'a * Proofview.V82.tac -> ('a -> 'b * Proofview.V82.tac) -> 'b * Proofview.V82.tac =
-    fun (x,t) f ->
-      let b,t' = f x in
-	b, Tacticals.tclTHEN t t'
-
-  let return x = x, Tacticals.tclIDTAC
 
   let mk_vect vnil vcons v =
     let ar = Array.length v in

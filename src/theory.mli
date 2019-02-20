@@ -73,10 +73,11 @@ module Stubs : sig
   val lift_transitivity_left : EConstr.constr Lazy.t
   val lift_transitivity_right : EConstr.constr Lazy.t
   val lift_reflexivity : EConstr.constr Lazy.t
+
     (** The evaluation fonction, used to convert a reified coq term to a
 	raw coq term *)
   val eval: EConstr.constr lazy_t
-   
+
   (** The main lemma of our theory, that is
       [compare (norm u) (norm v) = Eq -> eval u == eval v] *)
   val decide_thm:EConstr.constr lazy_t

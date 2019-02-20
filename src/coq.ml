@@ -312,6 +312,7 @@ module Equivalence = struct
     t.carrier, t.eq, t.equivalence
 end
 end
+
 (**[ match_as_equation goal eqt] see [eqt] as an equation. An
    optionnal rel-context can be provided to ensure that the term
    remains typable*)
