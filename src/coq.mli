@@ -36,6 +36,7 @@ val evar_unit :goal_sigma ->EConstr.constr ->  EConstr.constr* goal_sigma
 val evar_binary: goal_sigma -> EConstr.constr -> EConstr.constr* goal_sigma
 val evar_relation: goal_sigma -> EConstr.constr -> EConstr.constr* goal_sigma
 val cps_evar_relation : EConstr.constr -> (EConstr.constr -> Proofview.V82.tac) -> Proofview.V82.tac
+
 (** [cps_mk_letin name v] binds the constr [v] using a letin tactic  *)
 val cps_mk_letin : string -> EConstr.constr -> ( EConstr.constr -> Proofview.V82.tac) -> Proofview.V82.tac
 

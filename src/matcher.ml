@@ -52,10 +52,6 @@ type ext_units =
       is_ac : (symbol * bool) list
     } 	
 
-let print_units units=
-  List.iter (fun (op,unit) -> Printf.printf "%i %i\t" op unit) units;
-  Printf.printf "\n%!"
-
 exception NoUnit
 
 let get_unit units op =
@@ -128,11 +124,6 @@ module Terms : sig
 		 | TUnit of symbol
 		 | TVar of var
 
-  (** {2 Fresh variables: we provide some functions to pick some fresh variables with respect to a term}  *)
-  val fresh_var_term : t -> int
-  val fresh_var_nfterm : nf_term -> int
-
-		     
   (** {2 Constructors: we ensure that the terms are always
       normalised
      
@@ -143,10 +134,8 @@ module Terms : sig
   *)
   val mk_TAC : units -> symbol -> nf_term mset -> nf_term
   val mk_TA : units -> symbol -> nf_term list -> nf_term
-  val mk_TSym : symbol -> nf_term list -> nf_term
-  val mk_TVar : var -> nf_term
   val mk_TUnit : symbol -> nf_term
-   
+
   (** {2 Comparisons} *)
   val nf_term_compare : nf_term -> nf_term -> int
   val nf_equal : nf_term -> nf_term -> bool
@@ -181,31 +170,6 @@ end
       | TUnit of symbol
       | TVar of var
 
-	  
-    (** {2 Picking fresh variables}  *)
-
-    (** [fresh_var_term] picks a fresh variable with respect to a term *)
-    let fresh_var_term t =
-      let rec aux = function
-    	| Dot (_,t1,t2)
-    	| Plus (_,t1,t2) -> max (aux t1) (aux t2)
-    	| Sym (_,v) -> Array.fold_left (fun acc x -> max acc (aux x)) 0 v
-    	| Var v -> assert (v >= 0); v
-    	| Unit _ -> 0
-      in
-      aux t
-	  
-    (**  [fresh_var_nfterm] picks a fresh_variable with respect to a term *)
-    let fresh_var_nfterm t =
-      let rec aux = function
-    	| TAC (_,l) -> List.fold_left (fun acc (x,_) -> max acc (aux x)) 0 l
-    	| TA (_,l)
-    	| TSym (_,l) ->  List.fold_left (fun acc x -> max acc (aux x)) 0 l
-    	| TVar v -> assert (v >= 0); v
-    	| TUnit _ -> 0
-      in
-      aux t
-	  
     (** {2 Constructors: we ensure that the terms are always
 	normalised} *)
       	
@@ -296,11 +260,6 @@ end
 		 Printf.sprintf  "%s" (binary (single t) r)
        in
 	 aux l
-
-     let print_symbol s =
-       match s with
-	 | s, None -> Printf.sprintf "%i" s
-	 | s , Some u -> Printf.sprintf "%i(unit %i)" s u
 
      let sprint_ac (single : 'a -> string) (l : 'a mset) =
        (print_binary_list
@@ -481,10 +440,6 @@ end
   
    open X
 
-   let print_units ()=
-     List.iter (fun (op,unit) -> Printf.printf "%i %i\t" op unit) units;
-     Printf.printf "\n%!"
-      
    let mk_TAC s l = mk_TAC units s l
    let mk_TA s l = mk_TA units s l
    let mk_TAC' s l =
@@ -755,28 +710,6 @@ let tri_fold f (l : 'a list) (acc : 'b)= match l with
 
 module Positions = struct
 
-
-  let ac (l: 'a mset) : ('a mset * 'a )m =
-    let rec aux = function
-      | [] -> assert false
-      | [t,1] -> return ([],t)
-      | [t,tar] -> return ([t,tar -1],t)
-      | (t,tar) as h :: q ->
-	(aux q >> (fun (c,x) -> return (h :: c,x)))
-	>>| (if tar > 1  then return ((t,tar-1) :: q,t) else return (q,t))
-    in
-    aux l	     
-
-  let ac' current (l: 'a mset) : ('a mset * 'a )m =
-    ac_nondet_split_raw l >>
-      (fun (l,r) ->
-	if l = [] || r = []
-	then fail ()
-	else
-	  mk_TAC' current r >>
-	    fun t -> return (l, t)
-      )
-     
   let a (l : 'a list) : ('a list * 'a * 'a list) m =
     let rec aux left right : ('a list * 'a * 'a list) m =
       match right with
@@ -792,10 +725,10 @@ end
 let build_ac (current : symbol) (context : nf_term mset) (p : t)  : t m= 
   if  context = []
   then return  p
-  else 
+  else
     mk_TAC' current context >>
       fun t -> return (Plus (current,t_of_term t,p))
-	
+
 let build_a (current : symbol)
     (left : nf_term list) (right : nf_term list) (p : t) : t m=
   let right_pat p =
