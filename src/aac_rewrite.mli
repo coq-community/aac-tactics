@@ -8,16 +8,15 @@
 
 (** aac_rewrite -- rewriting modulo A or AC*)
 
-val aac_reflexivity : Coq.goal_sigma -> Goal.goal list Evd.sigma
-val aac_normalise : Coq.goal_sigma -> Goal.goal list Evd.sigma
+val aac_reflexivity : unit Proofview.tactic
+val aac_normalise : unit Proofview.tactic
 
 val aac_rewrite :
   args:(string * int) list ->
   ?abort:bool ->
-  EConstr.constr ->
   ?l2r:bool ->
   ?show:bool ->
-  ?strict:bool -> ?extra:EConstr.t -> Proofview.V82.tac
+  ?strict:bool -> ?extra:EConstr.t -> EConstr.constr -> unit Proofview.tactic
 
 val add : string -> 'a -> (string * 'a) list -> (string * 'a) list
 

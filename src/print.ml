@@ -68,11 +68,11 @@ let pp_all pt : (int * Terms.t * named_env Search_monad.m) Search_monad.m -> Pp.
 rename the variables, and rebuilds raw Coq terms (for the context, and
 the terms in the environment). In order to do so, it requires the
 information gathered by the {!Theory.Trans} module.*)
-let print rlt ir m (context : EConstr.rel_context) goal =
+let print rlt ir m (context : EConstr.rel_context) : unit Proofview.tactic =
   if Search_monad.count m = 0
   then
     (
-      Tacticals.tclFAIL 0  (Pp.str "No subterm modulo AC")  goal
+      Tacticals.New.tclFAIL 0  (Pp.str "No subterm modulo AC")
     )
   else
     let _ = Feedback.msg_notice (Pp.str "All solutions:") in
@@ -93,12 +93,13 @@ let print rlt ir m (context : EConstr.rel_context) goal =
       )
     in
     let m = Search_monad.sort (fun (x,_,_) (y,_,_) -> x -  y) m in
-    let env = Tacmach.pf_env goal in
-    let sigma = Tacmach.project goal in
+    let open Proofview.Notations in
+    Proofview.tclENV >>= fun env ->
+    Proofview.tclEVARMAP >>= fun sigma ->
     let _ = Feedback.msg_notice
       (pp_all
 	 (fun t -> Printer.pr_letype_env env sigma (Theory.Trans.raw_constr_of_t ir rlt  context  t)) m
       )
     in
-    Tacticals.tclIDTAC goal
+    Tacticals.New.tclIDTAC
      

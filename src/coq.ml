@@ -38,7 +38,52 @@ let nowhere =
 
 let retype c gl =
   let sigma, _ = Tacmach.pf_apply Typing.type_of gl c in
-    Refiner.tclEVARS sigma gl
+  Refiner.tclEVARS sigma gl
+
+(* similar to retype above. No Idea when/why this is needed, I smell some ugly hack.
+  Apparently, it has to do with the need to recompute universe constrains if we just compose terms *)
+let tclRETYPE c=
+  let open Proofview.Notations in
+  let open Proofview in
+  tclEVARMAP >>= fun sigma ->
+  Proofview.Goal.enter (fun goal ->
+      let env = Proofview.Goal.env goal in
+      let sigma,_ = Typing.type_of env sigma c in
+      Unsafe.tclEVARS sigma
+    )
+  
+(** {1 Tacticals}  *)
+
+let tclTIME msg tac = fun gl ->
+  let u = Sys.time () in
+  let r = tac gl in
+  let _ = Feedback.msg_notice (Pp.str (Printf.sprintf "%s:%fs" msg (Sys.time ()-.  u))) in
+    r
+
+let tclDEBUG msg =
+  let open Proofview in
+  tclBIND (tclUNIT ())
+  (fun _ -> let _ = Feedback.msg_debug (Pp.str msg) in tclUNIT ())
+    
+
+let tclPRINT =
+  let open Proofview.Notations in
+  let open Proofview in
+  tclEVARMAP >>= fun sigma ->
+  Proofview.Goal.enter (fun goal ->
+      let _ = Feedback.msg_notice (Printer.pr_goal (Proofview.Goal.print goal)) in                  
+      tclUNIT ())
+
+let tclSHOWPROOF : unit Proofview.tactic=
+  let open Proofview.Notations in
+  let open Proofview in
+  tclEVARMAP >>= fun sigma ->
+  tclENV >>= fun env ->
+  let p = Proof_global.give_me_the_proof () in 
+  let p = Proof.partial_proof p in 
+  let p = List.map (Evarutil.nf_evar sigma) p in 
+  let _ = List.map (fun c -> Feedback.msg_notice (Printer.pr_econstr_env env sigma c)) p (* list of econstr in sigma *) in
+  Tacticals.New.tclIDTAC
 
 let cps_mk_letin
     (name:string)
@@ -49,8 +94,20 @@ let cps_mk_letin
     let name = (Id.of_string name) in
     let name =  Tactics.fresh_id Id.Set.empty name goal in
     let letin = (Proofview.V82.of_tactic (Tactics.letin_tac None  (Name name) c None nowhere)) in
-      Tacticals.tclTHENLIST [retype c; letin; (k (mkVar name))] goal
+    Tacticals.tclTHENLIST [retype c; letin; (k (mkVar name))] goal
 
+let mk_letin (name:string) (c: constr) : constr Proofview.tactic =
+  let open Proofview.Notations in
+  let open Proofview in
+  let name = (Id.of_string name) in
+  Proofview.Goal.enter_one (fun goal ->
+      let env = Proofview.Goal.env goal in
+      tclEVARMAP >>= fun sigma ->
+      let name =  Tactics.fresh_id_in_env Id.Set.empty name env in
+      tclRETYPE c (* this fixes universe constrains problems in c *)
+        <*> Tactics.pose_tac (Name name) c
+        <*> tclUNIT (mkVar name)
+    )
 (** {1 General functions}  *)
 
 type goal_sigma =  Goal.goal Evd.sigma
@@ -83,34 +140,14 @@ let nf_evar goal c : constr=
   Evarutil.nf_evar evar_map c
 
   (* TODO: refactor following similar functions*)
-
-let evar_unit (gl : goal_sigma) (x : constr) : constr * goal_sigma =
-  let env = Tacmach.pf_env gl in
-  let evar_map = Tacmach.project gl in
-  let (em,x) = Evarutil.new_evar env evar_map x in
-    x,(goal_update gl em)
-     
-let evar_binary (gl: goal_sigma) (x : constr) =
-  let env = Tacmach.pf_env gl in
-  let evar_map = Tacmach.project gl in
+ 
+let evar_binary env (sigma: Evd.evar_map) (x : constr) =
   let ty = mkArrow x (mkArrow x x) in
-  let (em,x) = Evarutil.new_evar env evar_map ty in
-    x,( goal_update gl em)
+  Evarutil.new_evar env sigma ty
 
-let evar_relation (gl: goal_sigma) (x: constr) =
-  let env = Tacmach.pf_env gl in
-  let evar_map = Tacmach.project gl in
+let evar_relation env (sigma: Evd.evar_map) (x: constr) =
   let ty = mkArrow x (mkArrow x (mkSort Sorts.prop)) in
-  let (em,r) = Evarutil.new_evar env evar_map ty in
-    r,( goal_update gl em)
-
-let cps_evar_relation (x: constr) k = fun goal -> 
-  Tacmach.pf_apply
-    (fun env em ->
-      let ty = mkArrow x (mkArrow x (mkSort Sorts.prop)) in
-      let (em, r) = Evarutil.new_evar env em ty in
-      Tacticals.tclTHENLIST [Refiner.tclEVARS em; k r] goal
-    )	goal
+  Evarutil.new_evar env sigma ty
 
 let decomp_term sigma c = kind sigma (Termops.strip_outer_cast sigma c)
    
@@ -317,21 +354,19 @@ module Equivalence = struct
 end
 end
 
-(**[ match_as_equation goal eqt] see [eqt] as an equation. An
+(**[ match_as_equation env sigma eqt] see [eqt] as an equation. An
    optionnal rel-context can be provided to ensure that the term
    remains typable*)
-let match_as_equation ?(context = Context.Rel.empty) goal equation : (constr*constr* Std.Relation.t) option  =
-  let env = Tacmach.pf_env goal in
+let match_as_equation ?(context = Context.Rel.empty) env sigma equation : (constr*constr* Std.Relation.t) option  =
   let env = EConstr.push_rel_context context env in
-  let evar_map = Tacmach.project goal in
   begin
-    match decomp_term evar_map equation with
+    match decomp_term sigma equation with
       | App(c,ca) when Array.length ca >= 2 ->
 	let n = Array.length ca  in
 	let left  =  ca.(n-2) in
 	let right =  ca.(n-1) in
 	let r = (mkApp (c, Array.sub ca 0 (n - 2))) in
-	let carrier =  Typing.unsafe_type_of env evar_map left in
+	let carrier =  Typing.unsafe_type_of env sigma left in
 	let rlt =Std.Relation.make carrier r
 	in
 	Some (left, right, rlt )
@@ -339,23 +374,6 @@ let match_as_equation ?(context = Context.Rel.empty) goal equation : (constr*con
   end
 
 
-(** {1 Tacticals}  *)
-
-let tclTIME msg tac = fun gl ->
-  let u = Sys.time () in
-  let r = tac gl in
-  let _ = Feedback.msg_notice (Pp.str (Printf.sprintf "%s:%fs" msg (Sys.time ()-.  u))) in
-    r
-
-let tclDEBUG msg tac = fun gl ->
-  let _ = Feedback.msg_debug (Pp.str msg) in
-    tac gl
-
-let tclPRINT tac = fun gl ->
-  let env = Tacmach.pf_env gl in
-  let sigma = Tacmach.project gl in
-  let _ = Feedback.msg_notice (Printer.pr_econstr_env env sigma (Tacmach.pf_concl gl)) in
-    tac gl
 
 
 (** {1 Error related mechanisms}  *)
@@ -392,27 +410,26 @@ type hypinfo =
       l2r : bool; 			(** rewriting from left to right  *)
     }
 
-let get_hypinfo c ~l2r ?check_type  (k : hypinfo -> Proofview.V82.tac) :    Proofview.V82.tac = fun goal ->
-  let ctype =  Tacmach.pf_unsafe_type_of goal c in 
-  let evar_map = Tacmach.project goal in
-  let (rel_context, body_type) = decompose_prod_assum evar_map ctype in
+let get_hypinfo env sigma c ?check_type ~l2r  : hypinfo =
+  let ctype = Typing.unsafe_type_of env sigma c in
+  let (rel_context, body_type) = decompose_prod_assum sigma ctype in
   let rec check f e =
-    match decomp_term evar_map e with
-      | Rel i -> f (get_type (Context.Rel.lookup i rel_context))
-      | _ -> fold evar_map (fun acc x -> acc && check f x) true e
+    match decomp_term sigma e with
+    | Rel i -> f (get_type (Context.Rel.lookup i rel_context))
+    | _ -> fold sigma (fun acc x -> acc && check f x) true e
   in
   begin match check_type with
-    | None -> ()
-    | Some f ->
-	if not (check f body_type)
-	then user_error @@ Pp.strbrk "Unable to deal with higher-order or heterogeneous patterns";
+  | None -> ()
+  | Some f ->
+     if not (check f body_type)
+     then user_error @@ Pp.strbrk "Unable to deal with higher-order or heterogeneous patterns";
   end;
   begin
-    match match_as_equation ~context:rel_context goal body_type with
-      | None -> 
-	user_error @@ Pp.strbrk "The hypothesis is not an applied relation"
-      |  Some (hleft,hright,hrlt) ->
-	k {
+    match match_as_equation ~context:rel_context env sigma body_type with
+    | None -> 
+       user_error @@ Pp.strbrk "The hypothesis is not an applied relation"
+    |  Some (hleft,hright,hrlt) ->
+        {
     	  hyp = c;
     	  hyptype = ctype;
 	  body =  body_type;
@@ -422,9 +439,8 @@ let get_hypinfo c ~l2r ?check_type  (k : hypinfo -> Proofview.V82.tac) :    Proo
     	  left =hleft;
     	  right = hright;
 	}
-	goal
   end
-   
+  
 
 (* The problem : Given a term to rewrite of type [H :forall xn ... x1,
    t], we have to instanciate the subset of [xi] of type
@@ -441,37 +457,37 @@ let get_hypinfo c ~l2r ?check_type  (k : hypinfo -> Proofview.V82.tac) :    Proo
 
 (* Fresh evars for everyone (should be the good way to do this
    recompose in Coq v8.4) *)
-let recompose_prod 
-    (context : rel_context)
-    (subst : (int * constr) list)
-    env
-    em
-    : Evd.evar_map * constr list =
-  (* the last index of rel relevant for the rewriting *)
-  let min_n = List.fold_left
-    (fun acc (x,_) -> min acc x)
-    (List.length context) subst in 
-  let rec aux context acc em n =
-    let _ = Printf.printf "%i\n%!" n in
-    match context with
-      | [] ->
-	env, em, acc
-      | t::q ->
-	let env, em, acc = aux q acc em (n+1) in
-	if n >= min_n
-	then
-	  let em,x =
-	    try em, List.assoc n subst
-	    with | Not_found ->
-	      let (em, r) = Evarutil.new_evar env em (Vars.substl acc (get_type t)) in
-              (em, r)
-	  in
-	  (EConstr.push_rel t env), em,x::acc
-	else
-	  env,em,acc
-  in
-  let _,em,acc = aux context [] em 1 in
-  em, acc
+(* let recompose_prod 
+ *     (context : rel_context)
+ *     (subst : (int * constr) list)
+ *     env
+ *     em
+ *     : Evd.evar_map * constr list =
+ *   (\* the last index of rel relevant for the rewriting *\)
+ *   let min_n = List.fold_left
+ *     (fun acc (x,_) -> min acc x)
+ *     (List.length context) subst in 
+ *   let rec aux context acc em n =
+ *     let _ = Printf.printf "%i\n%!" n in
+ *     match context with
+ *       | [] ->
+ * 	env, em, acc
+ *       | t::q ->
+ * 	let env, em, acc = aux q acc em (n+1) in
+ * 	if n >= min_n
+ * 	then
+ * 	  let em,x =
+ * 	    try em, List.assoc n subst
+ * 	    with | Not_found ->
+ * 	      let (em, r) = Evarutil.new_evar env em (Vars.substl acc (get_type t)) in
+ *               (em, r)
+ * 	  in
+ * 	  (EConstr.push_rel t env), em,x::acc
+ * 	else
+ * 	  env,em,acc
+ *   in
+ *   let _,em,acc = aux context [] em 1 in
+ *   em, acc *)
 
 (* no fresh evars : instead, use a lambda abstraction around an
    application to handle non-instantiated variables. *)
@@ -554,31 +570,27 @@ let recompose_prod' context subst c =
 let build
     (h : hypinfo)
     (subst : (int *constr) list)
-    (k :constr -> Proofview.V82.tac)
-    : Proofview.V82.tac = fun goal ->
-      let c = recompose_prod' h.context subst h.hyp in
-      Tacticals.tclTHENLIST [k c] goal
+    =
+      recompose_prod' h.context subst h.hyp
 
-let build_with_evar
-    (h : hypinfo)
-    (subst : (int *constr) list)
-    (k :constr -> Proofview.V82.tac)
-    : Proofview.V82.tac
-    = fun goal ->
-      Tacmach.pf_apply
-	(fun env em ->
-	  let evar_map,  acc = recompose_prod h.context subst env em in
-	  let c = applist (h.hyp,List.rev acc) in
-	  Tacticals.tclTHENLIST [Refiner.tclEVARS evar_map; k c] goal
-	) goal
+(* let build_with_evar
+ *     (h : hypinfo)
+ *     (subst : (int *constr) list)
+ *     (k :constr -> Proofview.V82.tac)
+ *     : Proofview.V82.tac
+ *     = fun goal ->
+ *       Tacmach.pf_apply
+ * 	(fun env em ->
+ * 	  let evar_map,  acc = recompose_prod h.context subst env em in
+ * 	  let c = applist (h.hyp,List.rev acc) in
+ * 	  Tacticals.tclTHENLIST [Refiner.tclEVARS evar_map; k c] goal
+ * 	) goal *)
 
 
-let rewrite ?(abort=false)hypinfo subst k =
-  build hypinfo subst
-    (fun rew ->
-      let tac =
-	if not abort then
-          Proofview.V82.of_tactic begin
+let rewrite ?(abort=false) hypinfo subst =
+  let rew = build hypinfo subst in
+  let tac =
+    if not abort then    
 	  Equality.general_rewrite_bindings
 	    hypinfo.l2r
 	    Locus.AllOccurrences
@@ -586,11 +598,10 @@ let rewrite ?(abort=false)hypinfo subst k =
 	    false
 	    (rew,Tactypes.NoBindings)
 	    true
-          end
-	else
-	  Tacticals.tclIDTAC
-      in k tac
-    )
+    else
+      Tacticals.New.tclIDTAC
+  in tac
+   
 
 
 end

@@ -47,39 +47,39 @@ PRINTED BY { pr_constro }
 END
 
 TACTIC EXTEND _aac_reflexivity_
-| [ "aac_reflexivity" ] -> { Proofview.V82.tactic aac_reflexivity }
+| [ "aac_reflexivity" ] -> { aac_reflexivity }
 END
 
 TACTIC EXTEND _aac_normalise_
-| [ "aac_normalise" ] -> { Proofview.V82.tactic aac_normalise }
+| [ "aac_normalise" ] -> { aac_normalise }
 END
 
 TACTIC EXTEND _aac_rewrite_
 | [ "aac_rewrite" orient(l2r) constr(c) aac_args(args) constro(extra)] ->
-  { Proofview.V82.tactic (fun gl -> aac_rewrite ?extra ~args ~l2r ~strict:true c gl) }
+  { aac_rewrite ?extra ~args ~l2r ~strict:true c }
 END
  
 TACTIC EXTEND _aac_pattern_
 | [ "aac_pattern" orient(l2r) constr(c) aac_args(args) constro(extra)] ->
-  { Proofview.V82.tactic (fun gl -> aac_rewrite ?extra ~args ~l2r ~strict:true ~abort:true c gl) }
+  { aac_rewrite ?extra ~args ~l2r ~strict:true ~abort:true c  }
 END
 
 TACTIC EXTEND _aac_instances_
 | [ "aac_instances" orient(l2r) constr(c) aac_args(args) constro(extra)] ->
-  { Proofview.V82.tactic (fun gl -> aac_rewrite ?extra ~args ~l2r ~strict:true ~show:true c gl) }
+  { aac_rewrite ?extra ~args ~l2r ~strict:true ~show:true c }
 END
 
 TACTIC EXTEND _aacu_rewrite_
 | [ "aacu_rewrite" orient(l2r) constr(c) aac_args(args) constro(extra)] ->
-  { Proofview.V82.tactic (fun gl -> aac_rewrite ?extra ~args ~l2r ~strict:false c gl) }
+  { aac_rewrite ?extra ~args ~l2r ~strict:false c }
 END
  
 TACTIC EXTEND _aacu_pattern_
 | [ "aacu_pattern" orient(l2r) constr(c) aac_args(args) constro(extra)] ->
-  { Proofview.V82.tactic (fun gl -> aac_rewrite ?extra ~args ~l2r ~strict:false ~abort:true c gl) }
+  { aac_rewrite ?extra ~args ~l2r ~strict:false ~abort:true c }
 END
 
 TACTIC EXTEND _aacu_instances_
 | [ "aacu_instances" orient(l2r) constr(c) aac_args(args) constro(extra)] ->
-  { Proofview.V82.tactic (fun gl -> aac_rewrite ?extra ~args ~l2r ~strict:false ~show:true c gl) }
+  { aac_rewrite ?extra ~args ~l2r ~strict:false ~show:true c }
 END

@@ -137,11 +137,11 @@ module Trans :  sig
       evars; this is why we give back the [goal], accordingly
       updated. *)
   
-  val t_of_constr : Coq.goal_sigma -> Coq.Relation.t -> envs -> (EConstr.constr * EConstr.constr) -> Matcher.Terms.t * Matcher.Terms.t * Coq.goal_sigma
+  val t_of_constr : Environ.env -> Evd.evar_map -> Coq.Relation.t -> envs -> (EConstr.constr * EConstr.constr) -> Matcher.Terms.t * Matcher.Terms.t * Evd.evar_map
 
   (** [add_symbol] adds a given binary symbol to the environment of
       known stuff. *)
-  val add_symbol : Coq.goal_sigma -> Coq.Relation.t -> envs -> Constr.t -> Coq.goal_sigma
+  val add_symbol : Environ.env -> Evd.evar_map -> Coq.Relation.t -> envs -> Constr.t -> Evd.evar_map
 
   (** {2 Reconstruction: from AST back to Coq terms  }
      
@@ -152,7 +152,7 @@ module Trans :  sig
       the reflexive decision procedure. *)
 
   type ir
-  val ir_of_envs : Coq.goal_sigma -> Coq.Relation.t -> envs -> Coq.goal_sigma * ir
+  val ir_of_envs : Environ.env -> Evd.evar_map -> Coq.Relation.t -> envs -> Evd.evar_map * ir
   val ir_to_units : ir -> Matcher.ext_units
 
   (** {2 Building raw, natural, terms} *)
@@ -189,7 +189,7 @@ module Trans :  sig
       reify each term successively.*)
   type reifier
 
-  val mk_reifier :   Coq.Relation.t -> EConstr.constr -> ir -> (sigmas * reifier -> Proofview.V82.tac) -> Proofview.V82.tac
+  val mk_reifier : Coq.Relation.t -> EConstr.constr -> ir -> (sigmas * reifier) Proofview.tactic
 
   (** [reif_constr_of_t  reifier t] rebuilds the term [t] in the
       reified form. *)
