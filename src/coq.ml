@@ -13,6 +13,10 @@ open EConstr
 open Names
 open Context.Rel.Declaration
 
+let mkArrow x y = mkArrow x Sorts.Relevant y
+(* The kernel will fix the relevance if needed. Also as an equality
+   tactic we probably are only called on relevant terms. *)
+
 (* The contrib name is used to locate errors when loading constrs *)
 let contrib_name = "aac_tactics"
 
