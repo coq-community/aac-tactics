@@ -162,15 +162,16 @@ val tclDEBUG : string -> unit Proofview.tactic
 (** print the current goal *)
 val tclPRINT : unit Proofview.tactic
 
-(** print the current proof term *)
-val tclSHOWPROOF : unit Proofview.tactic
-
 (** {2 Error related mechanisms}  *)
 
 val anomaly : string -> 'a
 val user_error : Pp.t -> 'a
 val warning : string -> unit
 
+(** {2 Helpers}  *)
+
+(** print the current proof term *)
+val show_proof : Proof_global.t -> unit
 
 (** {2 Rewriting tactics used in aac_rewrite}  *)
 
