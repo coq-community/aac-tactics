@@ -72,9 +72,9 @@ module Classes = struct
 				rlt.Coq.Relation.r;
 				value
 			     |] )
-    let infer goal  rlt value =
+    let infer env sigma rlt value =
       let ty = ty rlt value in
-	Coq.resolve_one_typeclass  goal ty
+      Typeclasses.resolve_one_typeclass env sigma ty
   end
 
   module Commutative = struct
@@ -103,9 +103,9 @@ module Classes = struct
       let typeof = mk_typeof rlt ar in
       let relof = mk_relof rlt ar in
 	Coq.Classes.mk_morphism  typeof relof op
-    let infer goal rlt op ar =
+    let infer env sigma rlt op ar =
       let ty = ty rlt op ar in
-	Coq.resolve_one_typeclass goal ty
+	Typeclasses.resolve_one_typeclass env sigma ty
   end
 
   module Unit = struct
@@ -430,11 +430,11 @@ module Trans = struct
       units. Otherwise, we do not have the ability to rewrite [0 = a +
       a] in [a = ...]*)
   module Gather : sig
-    val gather : Coq.goal_sigma -> Coq.Relation.t -> envs -> constr -> Coq.goal_sigma
+    val gather : Environ.env -> Evd.evar_map -> Coq.Relation.t -> envs -> constr -> Evd.evar_map
   end
     = struct
 
-      let memoize  envs t pack : unit =
+      let memoize envs t pack : unit =
 	begin
 	  HMap.add envs.discr t (Some pack);
 	  add_bloom envs pack;
@@ -448,81 +448,81 @@ module Trans = struct
 	end
 
 
-      let get_unit (rlt : Coq.Relation.t) op goal :
-	  (Coq.goal_sigma * constr * constr ) option=
+      let get_unit (rlt : Coq.Relation.t) op env sigma :
+	    (Evd.evar_map * constr * constr ) option=
 	let x = (rlt.Coq.Relation.carrier)  in
-	let unit, goal = Coq.evar_unit goal x  in
+	let sigma,unit = Evarutil.new_evar env sigma x in
 	let ty =Classes.Unit.ty rlt  op  unit in
 	let result =
 	  try
-	    let t,goal = Coq.resolve_one_typeclass goal ty in
-	    Some (goal,t,unit)
+	    let sigma,t = Typeclasses.resolve_one_typeclass env sigma ty in
+	    Some (sigma,t,unit)
 	  with Not_found -> None
 	in
 	match result with
 	  | None -> None
-	  | Some (goal,s,unit) ->
-	    let unit = Coq.nf_evar goal unit  in
-	    Some (goal, unit, s)
+	  | Some (sigma,s,unit) ->
+	     let unit = Evarutil.nf_evar sigma unit in
+	    Some (sigma, unit, s)
 
 
 
       (** gives back the class and the operator *)
-      let is_bin  (rlt: Coq.Relation.t) (op: constr) ( goal: Coq.goal_sigma)
-	  : (Coq.goal_sigma * Bin.pack) option =
+      let is_bin  (rlt: Coq.Relation.t) (op: constr) env (sigma : Evd.evar_map)
+	  : (Evd.evar_map * Bin.pack) option =
 	let assoc_ty = Classes.Associative.ty rlt op in
 	let comm_ty = Classes.Commutative.ty rlt op in
 	let proper_ty  = Classes.Proper.ty rlt op 2 in
 	try
-	  let proper , goal = Coq.resolve_one_typeclass goal proper_ty in
-	  let assoc, goal = Coq.resolve_one_typeclass goal assoc_ty in
-	  let comm , goal =
+	  let sigma, proper = Typeclasses.resolve_one_typeclass env sigma proper_ty in
+	  let sigma, assoc = Typeclasses.resolve_one_typeclass env sigma assoc_ty in
+	  let sigma, comm  =
 	    try
-	      let comm, goal = Coq.resolve_one_typeclass goal comm_ty in
-	      Some comm, goal
+	      let sigma,comm = Typeclasses.resolve_one_typeclass env sigma comm_ty in
+	      sigma, Some comm
 	    with Not_found ->
-	      None, goal
+	      sigma, None
 	  in
 	  let bin =
-	    {Bin.value = EConstr.to_constr (Tacmach.project goal) op;
-	     Bin.compat = EConstr.to_constr (Tacmach.project goal) proper;
-	     Bin.assoc = EConstr.to_constr (Tacmach.project goal) assoc;
-	     Bin.comm = Option.map (EConstr.to_constr (Tacmach.project goal)) comm }
+	    {Bin.value = EConstr.to_constr sigma op;
+	     Bin.compat = EConstr.to_constr sigma proper;
+	     Bin.assoc = EConstr.to_constr sigma assoc;
+	     Bin.comm = Option.map (EConstr.to_constr sigma) comm }
 	  in
-	  Some (goal,bin)
+	  Some (sigma,bin)
 	with |Not_found -> None
 
-      let is_bin (rlt : Coq.Relation.t) (op : constr) (goal : Coq.goal_sigma)=
-	match is_bin rlt op goal with
+      let is_bin (rlt : Coq.Relation.t) (op : constr) env (sigma : Evd.evar_map)=
+	match is_bin rlt op env sigma with
 	  | None -> None
-	  | Some (goal, bin_pack) ->
-	    match get_unit rlt op goal with
-	      | None -> Some (goal, Bin (bin_pack, None))
+	  | Some (sigma, bin_pack) ->
+	    match get_unit rlt op env sigma with
+	      | None -> Some (sigma, Bin (bin_pack, None))
 	      | Some (gl, unit,s) ->
 		let unit_of =
 		  {
-		    Unit.uf_u = EConstr.to_constr (Tacmach.project goal) unit;
+		    Unit.uf_u = EConstr.to_constr sigma unit;
 		  (* TRICK : this term is not well-typed by itself,
 		     but it is okay the way we use it in the other
 		     functions *)
-		    Unit.uf_idx = EConstr.to_constr (Tacmach.project goal) op;
-		    Unit.uf_desc = EConstr.to_constr (Tacmach.project goal) s;
+		    Unit.uf_idx = EConstr.to_constr sigma op;
+		    Unit.uf_desc = EConstr.to_constr sigma s;
 		  }
 		in Some (gl,Bin (bin_pack, Some (unit_of)))
 
 
     (** {is_morphism} try to infer the kind of operator we are
 	dealing with *)
-    let is_morphism goal (rlt : Coq.Relation.t) (papp : constr) (ar : int) : (Coq.goal_sigma * pack ) option      =
+      let is_morphism env sigma (rlt : Coq.Relation.t) (papp : constr) (ar : int) : (Evd.evar_map * pack ) option      =
       let typeof = Classes.Proper.mk_typeof rlt ar in
       let relof = Classes.Proper.mk_relof rlt ar in
       let m = Coq.Classes.mk_morphism  typeof relof  papp in
 	try
-	  let m,goal = Coq.resolve_one_typeclass goal m in
-	  let pack = {Sym.ar = EConstr.to_constr (Tacmach.project goal) (Coq.Nat.of_int ar);
-                      Sym.value= EConstr.to_constr (Tacmach.project goal) papp;
-                      Sym.morph= EConstr.to_constr (Tacmach.project goal) m} in
-	    Some (goal, Sym pack)
+	  let sigma,m= Typeclasses.resolve_one_typeclass env sigma m in
+	  let pack = {Sym.ar = EConstr.to_constr sigma (Coq.Nat.of_int ar);
+                      Sym.value= EConstr.to_constr sigma papp;
+                      Sym.morph= EConstr.to_constr sigma m} in
+	    Some (sigma, Sym pack)
 	with
 	  | Not_found -> None
 
@@ -539,47 +539,47 @@ module Trans = struct
 	  let args = Array.sub ca (n-2) 2 in
 	  Some (papp, args )
 
-    let fold goal (rlt : Coq.Relation.t) envs t ca cont =
+    let fold env sigma (rlt : Coq.Relation.t) envs t ca cont =
       let fold_morphism t ca  =
 	let nb_params = Array.length ca in
 	let rec aux n =
 	  assert (n < nb_params && 0 < nb_params );
 	  let papp = mkApp (t, Array.sub ca 0 n) in
-	    match is_morphism goal rlt papp (nb_params - n) with
+	    match is_morphism env sigma rlt papp (nb_params - n) with
 	      | None ->
 		  (* here we have to memoize the failures *)
-		  HMap.add envs.discr (EConstr.to_constr (Tacmach.project goal) papp) None;
-		  if n < nb_params - 1 then aux (n+1) else goal
-	      | Some (goal, pack) ->
+		  HMap.add envs.discr (EConstr.to_constr sigma papp) None;
+		  if n < nb_params - 1 then aux (n+1) else sigma
+	      | Some (sigma, pack) ->
 		  let args = Array.sub ca (n) (nb_params -n)in
-		  let goal = Array.fold_left cont goal args in
-		    memoize envs (EConstr.to_constr (Tacmach.project goal) papp) pack;
-		    goal
+		  let sigma = Array.fold_left cont sigma args in
+		    memoize envs (EConstr.to_constr sigma papp) pack;
+		    sigma
 	in
-	  if nb_params = 0 then goal else aux 0
+	  if nb_params = 0 then sigma else aux 0
       in
       let is_aac t = is_bin rlt t  in
 	match crop_app t ca with
 	  | None ->
 		fold_morphism t ca
 	  | Some (papp, args) ->
-	      begin match is_aac papp goal with
+	      begin match is_aac papp env sigma with
 		| None -> fold_morphism t ca
-		| Some (goal, pack) ->
-		    memoize envs (EConstr.to_constr (Tacmach.project goal) papp) pack;
-		    Array.fold_left cont goal args
+		| Some (sigma, pack) ->
+		    memoize envs (EConstr.to_constr sigma papp) pack;
+		    Array.fold_left cont sigma args
 	      end
 
     (* update in place the envs of known stuff, using memoization. We
        have to memoize failures, here. *)
-    let gather goal (rlt : Coq.Relation.t ) envs t : Coq.goal_sigma =
-      let rec aux goal x =
-	match Coq.decomp_term (Tacmach.project goal) x with
+    let gather env sigma (rlt : Coq.Relation.t ) envs t : Evd.evar_map =
+      let rec aux sigma x =
+	match Coq.decomp_term sigma x with
 	  | Constr.App (t,ca) ->
-	      fold goal rlt envs t ca (aux )
-	  | _ ->  goal
+	      fold env sigma rlt envs t ca (aux )
+	  | _ ->  sigma
       in
-	aux goal t
+	aux sigma t
     end
 
   (** We build a term out of a constr, updating in place the
@@ -587,7 +587,7 @@ module Trans = struct
       constants).  *)
   module Parse :
   sig
-    val  t_of_constr : Coq.goal_sigma -> Coq.Relation.t -> envs  -> constr -> Matcher.Terms.t * Coq.goal_sigma
+    val  t_of_constr : Environ.env -> Evd.evar_map -> Coq.Relation.t -> envs  -> constr -> Matcher.Terms.t * Evd.evar_map
   end
     = struct
 
@@ -608,68 +608,68 @@ module Trans = struct
 	  This functions is prevented to go through [ar < 0] by the fact
 	  that a constant is a morphism. But not an eva. *)
 
-      let is_morphism goal (rlt : Coq.Relation.t) (papp : constr) (ar : int) : (Coq.goal_sigma * pack ) option      =
+      let is_morphism env sigma (rlt : Coq.Relation.t) (papp : constr) (ar : int) : (Evd.evar_map * pack ) option      =
 	let typeof = Classes.Proper.mk_typeof rlt ar in
 	let relof = Classes.Proper.mk_relof rlt ar in
 	let m = Coq.Classes.mk_morphism  typeof relof  papp in
 	try
-	  let m,goal = Coq.resolve_one_typeclass goal m in
-	  let pack = {Sym.ar = EConstr.to_constr ~abort_on_undefined_evars:(false)(Tacmach.project goal) (Coq.Nat.of_int ar);
-                      Sym.value= EConstr.to_constr ~abort_on_undefined_evars:(false)(Tacmach.project goal) papp;
-                      Sym.morph= EConstr.to_constr ~abort_on_undefined_evars:(false)(Tacmach.project goal) m} in
-	  Some (goal, Sym pack)
+	  let sigma,m = Typeclasses.resolve_one_typeclass env sigma m in
+	  let pack = {Sym.ar = EConstr.to_constr ~abort_on_undefined_evars:(false) sigma (Coq.Nat.of_int ar);
+                      Sym.value= EConstr.to_constr ~abort_on_undefined_evars:(false) sigma papp;
+                      Sym.morph= EConstr.to_constr ~abort_on_undefined_evars:(false) sigma m} in
+	  Some (sigma, Sym pack)
 	with
 	  | e ->  None
 
       exception NotReflexive
-      let discriminate goal envs (rlt : Coq.Relation.t) t ca : Coq.goal_sigma * pack * constr * constr array =
+      let discriminate env sigma envs (rlt : Coq.Relation.t) t ca : Evd.evar_map * pack * constr * constr array =
 	let nb_params = Array.length ca in
-	let rec fold goal ar :Coq.goal_sigma  * pack * constr * constr array =
+	let rec fold sigma ar :Evd.evar_map  * pack * constr * constr array =
 	  begin
 	    assert (0 <= ar && ar <= nb_params);
 	    let p_app = mkApp (t, Array.sub ca 0 (nb_params - ar)) in
 	    begin
 	      try
-		begin match HMap.find envs.discr (EConstr.to_constr ~abort_on_undefined_evars:(false) (Tacmach.project goal) p_app) with
+		begin match HMap.find envs.discr (EConstr.to_constr ~abort_on_undefined_evars:(false) sigma p_app) with
 		  | None ->
-		    fold goal (ar-1)
+		    fold sigma (ar-1)
 		  | Some pack ->
-		    (goal, pack, p_app,  Array.sub ca (nb_params -ar ) ar)
+		    (sigma, pack, p_app,  Array.sub ca (nb_params -ar ) ar)
 		end
 	      with
 		  Not_found -> (* Could not find this constr *)
-		    memoize (is_morphism goal rlt p_app ar) p_app ar
+		    memoize (is_morphism env sigma rlt p_app ar) p_app ar
 	    end
 	  end
 	and memoize (x) p_app ar =
 	  assert (0 <= ar && ar <= nb_params);
 	  match x with
-	    | Some (goal, pack) ->
-	      HMap.add envs.discr (EConstr.to_constr ~abort_on_undefined_evars:(false) (Tacmach.project goal) p_app) (Some pack);
+	    | Some (sigma, pack) ->
+	      HMap.add envs.discr (EConstr.to_constr ~abort_on_undefined_evars:(false) sigma p_app) (Some pack);
 	      add_bloom envs pack;
-	      (goal, pack, p_app, Array.sub ca (nb_params-ar) ar)
+	      (sigma, pack, p_app, Array.sub ca (nb_params-ar) ar)
 	    | None ->
 
 	      if ar = 0 then raise NotReflexive;
 	      begin
 		(* to memoise the failures *)
-		HMap.add envs.discr (EConstr.to_constr ~abort_on_undefined_evars:(false) (Tacmach.project goal) p_app) None;
+		HMap.add envs.discr (EConstr.to_constr ~abort_on_undefined_evars:(false) sigma p_app) None;
 		(* will terminate, since [const] is capped, and it is
 		   easy to find an instance of a constant *)
-		fold goal (ar-1)
+		fold sigma (ar-1)
 	      end
 	in
-	try match HMap.find envs.discr (EConstr.to_constr ~abort_on_undefined_evars:(false) (Tacmach.project goal) (mkApp (t,ca))) with
-	  | None -> fold goal (nb_params)
-	  | Some pack -> goal, pack, (mkApp (t,ca)), [| |]
-	with Not_found -> fold goal (nb_params)
+	try match HMap.find envs.discr (EConstr.to_constr ~abort_on_undefined_evars:(false) sigma (mkApp (t,ca))) with
+	  | None -> fold sigma (nb_params)
+	  | Some pack -> sigma, pack, (mkApp (t,ca)), [| |]
+	with Not_found -> fold sigma (nb_params)
 
-      let discriminate goal envs rlt  x =
+      let discriminate env sigma envs rlt  x =
 	try
-	  match Coq.decomp_term (Tacmach.project goal) x with
+	  match Coq.decomp_term sigma x with
 	    | Constr.App (t,ca) ->
-	      discriminate goal envs rlt   t ca
-	    | _ -> discriminate goal envs rlt x [| |]
+	      discriminate env sigma envs rlt   t ca
+	    | _ -> discriminate env sigma envs rlt x [| |]
 	with
 	  | NotReflexive -> user_error @@ Pp.strbrk "The relation to which the goal was lifted is not Reflexive"
 	    (* TODO: is it the only source of invalid use that fall
@@ -677,18 +677,18 @@ module Trans = struct
 	  |  e ->
 	    user_error @@ Pp.strbrk "Cannot handle this kind of hypotheses (variables occurring under a function symbol which is not a proper morphism)."
 
-      (** [t_of_constr goal rlt envs cstr] builds the abstract syntax tree
+      (** [t_of_constr env sigma rlt envs cstr] builds the abstract syntax tree
 	  of the term [cstr]. Doing so, it modifies the environment of
 	  known stuff [envs], and eventually creates fresh
-	  evars. Therefore, we give back the goal updated accordingly *)
-      let t_of_constr goal (rlt: Coq.Relation.t ) envs  : constr -> Matcher.Terms.t * Coq.goal_sigma =
-	let r_goal = ref (goal) in
+	  evars. Therefore, we give back the evar map updated accordingly *)
+      let t_of_constr env sigma (rlt: Coq.Relation.t ) envs  : constr -> Matcher.Terms.t * Evd.evar_map =
+	let r_sigma = ref (sigma) in
 	let rec aux x =
-	  match Coq.decomp_term (Tacmach.project goal) x with
+	  match Coq.decomp_term sigma x with
 	    | Constr.Rel i -> Matcher.Terms.Var i
 	    | _ ->
-		let goal, pack , p_app, ca = discriminate (!r_goal) envs rlt   x in
-		  r_goal := goal;
+		let sigma, pack , p_app, ca = discriminate env (!r_sigma) envs rlt   x in
+		  r_sigma := sigma;
 		  let k = find_bloom envs pack
 		  in
 		    match pack with
@@ -708,26 +708,26 @@ module Trans = struct
 			  Matcher.Terms.Sym ( k, Array.map aux ca)
 	in
 	  (
-	    fun x -> let r = aux x in r,  !r_goal
+	    fun x -> let r = aux x in r,  !r_sigma
 	  )
 
     end (* Parse *)
 
-  let add_symbol goal rlt envs l =
-    let goal = Gather.gather goal rlt envs (EConstr.of_constr (Constr.mkApp (l, [| Constr.mkRel 0;Constr.mkRel 0|]))) in
-    goal
+  let add_symbol env sigma rlt envs l =
+    let sigma = Gather.gather env sigma rlt envs (EConstr.of_constr (Constr.mkApp (l, [| Constr.mkRel 0;Constr.mkRel 0|]))) in
+    sigma
 
   (* [t_of_constr] buils a the abstract syntax tree of a constr,
      updating in place the environment. Doing so, we infer all the
      morphisms and the AC/A operators. It is mandatory to do so both
      for the pattern and the term, since AC symbols can occur in one
      and not the other *)
-  let t_of_constr goal rlt envs (l,r) =
-    let goal = Gather.gather goal rlt envs l in
-    let goal = Gather.gather goal rlt envs r in
-    let l,goal = Parse.t_of_constr goal rlt envs l in
-    let r, goal = Parse.t_of_constr goal rlt envs r in
-    l, r, goal
+  let t_of_constr env sigma rlt envs (l,r) =
+    let sigma = Gather.gather env sigma rlt envs l in
+    let sigma = Gather.gather env sigma rlt envs r in
+    let l,sigma = Parse.t_of_constr env sigma rlt envs l in
+    let r, sigma = Parse.t_of_constr env sigma rlt envs r in
+    l, r, sigma
 
   (* An intermediate representation of the environment, with association lists for AC/A operators, and also the raw [packer] information *)
 
@@ -742,7 +742,7 @@ module Trans = struct
 
   let ir_to_units ir = ir.matcher_units
 
-  let ir_of_envs goal (rlt : Coq.Relation.t) envs =
+  let ir_of_envs env sigma (rlt : Coq.Relation.t) envs =
     let add x y l = (x,y)::l in
     let  nil = [] in
     let sym ,
@@ -793,7 +793,7 @@ module Trans = struct
 		    if Constr.equal (unit_of.Unit.uf_u) u
 		    then
 		      {unit_of with
-			Unit.uf_idx = EConstr.to_constr (Tacmach.project goal) (Coq.Pos.of_int nop)} :: acc
+			Unit.uf_idx = EConstr.to_constr sigma (Coq.Pos.of_int nop)} :: acc
 		    else
 		      acc
 	      )
@@ -807,7 +807,7 @@ module Trans = struct
 	[] units
 
     in
-    goal, {
+    sigma, {
       packer = envs.bloom_back;
       bin =  (List.map (fun (n,(s,_)) -> n, s) bin);
       units = units;
@@ -915,6 +915,7 @@ module Trans = struct
     units_to_pos : int -> constr;
   }
 
+  let mkArrow x y = mkArrow x Sorts.Relevant y
 
   (** infers some stuff that will be required when we will build
       environments (our environments need a default case, so we need
@@ -922,31 +923,31 @@ module Trans = struct
   (* Note : this function can fail if the user is using the wrong
      relation, like proving a = b, while the classes are defined with
      another relation (==) *)
-  let build_reif_params goal (rlt : Coq.Relation.t) (zero) :
-      reif_params * Coq.goal_sigma =
+  let build_reif_params env sigma (rlt : Coq.Relation.t) (zero) :
+        Evd.evar_map * reif_params =
     let carrier = rlt.Coq.Relation.carrier in
-    let bin_null =
+    let sigma,bin_null =
       try
-	let op,goal = Coq.evar_binary goal carrier in
-	let assoc,goal = Classes.Associative.infer goal rlt op in
-	let compat,goal = Classes.Proper.infer goal rlt op 2 in
-	let op = Coq.nf_evar goal op in
-	  {
-	    Bin.value = EConstr.to_constr (Tacmach.project goal) op;
-	    Bin.compat = EConstr.to_constr (Tacmach.project goal) compat;
-	    Bin.assoc = EConstr.to_constr (Tacmach.project goal) assoc;
+        let sigma, op = Coq.evar_binary env sigma carrier in
+	let sigma, assoc = Classes.Associative.infer env sigma rlt op in
+	let sigma, compat = Classes.Proper.infer env sigma rlt op 2 in
+	let op = Evarutil.nf_evar sigma op in
+	  sigma,{
+	    Bin.value = EConstr.to_constr sigma op;
+	    Bin.compat = EConstr.to_constr sigma compat;
+	    Bin.assoc = EConstr.to_constr sigma assoc;
 	    Bin.comm = None
 	  }
       with Not_found -> user_error @@ Pp.strbrk "Cannot infer a default A operator (required at least to be Proper and Associative)"
     in
-    let zero, goal =
+    let sigma,zero =
       try
-	let evar_op,goal = Coq.evar_binary goal carrier in
-	let evar_unit, goal = Coq.evar_unit goal carrier in
+        let sigma, evar_op = Coq.evar_binary env sigma carrier in
+	let sigma,evar_unit = Evarutil.new_evar env sigma carrier in
 	let query = Classes.Unit.ty rlt evar_op evar_unit in
-	let _, goal = Coq.resolve_one_typeclass goal query in
-	  Coq.nf_evar goal evar_unit, goal
-      with _ -> 	zero, goal in
+	let sigma, _ = Typeclasses.resolve_one_typeclass env sigma query in
+	sigma,Evarutil.nf_evar sigma evar_unit
+      with _ -> sigma,zero in
     let sym_null = Sym.null rlt in
     let unit_null = Unit.default zero in
     let record =
@@ -958,7 +959,7 @@ module Trans = struct
 	bin_ty = Bin.mk_ty rlt
       }
     in
-      record,     goal
+      sigma,record
 
   (* We want to lift down the indexes of symbols. *)
   let renumber (l: (int * 'a) list ) =
@@ -981,62 +982,62 @@ module Trans = struct
 
   (** [build_sigma_maps] given a envs and some reif_params, we are
       able to build the sigmas *)
-  let build_sigma_maps  (rlt : Coq.Relation.t) zero ir (k : sigmas * sigma_maps -> Proofview.V82.tac ) : Proofview.V82.tac = fun goal ->
-    let rp,goal = build_reif_params goal rlt zero  in
-    let renumbered_sym, to_local, to_global = renumber ir.sym  in
-    let env_sym = Sigma.of_list
-      rp.sym_ty
-      (rp.sym_null)
-      renumbered_sym
-    in
-      Coq.cps_mk_letin "env_sym" env_sym
-	(fun env_sym ->
-	   let bin = (List.map ( fun (n,s) -> n, Bin.mk_pack rlt s) ir.bin) in
-	   let env_bin =
-	     Sigma.of_list
-	       rp.bin_ty
-	       (Bin.mk_pack rlt rp.bin_null)
-	       bin
-	   in
-	     Coq.cps_mk_letin "env_bin" env_bin
-	       (fun env_bin ->
-		  let units = (List.map (fun (n,s) -> n, Unit.mk_pack rlt env_bin s)ir.units) in
-		  let env_units =
-		    Sigma.of_list
-		      (Unit.ty_unit_pack rlt env_bin)
-		      (Unit.mk_pack rlt env_bin rp.unit_null )
-		      units
-		  in
-
-		    Coq.cps_mk_letin "env_units" env_units
-		      (fun env_units ->
-			 let sigmas =
-			   {
-			     env_sym =   env_sym ;
-			     env_bin =   env_bin ;
-			     env_units  = env_units;
-			   } in
-			 let f = List.map (fun (x,_) -> (x,Coq.Pos.of_int x)) in
-			 let sigma_maps =
-			   {
-			     sym_to_pos = (let sym = f renumbered_sym in fun x ->  (List.assoc (to_local x) sym));
-			     bin_to_pos = (let bin = f bin in fun x ->  (List.assoc  x bin));
-			     units_to_pos = (let units = f units in fun x ->  (List.assoc  x units));
-			   }
-			 in
-			   k (sigmas, sigma_maps )
-		      )
-	       )
-	) goal
+  let build_sigma_maps (rlt : Coq.Relation.t) zero ir : (sigmas * sigma_maps) Proofview.tactic =
+    let open Proofview.Notations in
+    let open Proofview in
+    tclEVARMAP >>= fun sigma ->
+    Proofview.Goal.enter_one (fun goal ->
+        let env = Proofview.Goal.env goal in
+        let sigma,rp = build_reif_params env sigma rlt zero in
+        Unsafe.tclEVARS sigma
+        <*> let renumbered_sym, to_local, to_global = renumber ir.sym  in
+            let env_sym = Sigma.of_list
+                            rp.sym_ty
+                            (rp.sym_null)
+                            renumbered_sym
+            in 
+            Coq.mk_letin "env_sym" env_sym >>= fun env_sym ->
+            let bin = (List.map ( fun (n,s) -> n, Bin.mk_pack rlt s) ir.bin) in
+            let env_bin =
+              Sigma.of_list
+	        rp.bin_ty
+	        (Bin.mk_pack rlt rp.bin_null)
+	        bin
+            in
+            (* let goalE = Proofview.Goal.goal goal in *)
+            Coq.mk_letin "env_bin" env_bin >>= fun env_bin ->
+            let units = (List.map (fun (n,s) -> n, Unit.mk_pack rlt env_bin s)ir.units) in
+            let env_units =
+              Sigma.of_list
+	        (Unit.ty_unit_pack rlt env_bin)
+	        (Unit.mk_pack rlt env_bin rp.unit_null )
+	        units
+            in
+            Coq.mk_letin "env_units" env_units >>= fun env_units ->
+            let sigmas =
+              {
+	        env_sym =  env_sym ;
+	        env_bin =  env_bin ;
+	        env_units  = env_units;
+              } in
+            let f = List.map (fun (x,_) -> (x,Coq.Pos.of_int x)) in
+            let sigma_maps =
+              {
+	        sym_to_pos = (let sym = f renumbered_sym in fun x ->  (List.assoc (to_local x) sym));
+	        bin_to_pos = (let bin = f bin in fun x ->  (List.assoc  x bin));
+	        units_to_pos = (let units = f units in fun x ->  (List.assoc  x units));
+              }
+            in
+            tclUNIT (sigmas, sigma_maps))
 
   (** builders for the reification *)
   type reif_builders =
-      {
-	rsum: constr -> constr -> constr -> constr;
-	rprd: constr -> constr -> constr -> constr;
-	rsym: constr -> constr array -> constr;
-	runit : constr -> constr
-      }
+    {
+      rsum: constr -> constr -> constr -> constr;
+      rprd: constr -> constr -> constr -> constr;
+      rsym: constr -> constr array -> constr;
+      runit : constr -> constr
+    }
 
   (* donne moi une tactique, je rajoute ma part.  Potentiellement, il
      est possible d'utiliser la notation 'do' a la Haskell:
@@ -1057,7 +1058,7 @@ module Trans = struct
     in aux ar
 
   (* TODO: use a do notation *)
-  let mk_reif_builders  (rlt: Coq.Relation.t)   (env_sym:constr)  (k: reif_builders -> Proofview.V82.tac) =
+  let mk_reif_builders  (rlt: Coq.Relation.t)   (env_sym:constr) : (reif_builders Proofview.tactic) =
     let x = (rlt.Coq.Relation.carrier) in
     let r = (rlt.Coq.Relation.r) in
 
@@ -1068,51 +1069,43 @@ module Trans = struct
     let rsym = mkApp (Lazy.force Stubs.rsym, x_r_env) in
     let vnil = mkApp (Lazy.force Stubs.vnil, x_r_env) in
     let vcons = mkApp (Lazy.force Stubs.vcons, x_r_env) in
-      Coq.cps_mk_letin "tty" tty
-      (fun tty ->
-      Coq.cps_mk_letin "rsum" rsum
-      (fun rsum ->
-      Coq.cps_mk_letin "rprd" rprd
-      (fun rprd ->
-      Coq.cps_mk_letin "rsym" rsym
-      (fun rsym ->
-      Coq.cps_mk_letin "vnil" vnil
-      (fun vnil ->
-      Coq.cps_mk_letin "vcons" vcons
-      (fun vcons ->
-	 let r ={
-	   rsum =
-	     begin fun idx l r ->
-	       mkApp (rsum, [|  idx ; mk_mset tty [l,1 ; r,1]|])
-	     end;
-	   rprd =
-	     begin fun idx l r ->
-	       let lst = NEList.of_list tty [l;r] in
-		 mkApp (rprd, [| idx; lst|])
-	     end;
-	   rsym =
-	     begin fun idx v ->
-	       let vect = mk_vect vnil vcons  v in
-		 mkApp (rsym, [| idx; vect|])
-	     end;
-	   runit = fun idx -> 	(* could benefit of a letin *)
-	     mkApp (Lazy.force Stubs.runit , [|x;r;env_sym;idx; |])
-	 }
-	 in k r
-      ))))))
+    let open Proofview.Notations in
+    Coq.mk_letin "tty" tty >>= fun tty ->
+    Coq.mk_letin "rsum" rsum >>= fun rsum ->
+    Coq.mk_letin "rprd" rprd >>= fun rprd ->
+    Coq.mk_letin "rsym" rsym >>= fun rsym ->
+    Coq.mk_letin "vnil" vnil >>= fun vnil ->
+    Coq.mk_letin "vcons" vcons >>= fun vcons ->
+    Proofview.tclUNIT {
+	rsum =
+	  begin fun idx l r ->
+	  mkApp (rsum, [|  idx ; mk_mset tty [l,1 ; r,1]|])
+	  end;
+	rprd =
+	  begin fun idx l r ->
+	  let lst = NEList.of_list tty [l;r] in
+	  mkApp (rprd, [| idx; lst|])
+	  end;
+	rsym =
+	  begin fun idx v ->
+	  let vect = mk_vect vnil vcons  v in
+	  mkApp (rsym, [| idx; vect|])
+	  end;
+	runit = fun idx -> 	(* could benefit of a letin *)
+	        mkApp (Lazy.force Stubs.runit , [|x;r;env_sym;idx; |])
+      }
 
 
 
   type reifier = sigma_maps * reif_builders
 
 
-  let  mk_reifier rlt zero envs (k : sigmas *reifier -> Proofview.V82.tac) =
-    build_sigma_maps rlt zero envs
-      (fun (s,sm) ->
-	   mk_reif_builders rlt s.env_sym
-	     (fun rb ->k (s,(sm,rb)) )
+  let  mk_reifier rlt zero envs : (sigmas *reifier) Proofview.tactic =
+    let open Proofview.Notations in
+    build_sigma_maps rlt zero envs >>= fun (s,sm) ->
+    mk_reif_builders rlt s.env_sym >>= fun rb ->
+      Proofview.tclUNIT (s,(sm,rb))
 
-      )
 
   (** [reif_constr_of_t reifier t] rebuilds the term [t] in the
       reified form. We use the [reifier] to minimise the size of the

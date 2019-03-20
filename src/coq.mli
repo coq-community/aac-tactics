@@ -32,15 +32,15 @@ type goal_sigma =  Goal.goal Evd.sigma
 val resolve_one_typeclass : Goal.goal Evd.sigma -> EConstr.types -> EConstr.constr * goal_sigma
 val cps_resolve_one_typeclass: ?error:Pp.t -> EConstr.types -> (EConstr.constr  -> Proofview.V82.tac) -> Proofview.V82.tac
 val nf_evar : goal_sigma -> EConstr.constr -> EConstr.constr
-val evar_unit :goal_sigma ->EConstr.constr ->  EConstr.constr* goal_sigma
-val evar_binary: goal_sigma -> EConstr.constr -> EConstr.constr* goal_sigma
-val evar_relation: goal_sigma -> EConstr.constr -> EConstr.constr* goal_sigma
-val cps_evar_relation : EConstr.constr -> (EConstr.constr -> Proofview.V82.tac) -> Proofview.V82.tac
+val evar_binary: Environ.env -> Evd.evar_map -> EConstr.constr -> Evd.evar_map * EConstr.constr
+val evar_relation: Environ.env -> Evd.evar_map -> EConstr.constr -> Evd.evar_map * EConstr.constr
 
 (** [cps_mk_letin name v] binds the constr [v] using a letin tactic  *)
 val cps_mk_letin : string -> EConstr.constr -> ( EConstr.constr -> Proofview.V82.tac) -> Proofview.V82.tac
+val mk_letin : string -> EConstr.constr -> EConstr.constr Proofview.tactic
 
 val retype : EConstr.constr -> Proofview.V82.tac
+val tclRETYPE : EConstr.constr -> unit Proofview.tactic
 
 val decomp_term : Evd.evar_map -> EConstr.constr -> (EConstr.constr , EConstr.types, EConstr.ESorts.t, EConstr.EInstance.t) Constr.kind_of_term
 val lapp : EConstr.constr lazy_t -> EConstr.constr array -> EConstr.constr
@@ -147,10 +147,9 @@ module Equivalence : sig
   val split : t -> EConstr.constr * EConstr.constr * EConstr.constr
 end
 
-(** [match_as_equation ?context goal c] try to decompose c as a
-    relation applied to two terms. An optionnal rel-context can be
-    provided to ensure that the term remains typable *)
-val match_as_equation  : ?context:EConstr.rel_context -> goal_sigma -> EConstr.constr -> (EConstr.constr * EConstr.constr * Relation.t) option
+(** [match_as_equation ?context env sigma c] try to decompose c as a
+    relation applied to two terms.  *)
+val match_as_equation  : ?context:EConstr.rel_context -> Environ.env -> Evd.evar_map -> EConstr.constr -> (EConstr.constr * EConstr.constr * Relation.t) option
 
 (** {2 Some tacticials}  *)
 
@@ -158,11 +157,13 @@ val match_as_equation  : ?context:EConstr.rel_context -> goal_sigma -> EConstr.c
 val tclTIME : string -> Proofview.V82.tac -> Proofview.V82.tac
 
 (** emit debug messages to see which tactics are failing *)
-val tclDEBUG : string -> Proofview.V82.tac -> Proofview.V82.tac
+val tclDEBUG : string -> unit Proofview.tactic
 
 (** print the current goal *)
-val tclPRINT : Proofview.V82.tac -> Proofview.V82.tac
+val tclPRINT : unit Proofview.tactic
 
+(** print the current proof term *)
+val tclSHOWPROOF : unit Proofview.tactic
 
 (** {2 Error related mechanisms}  *)
 
@@ -199,11 +200,11 @@ type hypinfo =
       l2r : bool; 			(** rewriting from left to right  *)
     }
 
-(** [get_hypinfo H l2r ?check_type k] analyse the hypothesis H, and
-    build the related hypinfo, in CPS style. Moreover, an optionnal
+(** [get_hypinfo H ?check_type l2r] analyse the hypothesis H, and
+    build the related hypinfo. Moreover, an optionnal
     function can be provided to check the type of every free
     variable of the body of the hypothesis.  *)
-val get_hypinfo :EConstr.constr -> l2r:bool -> ?check_type:(EConstr.types -> bool) ->   (hypinfo -> Proofview.V82.tac) -> Proofview.V82.tac
+val get_hypinfo : Environ.env -> Evd.evar_map ->  EConstr.constr -> ?check_type:(EConstr.types -> bool) -> l2r:bool -> hypinfo
  
 (** {2 Rewriting with bindings}
 
@@ -219,15 +220,15 @@ val get_hypinfo :EConstr.constr -> l2r:bool -> ?check_type:(EConstr.types -> boo
     Both these terms have the same type.
 *)
 
-(** build the constr to rewrite, in CPS style, with lambda abstractions  *)
-val build :  hypinfo ->  (int * EConstr.constr) list ->  (EConstr.constr -> Proofview.V82.tac) -> Proofview.V82.tac
+(** build the constr to rewrite, with lambda abstractions  *)
+val build :  hypinfo ->  (int * EConstr.constr) list ->  EConstr.constr
 
 (** build the constr to rewrite, in CPS style, with evars  *)
-val build_with_evar :  hypinfo ->  (int * EConstr.constr) list ->  (EConstr.constr -> Proofview.V82.tac) -> Proofview.V82.tac
+(* val build_with_evar :  hypinfo ->  (int * EConstr.constr) list ->  (EConstr.constr -> Proofview.V82.tac) -> Proofview.V82.tac *)
 
 (** [rewrite ?abort hypinfo subst] builds the rewriting tactic
-    associated with the given [subst] and [hypinfo], and feeds it to
-    the given continuation. If [abort] is set to [true], we build
+    associated with the given [subst] and [hypinfo]. 
+If [abort] is set to [true], we build
     [tclIDTAC] instead. *)
-val rewrite : ?abort:bool -> hypinfo -> (int * EConstr.constr) list -> (Proofview.V82.tac -> Proofview.V82.tac) -> Proofview.V82.tac
+val rewrite : ?abort:bool -> hypinfo -> (int * EConstr.constr) list -> unit Proofview.tactic
 end

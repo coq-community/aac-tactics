@@ -19,5 +19,5 @@ val print :
   Theory.Trans.ir ->
   (int * Matcher.Terms.t * Matcher.Subst.t Search_monad.m) Search_monad.m ->
   EConstr.rel_context  ->
-  Proofview.V82.tac
+  unit Proofview.tactic
 
