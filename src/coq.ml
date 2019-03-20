@@ -74,16 +74,14 @@ let tclPRINT =
       let _ = Feedback.msg_notice (Printer.pr_goal (Proofview.Goal.print goal)) in                  
       tclUNIT ())
 
-let tclSHOWPROOF : unit Proofview.tactic=
-  let open Proofview.Notations in
-  let open Proofview in
-  tclEVARMAP >>= fun sigma ->
-  tclENV >>= fun env ->
-  let p = Proof_global.give_me_the_proof () in 
+let show_proof pstate : unit =
+  let sigma, env = Pfedit.get_current_context pstate in
+  let p = Proof_global.give_me_the_proof pstate in 
   let p = Proof.partial_proof p in 
   let p = List.map (Evarutil.nf_evar sigma) p in 
-  let _ = List.map (fun c -> Feedback.msg_notice (Printer.pr_econstr_env env sigma c)) p (* list of econstr in sigma *) in
-  Tacticals.New.tclIDTAC
+  let () = List.iter (fun c -> Feedback.msg_notice (Printer.pr_econstr_env env sigma c)) p (* list of econstr in sigma *) in
+  ()
+
 
 let cps_mk_letin
     (name:string)
