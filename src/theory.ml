@@ -915,7 +915,7 @@ module Trans = struct
     units_to_pos : int -> constr;
   }
 
-  let mkArrow x y = mkArrow x Sorts.Relevant y
+  let _mkArrow x y = mkArrow x Sorts.Relevant y
 
   (** infers some stuff that will be required when we will build
       environments (our environments need a default case, so we need
