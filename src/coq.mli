@@ -22,9 +22,13 @@
 *)
 
 (** {2 Getting Coq terms from the environment}  *)
+type lazy_ref = Names.GlobRef.t Lazy.t
 
-val init_constant_constr : string list -> string -> Constr.t
-val init_constant : string list -> string -> EConstr.constr
+val get_fresh : lazy_ref -> Constr.constr
+val get_efresh : lazy_ref -> EConstr.constr
+  
+val find_global : string -> lazy_ref
+
 
 (** {2 General purpose functions} *)
 
@@ -43,7 +47,6 @@ val retype : EConstr.constr -> Proofview.V82.tac
 val tclRETYPE : EConstr.constr -> unit Proofview.tactic
 
 val decomp_term : Evd.evar_map -> EConstr.constr -> (EConstr.constr , EConstr.types, EConstr.ESorts.t, EConstr.EInstance.t) Constr.kind_of_term
-val lapp : EConstr.constr lazy_t -> EConstr.constr array -> EConstr.constr
 
 (** {2 Bindings with Coq' Standard Library}  *)
 
@@ -60,30 +63,14 @@ end
 (** Coq pairs *)
 module Pair:
 sig
-  val typ:EConstr.constr lazy_t
-  val pair:EConstr.constr lazy_t
+  val typ: lazy_ref
+  val pair: lazy_ref
   val of_pair : EConstr.constr -> EConstr.constr ->  EConstr.constr * EConstr.constr -> EConstr.constr
 end
 
-module Bool : sig
-  val typ : EConstr.constr lazy_t
-  val of_bool : bool -> EConstr.constr
-end
-
-
-module Comparison : sig
-  val typ : EConstr.constr lazy_t
-  val eq : EConstr.constr lazy_t
-  val lt : EConstr.constr lazy_t
-  val gt : EConstr.constr lazy_t
-end
-
-module Leibniz : sig
-  val eq_refl : EConstr.types -> EConstr.constr -> EConstr.constr
-end
 
 module Option : sig
-  val typ : EConstr.constr lazy_t
+  val typ : lazy_ref
   val some : EConstr.constr -> EConstr.constr -> EConstr.constr
   val none : EConstr.constr -> EConstr.constr
   val of_option : EConstr.constr -> EConstr.constr option -> EConstr.constr
@@ -92,15 +79,15 @@ end
 (** Coq positive numbers (pos) *)
 module Pos:
 sig
-  val typ:EConstr.constr lazy_t
+  val typ:lazy_ref
   val of_int: int ->EConstr.constr
 end
 
 (** Coq unary numbers (peano) *)
 module Nat:
 sig
-  val typ:EConstr.constr lazy_t
-  val of_int: int ->EConstr.constr
+  val typ:lazy_ref
+  val of_int: int -> Constr.constr
 end
 
 (** Coq typeclasses *)
@@ -118,19 +105,6 @@ module Relation : sig
   val split : t -> EConstr.constr * EConstr.constr
 end
    
-module Transitive : sig
-  type t =
-      {
-	carrier : EConstr.constr;
-	leq : EConstr.constr;
-	transitive : EConstr.constr;
-      }
-  val make : EConstr.constr -> EConstr.constr -> EConstr.constr -> t
-  val infer : goal_sigma -> EConstr.constr -> EConstr.constr -> t  * goal_sigma
-  val from_relation : goal_sigma -> Relation.t -> t * goal_sigma
-  val cps_from_relation : Relation.t -> (t -> Proofview.V82.tac) -> Proofview.V82.tac
-  val to_relation : t -> Relation.t
-end
 	
 module Equivalence : sig
   type t =
@@ -142,7 +116,6 @@ module Equivalence : sig
   val make  : EConstr.constr -> EConstr.constr -> EConstr.constr -> t
   val infer  : goal_sigma -> EConstr.constr -> EConstr.constr -> t  * goal_sigma
   val from_relation : goal_sigma -> Relation.t -> t * goal_sigma
-  val cps_from_relation : Relation.t -> (t -> Proofview.V82.tac) -> Proofview.V82.tac
   val to_relation : t -> Relation.t
   val split : t -> EConstr.constr * EConstr.constr * EConstr.constr
 end

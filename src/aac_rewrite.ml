@@ -68,12 +68,12 @@ let infer_lifting env sigma (rlt: Coq.Relation.t) : Evd.evar_map * aac_lift  =
   let x = rlt.Coq.Relation.carrier in
   let r = rlt.Coq.Relation.r in
   let (sigma, e) = Coq.evar_relation env sigma x in
-  let lift_ty = mkApp (Lazy.force Theory.Stubs.lift,[|x;r;e|]) in
+  let lift_ty = mkApp (Coq.get_efresh Theory.Stubs.lift,[|x;r;e|]) in
   let sigma, lift = try Typeclasses.resolve_one_typeclass env sigma lift_ty
                     with Not_found -> CErrors.user_err (Pp.strbrk "Cannot infer a lifting")
   in
   let eq = (Evarutil.nf_evar sigma e) in
-  let equiv = mkApp (Lazy.force Theory.Stubs.lift_proj_equivalence,[| x;r;eq; lift |]) in
+  let equiv = mkApp (Coq.get_efresh Theory.Stubs.lift_proj_equivalence,[| x;r;eq; lift |]) in
   sigma, {
       r = rlt;
       e = Coq.Equivalence.make x eq equiv;
@@ -110,7 +110,7 @@ let handle eqt zero envs (t : Matcher.Terms.t) (t' : Matcher.Terms.t) : ('a * 'b
   let t = Theory.Trans.reif_constr_of_t reifier t in
   let t' = Theory.Trans.reif_constr_of_t reifier  t' in
   (* Some letins  *)
-  let eval = (mkApp (Lazy.force Theory.Stubs.eval, [|x;r; maps.Theory.Trans.env_sym; maps.Theory.Trans.env_bin; maps.Theory.Trans.env_units|])) in
+  let eval = (mkApp (Coq.get_efresh Theory.Stubs.eval, [|x;r; maps.Theory.Trans.env_sym; maps.Theory.Trans.env_bin; maps.Theory.Trans.env_units|])) in
 
   Coq.mk_letin "eval" eval >>= fun eval ->
   Coq.mk_letin "left" t >>= fun t ->
@@ -124,13 +124,13 @@ let by_aac_reflexivity zero
   let open Proofview.Notations in
   handle eqt zero envs t t' >>= fun (maps,eval,t,t') ->
   let (x,r,e) = Coq.Equivalence.split eqt in
-  let decision_thm = Coq.lapp Theory.Stubs.decide_thm
+  let decision_thm = mkApp (Coq.get_efresh Theory.Stubs.decide_thm,
 	               [|x;r;e;
 	                 maps.Theory.Trans.env_sym;
 	                 maps.Theory.Trans.env_bin;
 	                 maps.Theory.Trans.env_units;
 	                 t;t';
-	               |]
+	               |])
   in
   (* This convert is required to deal with evars in a proper
      way *)
@@ -154,7 +154,7 @@ let by_aac_normalise zero lift ir t t' =
   let open Proofview.Notations in
   handle eqt zero ir t t' >>= fun (maps,eval,t,t') ->
   let (x,r,e) = Coq.Equivalence.split eqt in
-  let normalise_thm = Coq.lapp Theory.Stubs.lift_normalise_thm
+  let normalise_thm = mkApp (Coq.get_efresh Theory.Stubs.lift_normalise_thm,
 	                [|x;r;e;
 	                  maps.Theory.Trans.env_sym;
 	                  maps.Theory.Trans.env_bin;
@@ -162,7 +162,7 @@ let by_aac_normalise zero lift ir t t' =
 	                  rlt.Coq.Relation.r;
 	                  lift.lift;
 	                  t;t';
-	                |]
+	                |])
   in
   (* This convert is required to deal with evars in a proper
      way *)
@@ -229,7 +229,7 @@ let aac_reflexivity : unit Proofview.tactic =
                             with | Not_found -> Coq.user_error @@ Pp.strbrk "The goal's relation is not reflexive"
       in
       let lift_reflexivity =
-        mkApp (Lazy.force (Theory.Stubs.lift_reflexivity),
+        mkApp (Coq.get_efresh (Theory.Stubs.lift_reflexivity),
 	       [| x; r; lift.e.Coq.Equivalence.eq; lift.lift; reflexive |])
       in
       Unsafe.tclEVARS sigma 
@@ -258,11 +258,11 @@ let lift_transitivity in_left (step:constr) preorder lifting (using_eq : Coq.Equ
         let thm =
 	  if in_left
 	  then
-	    Lazy.force Theory.Stubs.lift_transitivity_left
+	    Theory.Stubs.lift_transitivity_left
 	  else
-	    Lazy.force Theory.Stubs.lift_transitivity_right
+	    Theory.Stubs.lift_transitivity_right
         in
-        mkApp (thm,
+        mkApp (Coq.get_efresh thm,
 	       [|
 	         preorder.Coq.Relation.carrier;
 	         preorder.Coq.Relation.r;

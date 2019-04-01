@@ -33,7 +33,7 @@ Require Import RelationClasses Equality.
 Require Export Morphisms.
 
 From AAC_tactics
-Require Import Utils.
+Require Import Utils Constants.
 
 Set Implicit Arguments.
 Set Asymmetric Patterns.
@@ -51,6 +51,10 @@ Section sigma.
     end.
   Definition sigma_add := @PositiveMap.add.
   Definition sigma_empty := @PositiveMap.empty.
+
+  Register sigma_get as aac_tactics.sigma.get.
+  Register sigma_add as aac_tactics.sigma.add.
+  Register sigma_empty as aac_tactics.sigma.empty.
 End sigma.
 
 
@@ -63,7 +67,10 @@ Class Commutative (X:Type) (R: relation X) (plus: X -> X -> X) :=
 Class Unit (X:Type) (R:relation X) (op : X -> X -> X) (unit:X) := {
   law_neutral_left: forall x, R (op unit x) x;
   law_neutral_right: forall x, R (op x unit) x
-}.
+                                                               }.
+Register Associative as aac_tactics.classes.Associative.
+Register Commutative as aac_tactics.classes.Commutative.
+Register Unit as aac_tactics.classes.Unit.
 
 
 (** Class used to find the equivalence relation on which operations
@@ -72,7 +79,9 @@ Class Unit (X:Type) (R:relation X) (op : X -> X -> X) (unit:X) := {
 Class AAC_lift X (R: relation X) (E : relation X) := {
   aac_lift_equivalence : Equivalence E;
   aac_list_proper : Proper (E ==> E ==> iff) R
-}.
+                                                    }.
+Register AAC_lift as aac_tactics.internal.AAC_lift.
+Register aac_lift_equivalence as aac_tactics.internal.aac_lift_equivalence.
 
 (** simple instances, when we have a subrelation, or an equivalence *)
 
@@ -149,6 +158,9 @@ Module Sym.
         | O => R
       | S n => respectful R (rel_of n)
       end.
+
+    Register type_of as aac_tactics.internal.sym.type_of.
+    Register rel_of as aac_tactics.internal.sym.rel_of.
    
   (** a symbol package contains an arity,
      a value of the corresponding type,
@@ -158,11 +170,16 @@ Module Sym.
     ar : nat;
     value :> type_of  ar;
     morph : Proper (rel_of ar) value
-  }.
+                           }.
+
+  Register pack as aac_tactics.sym.pack.
+  Register mkPack as aac_tactics.sym.mkPack.
+
 
   (** helper to build default values, when filling reification environments *)
   Definition null: pack := mkPack 1 (fun x => x) (fun _ _ H => H).
-   
+  Register null as aac_tactics.sym.null.
+
   End t.
 
 End Sym.
@@ -179,7 +196,10 @@ Module Bin.
       compat: Proper (R ==> R ==> R) value;
       assoc: Associative R value;
       comm: option (Commutative R value)
-    }.
+                     }.
+    
+    Register pack as aac_tactics.bin.pack.
+    Register mk_pack as aac_tactics.bin.mkPack.
   End t.
   (*    See #<a href="Instances.html">Instances.v</a># for concrete instances of these classes. *)
 
@@ -210,7 +230,14 @@ Section s.
   Record unit_pack := mk_unit_pack {
     u_value:> X;
     u_desc: list (unit_of u_value)
-  }.
+                        }.
+
+  Register unit_of as aac_tactics.internal.unit_of.
+  Register mk_unit_for as aac_tactics.internal.mk_unit_for.
+  Register unit_pack as aac_tactics.internal.unit_pack.
+  Register mk_unit_pack as aac_tactics.internal.mk_unit_pack.
+
+  
   Variable e_unit: positive -> unit_pack.
  
   Hint Resolve e_bin e_unit: typeclass_instances.
@@ -238,6 +265,14 @@ Section s.
   | vnil: vT O
   | vcons: forall n, T -> vT n -> vT (S n).
 
+  Register T as aac_tactics.internal.T.
+  Register sum as aac_tactics.internal.sum.
+  Register prd as aac_tactics.internal.prd.
+  Register sym as aac_tactics.internal.sym.
+  Register unit as aac_tactics.internal.unit.
+
+  Register vnil as aac_tactics.internal.vnil.
+  Register vcons as aac_tactics.internal.vcons.
 
   (** lexicographic rpo over the normalised syntax *)
   Fixpoint compare (u v: T) :=
@@ -279,6 +314,9 @@ Section s.
       | vnil => fun f => f
       | vcons _ u v => fun f => eval_aux v (f (eval u))
     end.
+
+  Register eval as aac_tactics.internal.eval.
+
 
   (** we need to show that compare reflects equality (this is because
      we work with msets rather than lists with arities) *)
@@ -872,11 +910,13 @@ Section s.
 
   Lemma decide: forall (u v: T), compare (norm u) (norm v) = Eq -> eval u == eval v.
   Proof. intros u v H. apply normalise. apply compare_reflect_eq. apply H. Qed.
+  Register decide as aac_tactics.internal.decide.
 
   Lemma lift_normalise {S} {H : AAC_lift S R}:
     forall (u v: T), (let x := norm u in let y := norm v in
       S (eval x) (eval y)) -> S (eval u) (eval v).
   Proof. destruct H. intros u v; simpl; rewrite 2 eval_norm. trivial. Qed.
+  Register lift_normalise as aac_tactics.internal.lift_normalise.
 
 End s.
 End Internal.
@@ -901,6 +941,10 @@ Section t.
 
   Lemma lift_reflexivity {HR :Reflexive R}: forall x y, E x y -> R x y.
   Proof. destruct H. intros ? ? G. rewrite G. reflexivity. Qed.
+
+  Register lift_transitivity_left as aac_tactics.internal.lift_transitivity_left.
+  Register lift_transitivity_right as aac_tactics.internal.lift_transitivity_right.
+  Register lift_reflexivity as aac_tactics.internal.lift_reflexivity.
 
 End t.
        
