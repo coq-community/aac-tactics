@@ -17,17 +17,24 @@ let mkArrow x y = mkArrow x Sorts.Relevant y
 (* The kernel will fix the relevance if needed. Also as an equality
    tactic we probably are only called on relevant terms. *)
 
+type lazy_ref = Names.GlobRef.t Lazy.t
+
 (* The contrib name is used to locate errors when loading constrs *)
 let contrib_name = "aac_tactics"
+let aac_lib_ref s = Coqlib.lib_ref (contrib_name ^ "." ^ s)
+let find_global s = lazy (aac_lib_ref s)
+                  
 
+let new_monomorphic_global gr =
+  try UnivGen.constr_of_monomorphic_global gr
+  with e ->
+    CErrors.anomaly Pp.(str "new_monomorphic_global raised an error on:" ++ Printer.pr_global gr)
+       
 (* Getting constrs (primitive Coq terms) from existing Coq
    libraries. *)
-let find_constant contrib dir s =
-  UnivGen.constr_of_global (Coqlib.find_reference contrib dir s)
-
-let init_constant_constr dir s = find_constant contrib_name dir s
-
-let init_constant dir s = EConstr.of_constr (find_constant contrib_name dir s)
+let get_fresh r = new_monomorphic_global (Lazy.force r)
+let get_efresh r = EConstr.of_constr (new_monomorphic_global (Lazy.force r))
+                        
 
 (* A clause specifying that the [let] should not try to fold anything
    in the goal *)
@@ -149,51 +156,24 @@ let evar_relation env (sigma: Evd.evar_map) (x: constr) =
 
 let decomp_term sigma c = kind sigma (Termops.strip_outer_cast sigma c)
    
-let lapp c v  = mkApp (Lazy.force c, v)
-
 (** {2 Bindings with Coq' Standard Library}  *)
 module Std = struct  		
 (* Here we package the module to be able to use List, later *)
 
 module Pair = struct
  
-  let path = ["Coq"; "Init"; "Datatypes"]
-  let typ = lazy (init_constant path "prod")
-  let pair = lazy (init_constant path "pair")
+  let typ = find_global "pair.prod"
+  let pair = find_global "pair.pair"
   let of_pair t1 t2 (x,y) =
-    mkApp (Lazy.force pair,  [| t1; t2; x ; y|] )
-end
-
-module Bool = struct
-  let path = ["Coq"; "Init"; "Datatypes"]
-  let typ = lazy (init_constant path "bool")
-  let ctrue = lazy (init_constant path "true")
-  let cfalse = lazy (init_constant path "false")
-  let of_bool  b =
-    if b then Lazy.force ctrue else Lazy.force cfalse
-end
-
-module Comparison = struct
-  let path = ["Coq"; "Init"; "Datatypes"]
-  let typ = lazy (init_constant path "comparison")
-  let eq = lazy (init_constant path "Eq")
-  let lt = lazy (init_constant path "Lt")
-  let gt = lazy (init_constant path "Gt")
-end
-
-module Leibniz = struct
-  let path = ["Coq"; "Init"; "Logic"]
-  let eq_refl = lazy (init_constant path "eq_refl")
-  let eq_refl ty x = lapp eq_refl [| ty;x|]
+    mkApp (get_efresh pair,  [| t1; t2; x ; y|] )
 end
 
 module Option = struct
-  let path = ["Coq"; "Init"; "Datatypes"]
-  let typ = lazy (init_constant path "option")
-  let some = lazy (init_constant path "Some")
-  let none = lazy (init_constant path "None")
-  let some t x = mkApp (Lazy.force some, [| t ; x|])
-  let none t = mkApp (Lazy.force none, [| t |])
+  let typ = find_global "option.typ"
+  let some = find_global "option.Some"
+  let none = find_global "option.None"
+  let some t x = mkApp (get_efresh some, [| t ; x|])
+  let none t = mkApp (get_efresh none, [| t |])
   let of_option t x = match x with
     | Some x -> some t x
     | None -> none t
@@ -201,23 +181,22 @@ end
 
 module Pos = struct
    
-    let path = ["Coq" ; "Numbers"; "BinNums"]
-    let typ = lazy (init_constant path "positive")
-    let xI =      lazy (init_constant path "xI")
-    let xO =      lazy (init_constant path "xO")
-    let xH =      lazy (init_constant path "xH")
+    let typ = find_global "pos.typ"
+    let xI =  find_global  "pos.xI"
+    let xO =  find_global "pos.xO"
+    let xH =  find_global "pos.xH"
 
     (* A coq positive from an int *)
     let of_int n =
       let rec aux n =
 	begin  match n with
 	  | n when n < 1 -> assert false
-	  | 1 -> Lazy.force xH
+	  | 1 -> get_efresh xH
 	  | n -> mkApp
 	      (
 		(if n mod 2 = 0
-		 then Lazy.force xO
-		 else Lazy.force xI
+		 then get_efresh xO
+		 else get_efresh xI
 		),  [| aux (n/2)|]
 	      )
 	end
@@ -226,68 +205,62 @@ module Pos = struct
 end
    
 module Nat = struct
-  let path = ["Coq" ; "Init"; "Datatypes"]
-  let typ = lazy (init_constant path "nat")
-  let _S =      lazy (init_constant  path "S")
-  let _O =      lazy (init_constant  path "O")
+  let typ = find_global "nat.type"
+  let _S = find_global "nat.S"
+  let _O = find_global "nat.O"
     (* A coq nat from an int *)
-  let of_int n =
-    let rec aux n =
-      begin  match n with
-	| n when n < 0 -> assert false
-	| 0 -> Lazy.force _O
-	| n -> mkApp
-	    (
-	      (Lazy.force _S
-	      ),  [| aux (n-1)|]
-	    )
-      end
-    in
-      aux n
+  let rec of_int n =
+    begin  match n with
+    | n when n < 0 -> assert false
+    | 0 -> get_fresh _O
+    | n -> Constr.mkApp
+	     (
+	       ( get_fresh _S
+	       ),  [| of_int (n-1)|]
+	     )
+    end
 end
    
 (** Lists from the standard library*)
 module List = struct
-  let path = ["Coq"; "Init"; "Datatypes"]
-  let typ = lazy (init_constant path "list")
-  let nil = lazy (init_constant path "nil")
-  let cons = lazy (init_constant path "cons")
+  let typ = find_global "list.typ"
+  let nil = find_global "list.nil"
+  let cons = find_global "list.cons"
   let cons ty h t =
-    mkApp (Lazy.force cons, [|  ty; h ; t |])
+    mkApp (get_efresh cons, [|  ty; h ; t |])
   let nil ty =
-    (mkApp (Lazy.force nil, [|  ty |]))
+    (mkApp (get_efresh nil, [|  ty |]))
   let rec of_list ty = function
     | [] -> nil ty
     | t::q -> cons ty t (of_list  ty q)
   let type_of_list ty =
-    mkApp (Lazy.force typ, [|ty|])
+    mkApp (get_efresh typ, [|ty|])
 end
    
 (** Morphisms *)
 module Classes =
 struct
-  let classes_path = ["Coq";"Classes"; ]
-  let morphism = lazy (init_constant (classes_path@["Morphisms"]) "Proper")
-  let equivalence = lazy (init_constant (classes_path@ ["RelationClasses"]) "Equivalence")
-  let reflexive = lazy (init_constant (classes_path@ ["RelationClasses"]) "Reflexive")
-  let transitive = lazy (init_constant (classes_path@ ["RelationClasses"]) "Transitive")
+  let morphism = find_global "coq.classes.morphisms.Proper"
+  let equivalence = find_global "coq.RelationClasses.Equivalence"
+  let reflexive = find_global "coq.RelationClasses.Reflexive"
+  let transitive = find_global "coq.RelationClasses.Transitive"
 
   (** build the type [Equivalence ty rel]  *)
   let mk_equivalence ty rel =
-    mkApp (Lazy.force equivalence, [| ty; rel|])
+    mkApp (get_efresh equivalence, [| ty; rel|])
 
 
   (** build the type [Reflexive ty rel]  *)
   let mk_reflexive ty rel =
-    mkApp (Lazy.force reflexive, [| ty; rel|])
+    mkApp (get_efresh reflexive, [| ty; rel|])
 
   (** build the type [Proper rel t] *)
   let mk_morphism ty rel t =
-    mkApp (Lazy.force morphism, [| ty; rel; t|])
+    mkApp (get_efresh morphism, [| ty; rel; t|])
 
   (** build the type [Transitive ty rel]  *)
   let mk_transitive ty rel =
-    mkApp (Lazy.force transitive, [| ty; rel|])
+    mkApp (get_efresh transitive, [| ty; rel|])
 end
 
 module Relation = struct
@@ -299,31 +272,6 @@ module Relation = struct
 	
   let make ty r = {carrier = ty; r = r }
   let split t = t.carrier, t.r
-end
-   
-module Transitive = struct
-  type t =
-      {
-	carrier : constr;
-	leq : constr;
-	transitive : constr;
-      }
-  let make ty leq transitive = {carrier = ty; leq = leq; transitive = transitive}
-  let infer goal ty leq  =
-    let ask = Classes.mk_transitive ty leq in
-    let transitive , goal = resolve_one_typeclass goal ask in
-      make ty leq transitive, goal
-  let from_relation goal rlt =
-    infer goal (rlt.Relation.carrier) (rlt.Relation.r)
-  let cps_from_relation rlt k =
-    let ty =rlt.Relation.carrier in
-    let r = rlt.Relation.r in
-    let ask = Classes.mk_transitive  ty r in
-    cps_resolve_one_typeclass ask
-      (fun trans -> k (make ty r trans) )
-  let to_relation t =
-    {Relation.carrier = t.carrier; Relation.r = t.leq}
-
 end
 	
 module Equivalence = struct
@@ -340,11 +288,6 @@ module Equivalence = struct
       make ty eq equivalence, goal 	 
   let from_relation goal rlt =
     infer goal (rlt.Relation.carrier) (rlt.Relation.r)
-  let cps_from_relation rlt k =
-    let ty =rlt.Relation.carrier in
-    let r = rlt.Relation.r in
-    let ask = Classes.mk_equivalence  ty r in
-    cps_resolve_one_typeclass ask (fun equiv -> k (make ty r equiv) )
   let to_relation t =
     {Relation.carrier = t.carrier; Relation.r = t.eq}
   let split t =

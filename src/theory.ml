@@ -29,46 +29,36 @@ open Debug
   (* TODO module HMap = Hashtbl, du coup ? *)
 module HMap = Hashtbl.Make(Constr)
 
-let ac_theory_path = ["AAC_tactics"; "AAC"]
-let ac_util_path = ["AAC_tactics"; "Utils"]
-
 module Stubs = struct
-  let path = ac_theory_path@["Internal"]
 
   (** The constants from the inductive type *)
-  let _Tty = lazy (Coq.init_constant path "T")
+  let _Tty = Coq.find_global "internal.T"
 
-  let rsum = lazy (Coq.init_constant path "sum")
-  let rprd = lazy (Coq.init_constant path "prd")
-  let rsym = lazy (Coq.init_constant path "sym")
-  let runit = lazy (Coq.init_constant path "unit")
+  let rsum = Coq.find_global "internal.sum"
+  let rprd = Coq.find_global "internal.prd"
+  let rsym = Coq.find_global "internal.sym"
+  let runit = Coq.find_global "internal.unit"
 
-  let vnil = lazy (Coq.init_constant path "vnil")
-  let vcons = lazy (Coq.init_constant path "vcons")
-  let eval = lazy (Coq.init_constant path "eval")
+  let vnil = Coq.find_global "internal.vnil"
+  let vcons = Coq.find_global "internal.vcons"
+  let eval = Coq.find_global "internal.eval"
 
 
-  let decide_thm = lazy (Coq.init_constant path "decide")
-  let lift_normalise_thm = lazy (Coq.init_constant path "lift_normalise")
+  let decide_thm = Coq.find_global "internal.decide"
+  let lift_normalise_thm = Coq.find_global "internal.lift_normalise"
 
-  let lift =
-    lazy (Coq.init_constant ac_theory_path "AAC_lift")
-  let lift_proj_equivalence=
-    lazy (Coq.init_constant ac_theory_path "aac_lift_equivalence")
-  let lift_transitivity_left =
-    lazy(Coq.init_constant ac_theory_path "lift_transitivity_left")
-  let lift_transitivity_right =
-    lazy(Coq.init_constant ac_theory_path "lift_transitivity_right")
-  let lift_reflexivity =
-    lazy(Coq.init_constant ac_theory_path "lift_reflexivity")
+  let lift = Coq.find_global "internal.AAC_lift"
+  let lift_proj_equivalence= Coq.find_global "internal.aac_lift_equivalence"
+  let lift_transitivity_left = Coq.find_global "internal.lift_transitivity_left"
+  let lift_transitivity_right = Coq.find_global "internal.lift_transitivity_right"
+  let lift_reflexivity = Coq.find_global "internal.lift_reflexivity"
 end
 
 module Classes = struct
   module Associative = struct
-    let path = ac_theory_path
-    let typ = lazy (Coq.init_constant path "Associative")
+    let typ = Coq.find_global "classes.Associative"
     let ty (rlt : Coq.Relation.t) (value : constr) =
-      mkApp (Lazy.force typ, [| rlt.Coq.Relation.carrier;
+      mkApp (Coq.get_efresh typ, [| rlt.Coq.Relation.carrier;
 				rlt.Coq.Relation.r;
 				value
 			     |] )
@@ -78,10 +68,9 @@ module Classes = struct
   end
 
   module Commutative = struct
-    let path = ac_theory_path
-    let typ = lazy (Coq.init_constant path "Commutative")
+    let typ = Coq.find_global "classes.Commutative"
     let ty (rlt : Coq.Relation.t) (value : constr) =
-      mkApp (Lazy.force typ, [| rlt.Coq.Relation.carrier;
+      mkApp (Coq.get_efresh typ, [| rlt.Coq.Relation.carrier;
 				rlt.Coq.Relation.r;
 				value
 			     |] )
@@ -89,15 +78,14 @@ module Classes = struct
   end
 
   module Proper = struct
-    let path = ac_theory_path @ ["Internal";"Sym"]
-    let typeof = lazy (Coq.init_constant path "type_of")
-    let relof = lazy (Coq.init_constant path "rel_of")
+    let typeof =  Coq.find_global "internal.sym.type_of"
+    let relof = Coq.find_global "internal.sym.rel_of"
     let mk_typeof :  Coq.Relation.t -> int -> constr = fun rlt n ->
       let x = rlt.Coq.Relation.carrier in
-	mkApp (Lazy.force typeof, [| x ; Coq.Nat.of_int n |])
+	mkApp (Coq.get_efresh typeof, [| x ; of_constr (Coq.Nat.of_int n) |])
     let mk_relof :  Coq.Relation.t -> int -> constr = fun rlt n ->
       let (x,r) = Coq.Relation.split rlt in
-      mkApp (Lazy.force relof, [| x;r ; Coq.Nat.of_int n |])
+      mkApp (Coq.get_efresh relof, [| x;r ; of_constr (Coq.Nat.of_int n) |])
 
     let ty rlt op ar  =
       let typeof = mk_typeof rlt ar in
@@ -109,10 +97,9 @@ module Classes = struct
   end
 
   module Unit = struct
-    let path = ac_theory_path
-    let typ = lazy (Coq.init_constant path "Unit")
+    let typ = Coq.find_global "classes.Unit"
     let ty (rlt : Coq.Relation.t) (value : constr) (unit : constr)=
-      mkApp (Lazy.force typ, [| rlt.Coq.Relation.carrier;
+      mkApp (Coq.get_efresh typ, [| rlt.Coq.Relation.carrier;
  				rlt.Coq.Relation.r;
  				value;
  				unit
@@ -123,13 +110,12 @@ end
 
 (* Non empty lists *)
 module NEList = struct
-  let path = ac_util_path
-  let nil = lazy (Coq.init_constant path "nil")
-  let cons = lazy (Coq.init_constant path "cons")
+  let nil = Coq.find_global "nelist.nil"
+  let cons = Coq.find_global "nelist.cons"
   let cons ty h t =
-    mkApp (Lazy.force cons, [|  ty; h ; t |])
+    mkApp (Coq.get_efresh cons, [|  ty; h ; t |])
   let nil ty x =
-    (mkApp (Lazy.force nil, [|  ty ; x|]))
+    (mkApp (Coq.get_efresh nil, [|  ty ; x|]))
   let rec of_list ty = function
     | [] -> invalid_arg "NELIST"
     | [x] -> nil ty x
@@ -139,11 +125,11 @@ end
 
 (** a [mset] is a ('a * pos) list *)
 let mk_mset ty (l : (constr * int) list) =
-  let pos = Lazy.force Coq.Pos.typ in
+  let pos = Coq.get_efresh Coq.Pos.typ in
   let pair (x : constr) (ar : int) =
     Coq.Pair.of_pair ty pos (x, Coq.Pos.of_int ar)
   in
-  let pair_ty = Coq.lapp Coq.Pair.typ [| ty ; pos|] in
+  let pair_ty = mkApp (Coq.get_efresh Coq.Pair.typ,[| ty ; pos|]) in
   let rec aux = function
     | [ ] -> assert false
     | [x,ar] -> NEList.nil pair_ty (pair x ar)
@@ -152,17 +138,17 @@ let mk_mset ty (l : (constr * int) list) =
     aux l
 
 module Sigma = struct
-  let sigma_empty = lazy (Coq.init_constant ac_theory_path "sigma_empty")
-  let sigma_add = lazy (Coq.init_constant ac_theory_path "sigma_add")
-  let sigma_get = lazy (Coq.init_constant ac_theory_path "sigma_get")
+  let sigma_empty = Coq.find_global "sigma.empty"
+  let sigma_add = Coq.find_global "sigma.add"
+  let sigma_get = Coq.find_global "sigma.get"
 
   let add ty n x map =
-    mkApp (Lazy.force sigma_add,[|ty; n; x ;  map|])
+    mkApp (Coq.get_efresh sigma_add,[|ty; n; x ;  map|])
   let empty ty =
-    mkApp (Lazy.force sigma_empty,[|ty |])
+    mkApp (Coq.get_efresh sigma_empty,[|ty |])
 
   let to_fun ty null map =
-    mkApp (Lazy.force sigma_get, [|ty;null;map|])
+    mkApp (Coq.get_efresh sigma_get, [|ty;null;map|])
 
   let of_list ty null l =
     match l with
@@ -183,21 +169,20 @@ end
 
 module Sym = struct
   type pack = {ar: Constr.t; value: Constr.t ; morph: Constr.t}
-  let path = ac_theory_path @ ["Internal";"Sym"]
-  let typ = lazy (Coq.init_constant path "pack")
-  let mkPack = lazy (Coq.init_constant path "mkPack")
-  let null = lazy (Coq.init_constant path "null")
+  let typ = Coq.find_global "sym.pack"
+  let mkPack = Coq.find_global "sym.mkPack"
+  let null = Coq.find_global "sym.null"
   let mk_pack (rlt: Coq.Relation.t) s =
     let (x,r) = Coq.Relation.split rlt in
-      mkApp (Lazy.force mkPack, [|x;r; EConstr.of_constr s.ar;EConstr.of_constr s.value;EConstr.of_constr s.morph|])
+      mkApp (Coq.get_efresh mkPack, [|x;r; EConstr.of_constr s.ar;EConstr.of_constr s.value;EConstr.of_constr s.morph|])
   let null  rlt =
     let x = rlt.Coq.Relation.carrier in
     let r = rlt.Coq.Relation.r in
-      mkApp (Lazy.force null, [| x;r;|])
+      mkApp (Coq.get_efresh null, [| x;r;|])
 
   let mk_ty : Coq.Relation.t -> constr = fun rlt ->
     let (x,r) = Coq.Relation.split rlt in
-      mkApp (Lazy.force typ, [| x; r|] )
+      mkApp (Coq.get_efresh typ, [| x; r|] )
 end
 
 module Bin =struct
@@ -207,14 +192,13 @@ module Bin =struct
 	       comm : Constr.t option;
 	      }
 
-  let path = ac_theory_path @ ["Internal";"Bin"]
-  let typ = lazy (Coq.init_constant path "pack")
-  let mkPack = lazy (Coq.init_constant path "mk_pack")
+  let typ = Coq.find_global "bin.pack"
+  let mkPack = Coq.find_global "bin.mkPack"
 
   let mk_pack: Coq.Relation.t -> pack -> constr = fun (rlt) s ->
     let (x,r) = Coq.Relation.split rlt in
     let comm_ty = Classes.Commutative.ty rlt (EConstr.of_constr s.value) in
-    mkApp (Lazy.force mkPack , [| x ; r;
+    mkApp (Coq.get_efresh mkPack , [| x ; r;
 				  EConstr.of_constr s.value;
 				  EConstr.of_constr s.compat ;
 				  EConstr.of_constr s.assoc;
@@ -222,15 +206,14 @@ module Bin =struct
 			       |])
   let mk_ty : Coq.Relation.t -> constr = fun rlt ->
    let (x,r) = Coq.Relation.split rlt in
-      mkApp (Lazy.force typ, [| x; r|] )
+      mkApp (Coq.get_efresh typ, [| x; r|] )
 end
 
 module Unit = struct
-  let path = ac_theory_path @ ["Internal"]
-  let unit_of_ty = lazy (Coq.init_constant path "unit_of")
-  let unit_pack_ty = lazy (Coq.init_constant path "unit_pack")
-  let mk_unit_of = lazy (Coq.init_constant path "mk_unit_for")
-  let mk_unit_pack = lazy (Coq.init_constant path "mk_unit_pack")
+  let unit_of_ty = Coq.find_global "internal.unit_of"
+  let unit_pack_ty = Coq.find_global "internal.unit_pack"
+  let mk_unit_of = Coq.find_global "internal.mk_unit_for"
+  let mk_unit_pack = Coq.find_global "internal.mk_unit_pack"
 
   type unit_of =
       {
@@ -246,15 +229,15 @@ module Unit = struct
 
   let ty_unit_of rlt  e_bin u =
     let (x,r) = Coq.Relation.split rlt in
-      mkApp ( Lazy.force unit_of_ty, [| x; r; e_bin; u |])
+      mkApp ( Coq.get_efresh unit_of_ty, [| x; r; e_bin; u |])
 
   let ty_unit_pack rlt e_bin =
     let (x,r) = Coq.Relation.split rlt in
-      mkApp (Lazy.force unit_pack_ty, [| x; r; e_bin |])
+      mkApp (Coq.get_efresh unit_pack_ty, [| x; r; e_bin |])
 
   let mk_unit_of rlt e_bin u unit_of =
     let (x,r) = Coq.Relation.split rlt in
-    mkApp (Lazy.force mk_unit_of , [| x;
+    mkApp (Coq.get_efresh mk_unit_of , [| x;
 				      r;
 				      e_bin ;
 				      u;
@@ -267,7 +250,7 @@ module Unit = struct
     let ty = ty_unit_of rlt e_bin pack.u_value in
     let mk_unit_of = mk_unit_of rlt e_bin pack.u_value in
     let u_desc =Coq.List.of_list ( ty ) (List.map mk_unit_of pack.u_desc) in
-      mkApp (Lazy.force mk_unit_pack, [|x;r;
+      mkApp (Coq.get_efresh mk_unit_pack, [|x;r;
 			       e_bin ;
 			       pack.u_value;
 			       u_desc
@@ -519,7 +502,7 @@ module Trans = struct
       let m = Coq.Classes.mk_morphism  typeof relof  papp in
 	try
 	  let sigma,m= Typeclasses.resolve_one_typeclass env sigma m in
-	  let pack = {Sym.ar = EConstr.to_constr sigma (Coq.Nat.of_int ar);
+	  let pack = {Sym.ar = Coq.Nat.of_int ar;
                       Sym.value= EConstr.to_constr sigma papp;
                       Sym.morph= EConstr.to_constr sigma m} in
 	    Some (sigma, Sym pack)
@@ -614,7 +597,7 @@ module Trans = struct
 	let m = Coq.Classes.mk_morphism  typeof relof  papp in
 	try
 	  let sigma,m = Typeclasses.resolve_one_typeclass env sigma m in
-	  let pack = {Sym.ar = EConstr.to_constr ~abort_on_undefined_evars:(false) sigma (Coq.Nat.of_int ar);
+	  let pack = {Sym.ar = Coq.Nat.of_int ar;
                       Sym.value= EConstr.to_constr ~abort_on_undefined_evars:(false) sigma papp;
                       Sym.morph= EConstr.to_constr ~abort_on_undefined_evars:(false) sigma m} in
 	  Some (sigma, Sym pack)
@@ -1048,7 +1031,7 @@ module Trans = struct
       | n  -> let n = n-1 in
 	  mkApp( vcons,
  		 [|
-		   (Coq.Nat.of_int n);
+		   of_constr (Coq.Nat.of_int n);
 		   v.(ar - 1 - n);
 		   (aux (n))
 		 |]
@@ -1061,12 +1044,12 @@ module Trans = struct
     let r = (rlt.Coq.Relation.r) in
 
     let x_r_env = [|x;r;env_sym|] in
-    let tty =  mkApp (Lazy.force Stubs._Tty, x_r_env) in
-    let rsum = mkApp (Lazy.force Stubs.rsum, x_r_env) in
-    let rprd = mkApp (Lazy.force Stubs.rprd, x_r_env) in
-    let rsym = mkApp (Lazy.force Stubs.rsym, x_r_env) in
-    let vnil = mkApp (Lazy.force Stubs.vnil, x_r_env) in
-    let vcons = mkApp (Lazy.force Stubs.vcons, x_r_env) in
+    let tty =  mkApp (Coq.get_efresh Stubs._Tty, x_r_env) in
+    let rsum = mkApp (Coq.get_efresh Stubs.rsum, x_r_env) in
+    let rprd = mkApp (Coq.get_efresh Stubs.rprd, x_r_env) in
+    let rsym = mkApp (Coq.get_efresh Stubs.rsym, x_r_env) in
+    let vnil = mkApp (Coq.get_efresh Stubs.vnil, x_r_env) in
+    let vcons = mkApp (Coq.get_efresh Stubs.vcons, x_r_env) in
     let open Proofview.Notations in
     Coq.mk_letin "tty" tty >>= fun tty ->
     Coq.mk_letin "rsum" rsum >>= fun rsum ->
@@ -1090,7 +1073,7 @@ module Trans = struct
 	  mkApp (rsym, [| idx; vect|])
 	  end;
 	runit = fun idx -> 	(* could benefit of a letin *)
-	        mkApp (Lazy.force Stubs.runit , [|x;r;env_sym;idx; |])
+	        mkApp (Coq.get_efresh Stubs.runit , [|x;r;env_sym;idx; |])
       }
 
 

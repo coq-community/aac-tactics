@@ -104,6 +104,10 @@ Inductive nelist (A : Type) : Type :=
 | nil : A -> nelist A
 | cons : A -> nelist A -> nelist A.
 
+Register nil as aac_tactics.nelist.nil.
+Register cons as aac_tactics.nelist.cons.
+
+
 Notation "x :: y" := (cons x y).
 
 Fixpoint nelist_map (A B: Type) (f: A -> B) l :=

@@ -18,7 +18,8 @@
     (either using the Coq "raw" terms, as written in the starting
     goal, or using the reified Coq datatypes we define in {i
     AAC_rewrite.v}).
-*)
+ *)
+open Coq
 
 (** Both in OCaml and Coq, we represent finite multisets using
     weighted lists ([('a*int) list]), see {!Matcher.mset}.
@@ -53,7 +54,7 @@ sig
   (** mimics the Coq record [Sym.pack] *)
   type pack = {ar: Constr.t; value: Constr.t ; morph: Constr.t}
 
-  val typ: EConstr.constr lazy_t
+  val typ: lazy_ref
 
 
   (** [mk_pack rlt (ar,value,morph)]  *)
@@ -68,21 +69,21 @@ end
 (** We need to export some Coq stubs out of this module. They are used
     by the main tactic, see {!Rewrite} *)
 module Stubs : sig
-  val lift : EConstr.constr Lazy.t
-  val lift_proj_equivalence : EConstr.constr Lazy.t
-  val lift_transitivity_left : EConstr.constr Lazy.t
-  val lift_transitivity_right : EConstr.constr Lazy.t
-  val lift_reflexivity : EConstr.constr Lazy.t
+  val lift : lazy_ref
+  val lift_proj_equivalence : lazy_ref
+  val lift_transitivity_left : lazy_ref
+  val lift_transitivity_right : lazy_ref
+  val lift_reflexivity : lazy_ref
 
     (** The evaluation fonction, used to convert a reified coq term to a
 	raw coq term *)
-  val eval: EConstr.constr lazy_t
+  val eval: lazy_ref
 
   (** The main lemma of our theory, that is
       [compare (norm u) (norm v) = Eq -> eval u == eval v] *)
-  val decide_thm:EConstr.constr lazy_t
+  val decide_thm: lazy_ref
 
-  val lift_normalise_thm : EConstr.constr lazy_t
+  val lift_normalise_thm : lazy_ref
 end
 
 (** {2 Building reified terms}
