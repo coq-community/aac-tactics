@@ -1,6 +1,12 @@
 ---
-fullname: AAC tactics
+fullname: AAC Tactics
 shortname: aac-tactics
+organization: coq-community
+community: true
+
+synopsis: >-
+  This Coq plugin provides tactics for rewriting universally quantified
+  equations, modulo associative (and possibly commutative) operators
 
 description: |
   This Coq plugin provides tactics for rewriting universally quantified
@@ -38,13 +44,14 @@ license:
 plugin: true
 
 supported_coq_versions:
-  text: Coq 8.9 (use the corresponding branch or release for other Coq versions)
+  text: 8.9 (use the corresponding branch or release for other Coq versions)
   opam: '{>= "8.9" & < "8.10~"}'
 
-tested_coq_versions:
+tested_coq_nix_versions:
 - version_or_url: 8.9
 
-tested_coq_opam_version: 8.9
+tested_coq_opam_versions:
+- version: 8.9
 
 namespace: AAC_tactics
 
