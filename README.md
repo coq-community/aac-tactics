@@ -1,13 +1,10 @@
-# AAC tactics
+# AAC Tactics
 
 [![Travis][travis-shield]][travis-link]
 [![Contributing][contributing-shield]][contributing-link]
 [![Code of Conduct][conduct-shield]][conduct-link]
 [![Gitter][gitter-shield]][gitter-link]
 [![DOI][doi-shield]][doi-link]
-
-[doi-shield]: https://zenodo.org/badge/DOI/10.1007/978-3-642-25379-9_14.svg
-[doi-link]: https://doi.org/10.1007/978-3-642-25379-9_14
 
 [travis-shield]: https://travis-ci.com/coq-community/aac-tactics.svg?branch=master
 [travis-link]: https://travis-ci.com/coq-community/aac-tactics/builds
@@ -20,6 +17,9 @@
 
 [gitter-shield]: https://img.shields.io/badge/chat-on%20gitter-%23c1272d.svg
 [gitter-link]: https://gitter.im/coq-community/Lobby
+
+[doi-shield]: https://zenodo.org/badge/DOI/10.1007/978-3-642-25379-9_14.svg
+[doi-link]: https://doi.org/10.1007/978-3-642-25379-9_14
 
 This Coq plugin provides tactics for rewriting universally quantified
 equations, modulo associativity and commutativity of some operator.
@@ -42,14 +42,14 @@ More details about the project can be found in the paper
   - Fabian Kunze ([**@fakusb**](https://github.com/fakusb))
   - Karl Palmskog ([**@palmskog**](https://github.com/palmskog))
 - License: [GNU Lesser General Public License v3.0 or later](LICENSE)
-- Compatible Coq versions: Coq 8.9 (use the corresponding branch or release for other Coq versions)
+- Compatible Coq versions: 8.9 (use the corresponding branch or release for other Coq versions)
 - Compatible OCaml versions: all versions supported by Coq
-- Additional dependencies: none
+- Additional Coq dependencies: none
 
 ## Building and installation instructions
 
-The easiest way to install the latest released version is via
-[OPAM](https://opam.ocaml.org/doc/Install.html):
+The easiest way to install the latest released version of AAC Tactics
+is via [OPAM](https://opam.ocaml.org/doc/Install.html):
 
 ```shell
 opam repo add coq-released https://coq.inria.fr/opam/released
@@ -67,6 +67,7 @@ make install
 
 After installation, the included modules are available under
 the `AAC_tactics` namespace.
+
 
 ## Documentation
 
