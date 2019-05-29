@@ -48,10 +48,10 @@ supported_coq_versions:
   opam: '{>= "8.10" & < "8.11~"}'
 
 tested_coq_nix_versions:
-- version_or_url: https://github.com/coq/coq-on-cachix/tarball/v8.10
+- version_or_url: '8.10'
 
 tested_coq_opam_versions:
-#- version: dev
+- version: '8.10'
 
 namespace: AAC_tactics
 
