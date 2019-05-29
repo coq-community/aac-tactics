@@ -40,8 +40,13 @@ matrix:
 
   # Test supported versions of Coq via Nix
   - env:
-    - COQ=https://github.com/coq/coq-on-cachix/tarball/v8.10
+    - COQ=8.10
     <<: *NIX
 
   # Test supported versions of Coq via OPAM
+  - env:
+    - COQ_IMAGE=coqorg/coq:8.10
+    - CONTRIB_NAME=coq-aac-tactics
+    - NJOBS=2
+    <<: *OPAM
 
