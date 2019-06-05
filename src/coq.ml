@@ -27,7 +27,7 @@ let find_global s = lazy (aac_lib_ref s)
 
 let new_monomorphic_global gr =
   try UnivGen.constr_of_monomorphic_global gr
-  with e ->
+  with _e ->
     CErrors.anomaly Pp.(str "new_monomorphic_global raised an error on:" ++ Printer.pr_global gr)
        
 (* Getting constrs (primitive Coq terms) from existing Coq
@@ -74,16 +74,14 @@ let tclDEBUG msg =
     
 
 let tclPRINT =
-  let open Proofview.Notations in
   let open Proofview in
-  tclEVARMAP >>= fun sigma ->
   Proofview.Goal.enter (fun goal ->
       let _ = Feedback.msg_notice (Printer.pr_goal (Proofview.Goal.print goal)) in                  
       tclUNIT ())
 
 let show_proof pstate : unit =
   let sigma, env = Pfedit.get_current_context pstate in
-  let p = Proof_global.give_me_the_proof pstate in 
+  let p = Proof_global.get_proof pstate in 
   let p = Proof.partial_proof p in 
   let p = List.map (Evarutil.nf_evar sigma) p in 
   let () = List.iter (fun c -> Feedback.msg_notice (Printer.pr_econstr_env env sigma c)) p (* list of econstr in sigma *) in
@@ -107,7 +105,6 @@ let mk_letin (name:string) (c: constr) : constr Proofview.tactic =
   let name = (Id.of_string name) in
   Proofview.Goal.enter_one (fun goal ->
       let env = Proofview.Goal.env goal in
-      tclEVARMAP >>= fun sigma ->
       let name =  Tactics.fresh_id_in_env Id.Set.empty name env in
       tclRETYPE c (* this fixes universe constrains problems in c *)
         <*> Tactics.pose_tac (Name name) c
