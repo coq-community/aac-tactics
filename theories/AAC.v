@@ -320,8 +320,8 @@ Section s.
 
   (** we need to show that compare reflects equality (this is because
      we work with msets rather than lists with arities) *)
-  Lemma tcompare_weak_spec: forall (u v : T), compare_weak_spec u v (compare u v)
-  with vcompare_reflect_eqdep: forall i us j vs (H: i=j), vcompare us vs = Eq -> cast vT H us = vs.
+  Fixpoint tcompare_weak_spec u : forall (v : T), compare_weak_spec u v (compare u v)
+  with vcompare_reflect_eqdep i us : forall j vs (H: i=j), vcompare us vs = Eq -> cast vT H us = vs.
   Proof.
     induction u.
      destruct v; simpl; try constructor.
@@ -878,8 +878,8 @@ Section s.
 
   (** correctness of the normalisation function *)
 
-  Theorem eval_norm: forall u, eval (norm u) == eval u
-    with eval_norm_aux: forall i (l: vT i) (f: Sym.type_of i),
+  Fixpoint eval_norm u: eval (norm u) == eval u
+    with eval_norm_aux i l : forall (f: Sym.type_of i),
       Proper (@Sym.rel_of X R i) f -> eval_aux (vnorm l) f == eval_aux l f.
   Proof.
     induction u as [ p m | p l | ? | ?];  simpl norm.
