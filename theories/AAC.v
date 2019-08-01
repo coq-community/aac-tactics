@@ -161,14 +161,14 @@ Module Sym.
 
     Register type_of as aac_tactics.internal.sym.type_of.
     Register rel_of as aac_tactics.internal.sym.rel_of.
-   
+
   (** a symbol package contains an arity,
      a value of the corresponding type,
      and a proof that the value is a proper morphism *)
-  #[universes(template)]
-  Record pack  : Type := mkPack {
+
+  Record pack : Type := mkPack {
     ar : nat;
-    value :> type_of  ar;
+    value :> type_of ar;
     morph : Proper (rel_of ar) value
                            }.
 
@@ -190,7 +190,6 @@ Module Bin.
   Section t.
     Context {X} {R: relation X}.
 
-    #[universes(template)]
     Record pack := mk_pack {
       value:> X -> X -> X;
       compat: Proper (R ==> R ==> R) value;
@@ -226,7 +225,6 @@ Section s.
     uf_desc: Unit R (Bin.value (e_bin uf_idx)) u
   }.
 
-  #[universes(template)]
   Record unit_pack := mk_unit_pack {
     u_value:> X;
     u_desc: list (unit_of u_value)
@@ -255,7 +253,6 @@ Section s.
      contains, among other things, the arity of symbols)
      *)
 
-  #[universes(template)]
   Inductive T: Type :=
   | sum: idx -> mset T -> T
   | prd: idx -> nelist T -> T
