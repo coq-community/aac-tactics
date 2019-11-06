@@ -12,7 +12,7 @@
    lines, or add them to your .coqrc files, replacing "."  with the
    path to the [aac_tactics] library. *)
 
-Require Arith ZArith.
+Require Arith ZArith Lia.
 
 From AAC_tactics
 Require Import AAC.
@@ -346,7 +346,7 @@ End AAC_normalise.
 Section Examples.
 
   Import Instances.Z.
-  Import ZArith.
+  Import ZArith Lia.
   Open Scope Z_scope.
 
   (** *** Reverse triangle inequality *)
@@ -359,7 +359,7 @@ Section Examples.
 
   (** The following morphisms are required to perform the required rewrites *)
   Instance Zminus_compat : Proper (Z.ge ==> Z.le) Z.opp.
-  Proof. intros x y. omega. Qed.
+  Proof. intros x y. lia. Qed.
  
   Instance Proper_Zplus : Proper (Z.le ==> Z.le ==> Z.le) Zplus.
   Proof. firstorder. Qed.
