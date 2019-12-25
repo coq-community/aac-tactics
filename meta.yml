@@ -3,12 +3,14 @@ fullname: AAC Tactics
 shortname: aac-tactics
 organization: coq-community
 community: true
+travis: true
+doi: 10.1007/978-3-642-25379-9_14
 
 synopsis: >-
   This Coq plugin provides tactics for rewriting universally quantified
   equations, modulo associative (and possibly commutative) operators
 
-description: |
+description: |-
   This Coq plugin provides tactics for rewriting universally quantified
   equations, modulo associativity and commutativity of some operator.
   The tactics can be applied for custom operators by registering the
@@ -16,10 +18,10 @@ description: |
   operator instances, such as for Z binary arithmetic and booleans, are
   provided with the plugin.
 
-paper:
-  doi: 10.1007/978-3-642-25379-9_14
-  url: https://arxiv.org/abs/1106.4448
-  title: Tactics for Reasoning modulo AC in Coq
+publications:
+- pub_doi: 10.1007/978-3-642-25379-9_14
+  pub_url: https://arxiv.org/abs/1106.4448
+  pub_title: Tactics for Reasoning modulo AC in Coq
 
 authors:
 - name: Thomas Braibant
@@ -37,6 +39,8 @@ maintainers:
 
 opam-file-maintainer: palmskog@gmail.com
 
+opam-file-version: 8.11.dev
+
 license:
   fullname: GNU Lesser General Public License v3.0 or later
   identifier: LGPL-3.0-or-later
@@ -48,10 +52,10 @@ supported_coq_versions:
   opam: '{= "dev"}'
 
 tested_coq_nix_versions:
-- version_or_url: https://github.com/coq/coq-on-cachix/tarball/master
+- version_or_url: '8.11'
 
 tested_coq_opam_versions:
-- version: dev
+- version: '8.11'
 
 namespace: AAC_tactics
 

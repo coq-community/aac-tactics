@@ -28,10 +28,6 @@ operators and their properties as type class instances. Many common
 operator instances, such as for Z binary arithmetic and booleans, are
 provided with the plugin.
 
-
-More details about the project can be found in the paper
-[Tactics for Reasoning modulo AC in Coq](https://arxiv.org/abs/1106.4448).
-
 ## Meta
 
 - Author(s):
@@ -45,6 +41,9 @@ More details about the project can be found in the paper
 - Compatible Coq versions: master (use the corresponding branch or release for other Coq versions)
 - Compatible OCaml versions: all versions supported by Coq
 - Additional Coq dependencies: none
+- Coq namespace: `AAC_tactics`
+- Related publication(s):
+  - [Tactics for Reasoning modulo AC in Coq](https://arxiv.org/abs/1106.4448) doi:[10.1007/978-3-642-25379-9_14](https://doi.org/10.1007/978-3-642-25379-9_14)
 
 ## Building and installation instructions
 
@@ -64,9 +63,6 @@ cd aac-tactics
 make   # or make -j <number-of-cores-on-your-machine>
 make install
 ```
-
-After installation, the included modules are available under
-the `AAC_tactics` namespace.
 
 
 ## Documentation
