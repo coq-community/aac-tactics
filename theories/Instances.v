@@ -177,11 +177,11 @@ Module Prop_ops.
 End Prop_ops.
 
 Module Bool.
-  Instance aac_orb_Assoc : Associative eq orb. Proof.  unfold Associative; firstorder.  Qed.
-  Instance aac_orb_Comm : Commutative eq orb. Proof.  unfold Commutative; firstorder.  Qed.
-  Instance aac_andb_Assoc : Associative eq andb. Proof.  unfold Associative; firstorder.  Qed.
-  Instance aac_andb_Comm : Commutative eq andb. Proof.  unfold Commutative; firstorder.  Qed.
-  Instance aac_true : Unit eq orb false.  Proof.  constructor; firstorder.  Qed.
+  Instance aac_orb_Assoc : Associative eq orb. Proof.  unfold Associative; firstorder with bool.  Qed.
+  Instance aac_orb_Comm : Commutative eq orb. Proof.  unfold Commutative; firstorder with bool.  Qed.
+  Instance aac_andb_Assoc : Associative eq andb. Proof.  unfold Associative; firstorder with bool.  Qed.
+  Instance aac_andb_Comm : Commutative eq andb. Proof.  unfold Commutative; firstorder with bool.  Qed.
+  Instance aac_true : Unit eq orb false.  Proof.  constructor; firstorder with bool.  Qed.
   Instance aac_false : Unit eq andb true.  Proof.  constructor; intros [|];firstorder.  Qed.
  
   Instance negb_compat : Proper (eq ==> eq) negb.  Proof. intros [|] [|]; auto. Qed.
