@@ -362,7 +362,7 @@ Section Examples.
   Proof. intros x y. lia. Qed.
  
   Instance Proper_Zplus : Proper (Z.le ==> Z.le ==> Z.le) Zplus.
-  Proof. firstorder. Qed.
+  Proof. intros ? ? ? ? ? ?; lia. Qed.
 
   Goal forall a b, Z.abs a - Z.abs b <= Z.abs (a - b).
     intros. unfold Zminus.
