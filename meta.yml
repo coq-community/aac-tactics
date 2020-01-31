@@ -45,7 +45,9 @@ license:
   fullname: GNU Lesser General Public License v3.0 or later
   identifier: LGPL-3.0-or-later
 
-plugin: true
+supported_ocaml_versions:
+  text: 4.05.0 or later
+  opam: '{>= "4.05.0"}'
 
 supported_coq_versions:
   text: 8.11 (use the corresponding branch or release for other Coq versions)
