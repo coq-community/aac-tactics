@@ -4,7 +4,4 @@
  (flags :standard -rectypes -warn-error -3-27-32)
  (libraries coq.plugins.ltac))
 
-(rule
- (targets aac.ml)
- (deps (:pp-file aac.mlg))
- (action (run coqpp %{pp-file})))
+(coq.pp (modules aac))
