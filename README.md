@@ -18,6 +18,7 @@
 [gitter-shield]: https://img.shields.io/badge/chat-on%20gitter-%23c1272d.svg
 [gitter-link]: https://gitter.im/coq-community/Lobby
 
+
 [doi-shield]: https://zenodo.org/badge/DOI/10.1007/978-3-642-25379-9_14.svg
 [doi-link]: https://doi.org/10.1007/978-3-642-25379-9_14
 
@@ -39,8 +40,8 @@ provided with the plugin.
   - Karl Palmskog ([**@palmskog**](https://github.com/palmskog))
 - License: [GNU Lesser General Public License v3.0 or later](LICENSE)
 - Compatible Coq versions: master (use the corresponding branch or release for other Coq versions)
-- Compatible OCaml versions: all versions supported by Coq
-- Additional Coq dependencies: none
+- Compatible OCaml versions: 4.05.0 or later
+- Additional dependencies: none
 - Coq namespace: `AAC_tactics`
 - Related publication(s):
   - [Tactics for Reasoning modulo AC in Coq](https://arxiv.org/abs/1106.4448) doi:[10.1007/978-3-642-25379-9_14](https://doi.org/10.1007/978-3-642-25379-9_14)

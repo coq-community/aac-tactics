@@ -7,7 +7,7 @@ dev-repo: "git+https://github.com/coq-community/aac-tactics.git"
 bug-reports: "https://github.com/coq-community/aac-tactics/issues"
 license: "LGPL-3.0-or-later"
 
-synopsis: "This Coq plugin provides tactics for rewriting universally quantified equations, modulo associative (and possibly commutative) operators"
+synopsis: "Coq plugin providing tactics for rewriting universally quantified equations, modulo associative (and possibly commutative) operators"
 description: """
 This Coq plugin provides tactics for rewriting universally quantified
 equations, modulo associativity and commutativity of some operator.
@@ -19,7 +19,7 @@ provided with the plugin."""
 build: [make "-j%{jobs}%"]
 install: [make "install"]
 depends: [
-  "ocaml"
+  "ocaml" {>= "4.05.0"}
   "coq" {= "dev"}
 ]
 

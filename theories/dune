@@ -1,0 +1,4 @@
+(coq.theory
+ (name AAC_tactics)
+ (public_name coq-aac-tactics.AAC_tactics)
+ (libraries coq-aac-tactics.plugin))

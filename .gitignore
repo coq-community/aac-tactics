@@ -22,3 +22,4 @@ src/aac.ml
 .merlin
 Makefile.coq
 Makefile.coq.conf
+_build
