@@ -7,7 +7,7 @@ travis: true
 doi: 10.1007/978-3-642-25379-9_14
 
 synopsis: >-
-  This Coq plugin provides tactics for rewriting universally quantified
+  Coq plugin providing tactics for rewriting universally quantified
   equations, modulo associative (and possibly commutative) operators
 
 description: |-
@@ -45,11 +45,13 @@ license:
   fullname: GNU Lesser General Public License v3.0 or later
   identifier: LGPL-3.0-or-later
 
-plugin: true
-
 supported_coq_versions:
   text: master (use the corresponding branch or release for other Coq versions)
   opam: '{= "dev"}'
+
+supported_ocaml_versions:
+    text: 4.05.0 or later
+    opam: '{>= "4.05.0"}'
 
 tested_coq_nix_versions:
 - version_or_url: https://github.com/coq/coq-on-cachix/tarball/master
