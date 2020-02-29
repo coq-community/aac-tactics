@@ -1,7 +1,7 @@
 (library
  (name aac_plugin)
  (public_name coq-aac-tactics.plugin)
- (flags :standard -rectypes -warn-error -3-27-32)
+ (flags :standard -rectypes -w -3-27-32)
  (libraries coq.plugins.ltac))
 
 (coq.pp (modules aac))
