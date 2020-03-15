@@ -1,5 +1,6 @@
 opam-version: "2.0"
 maintainer: "palmskog@gmail.com"
+version: "dev"
 
 homepage: "https://github.com/coq-community/aac-tactics"
 dev-repo: "git+https://github.com/coq-community/aac-tactics.git"
@@ -15,10 +16,7 @@ operators and their properties as type class instances. Many common
 operator instances, such as for Z binary arithmetic and booleans, are
 provided with the plugin."""
 
-build: [
-  ["dune" "subst"] {pinned}
-  ["dune" "build" "-p" name "-j" jobs]
-]
+build: ["dune" "build" "-p" name "-j" jobs]
 depends: [
   "ocaml" {>= "4.05.0"}
   "dune" {>= "2.4"}
