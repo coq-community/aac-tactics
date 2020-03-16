@@ -59,7 +59,7 @@ opam install coq-aac-tactics
 To instead build and install manually, do:
 
 ``` shell
-git clone https://github.com/coq-community/aac-tactics
+git clone https://github.com/coq-community/aac-tactics.git
 cd aac-tactics
 make   # or make -j <number-of-cores-on-your-machine>
 make install

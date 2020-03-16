@@ -19,6 +19,7 @@
 .coq-native
 
 src/aac.ml
+.lia.cache
 .merlin
 Makefile.coq
 Makefile.coq.conf
