@@ -35,6 +35,7 @@ language: shell
 
 .nix: &NIX
   language: nix
+  nix: 2.3.5
   script:
   - nix-build --argstr coq-version-or-url "$COQ" --extra-substituters https://coq.cachix.org --trusted-public-keys "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= coq.cachix.org-1:5QW/wwEnD+l2jvN6QRbRRsa4hBHG3QiQQ26cxu1F5tI="
 
@@ -47,4 +48,9 @@ jobs:
     <<: *NIX
 
   # Test supported versions of Coq via OPAM
+  - env:
+    - COQ_IMAGE=coqorg/coq:8.12
+    - PACKAGE=coq-aac-tactics.8.12.dev
+    - NJOBS=2
+    <<: *OPAM
 
