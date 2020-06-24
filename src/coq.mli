@@ -144,7 +144,7 @@ val warning : string -> unit
 (** {2 Helpers}  *)
 
 (** print the current proof term *)
-val show_proof : Declare.Proof.t -> unit
+val show_proof : Proof_global.t -> unit
 
 (** {2 Rewriting tactics used in aac_rewrite}  *)
 
