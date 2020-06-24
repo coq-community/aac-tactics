@@ -80,8 +80,8 @@ let tclPRINT =
       tclUNIT ())
 
 let show_proof pstate : unit =
-  let sigma, env = Pfedit.get_current_context pstate in
-  let p = Proof_global.get_proof pstate in 
+  let sigma, env = Declare.Proof.get_current_context pstate in
+  let p = Declare.Proof.get pstate in
   let p = Proof.partial_proof p in 
   let p = List.map (Evarutil.nf_evar sigma) p in 
   let () = List.iter (fun c -> Feedback.msg_notice (Printer.pr_econstr_env env sigma c)) p (* list of econstr in sigma *) in
