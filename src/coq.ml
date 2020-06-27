@@ -43,9 +43,13 @@ let nowhere =
     Locus.concl_occs = Locus.NoOccurrences
   }
 
+let tclEVARS sigma gl =
+  let open Evd in
+  { it = [gl.it]; sigma }
+
 let retype c gl =
   let sigma, _ = Tacmach.pf_apply Typing.type_of gl c in
-  Refiner.tclEVARS sigma gl
+  tclEVARS sigma gl
 
 (* similar to retype above. No Idea when/why this is needed, I smell some ugly hack.
   Apparently, it has to do with the need to recompute universe constrains if we just compose terms *)
@@ -133,7 +137,7 @@ let cps_resolve_one_typeclass ?error : types -> (constr  -> Proofview.V82.tac) -
 		      | Some x -> CErrors.user_err x
 		    end
 		in
-		Tacticals.tclTHENLIST [Refiner.tclEVARS em; k c] goal
+		Tacticals.tclTHENLIST [tclEVARS em; k c] goal
     )	goal
 
 
