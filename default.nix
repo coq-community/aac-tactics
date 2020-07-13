@@ -15,7 +15,7 @@ pkgs.stdenv.mkDerivation {
 
   name = "aac-tactics";
 
-  buildInputs = with coq.ocamlPackages; [ ocaml findlib ]
+  buildInputs = with coq.ocamlPackages; [ ocaml findlib num ]
     ++ pkgs.lib.optionals shell [ merlin ocp-indent ocp-index ];
 
   propagatedBuildInputs = [
