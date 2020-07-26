@@ -19,7 +19,7 @@ provided with the plugin."""
 build: ["dune" "build" "-p" name "-j" jobs]
 depends: [
   "ocaml" {>= "4.05.0"}
-  "dune" {>= "2.4"}
+  "dune" {>= "2.5"}
   "coq" {>= "8.12" & < "8.13~"}
 ]
 
