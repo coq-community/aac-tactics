@@ -398,7 +398,7 @@ Section s.
     match u with
       | sum j l => if eq_idx_bool j i then Is_op l else Is_nothing
       | unit j => if is_unit j   then Is_unit j else Is_nothing
-      | u => Is_nothing
+      | _ => Is_nothing
     end.
 
     Definition copy_mset n (l: mset T): mset T :=
@@ -446,7 +446,7 @@ Section s.
     match u with
       | prd j l => if eq_idx_bool j i then Is_op l else Is_nothing
       | unit j => if is_unit j  then Is_unit j else Is_nothing
-      | u => Is_nothing
+      | _ => Is_nothing
     end.
  
    
