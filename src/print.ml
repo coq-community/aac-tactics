@@ -38,7 +38,7 @@ let pp_envm pt : named_env Search_monad.m -> Pp.t = fun m ->
   let _,s =
     Search_monad.fold
       (fun env (n,acc) ->
-	 n+1,  h 0 (str (Printf.sprintf "%i:\t[" n) ++pp_env pt env ++ str "]") ++ fnl () :: acc
+	 n+1,  h (str (Printf.sprintf "%i:\t[" n) ++pp_env pt env ++ str "]") ++ fnl () :: acc
       ) m (0,[])
   in
     List.fold_left (fun acc s -> s ++ acc) (str "") (s)
