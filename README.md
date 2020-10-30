@@ -36,7 +36,6 @@ provided with the plugin.
   - Damien Pous (initial)
   - Fabian Kunze
 - Coq-community maintainer(s):
-  - Fabian Kunze ([**@fakusb**](https://github.com/fakusb))
   - Karl Palmskog ([**@palmskog**](https://github.com/palmskog))
 - License: [GNU Lesser General Public License v3.0 or later](LICENSE)
 - Compatible Coq versions: master (use the corresponding branch or release for other Coq versions)
@@ -61,7 +60,7 @@ To instead build and install manually, do:
 ``` shell
 git clone https://github.com/coq-community/aac-tactics.git
 cd aac-tactics
-make   # or make -j <number-of-cores-on-your-machine>
+make   # or make -j <number-of-cores-on-your-machine> 
 make install
 ```
 

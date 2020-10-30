@@ -33,8 +33,6 @@ authors:
   initial: false
 
 maintainers:
-- name: Fabian Kunze
-  nickname: fakusb
 - name: Karl Palmskog
   nickname: palmskog
 
