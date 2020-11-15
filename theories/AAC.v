@@ -237,7 +237,8 @@ Section s.
 
   
   Variable e_unit: positive -> unit_pack.
- 
+
+  #[local]
   Hint Resolve e_bin e_unit: typeclass_instances.
 
   (** ** Almost normalised syntax
@@ -532,10 +533,12 @@ Section s.
   Proof.
     destruct ((e_bin i)); auto.
   Qed.
+  #[local]
   Hint Resolve Binvalue_Proper Binvalue_Associative Binvalue_Commutative : core.
 
   (** auxiliary lemmas about sums  *)
 
+  #[local]
   Hint Resolve is_unit_of_Unit : core.
   Section sum_correctness.
     Variable i : idx.
@@ -604,8 +607,11 @@ Section s.
     Qed.
 
     (* Hint Resolve copy_plus. : this lags because of  the inference of the implicit arguments *)
+    #[local]
     Hint Extern 5 (copy (?n + ?m) (eval ?a) == Bin.value (copy ?n (eval ?a)) (copy ?m (eval ?a))) => apply copy_plus : core.
+    #[local]
     Hint Extern 5 (?x == ?x) => reflexivity : core.
+    #[local]
     Hint Extern 5 ( Bin.value ?x ?y == Bin.value ?y ?x) => apply Bin.comm : core.
    
     Lemma eval_merge_bin : forall (h k: mset T),
