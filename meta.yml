@@ -3,7 +3,7 @@ fullname: AAC Tactics
 shortname: aac-tactics
 organization: coq-community
 community: true
-travis: true
+action: true
 plugin: true
 doi: 10.1007/978-3-642-25379-9_14
 
