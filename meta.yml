@@ -6,6 +6,7 @@ community: true
 action: true
 plugin: true
 doi: 10.1007/978-3-642-25379-9_14
+branch: 'v8.13'
 
 synopsis: >-
   Coq plugin providing tactics for rewriting universally quantified
@@ -38,25 +39,25 @@ maintainers:
 
 opam-file-maintainer: palmskog@gmail.com
 
-opam-file-version: dev
+opam-file-version: 8.13.dev
 
 license:
   fullname: GNU Lesser General Public License v3.0 or later
   identifier: LGPL-3.0-or-later
 
 supported_coq_versions:
-  text: master (use the corresponding branch or release for other Coq versions)
-  opam: '{= "dev"}'
+  text: 8.13 (use the corresponding branch or release for other Coq versions)
+  opam: '{>= "8.13" & < "8.14~"}'
 
 supported_ocaml_versions:
     text: 4.05.0 or later
     opam: '{>= "4.05.0"}'
 
 tested_coq_nix_versions:
-- version_or_url: https://github.com/coq/coq-on-cachix/tarball/master
+- version_or_url: https://github.com/coq/coq-on-cachix/tarball/v8.13
 
 tested_coq_opam_versions:
-- version: dev
+- version: '8.13'
 
 namespace: AAC_tactics
 

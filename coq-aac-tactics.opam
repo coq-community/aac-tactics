@@ -1,6 +1,6 @@
 opam-version: "2.0"
 maintainer: "palmskog@gmail.com"
-version: "dev"
+version: "8.13.dev"
 
 homepage: "https://github.com/coq-community/aac-tactics"
 dev-repo: "git+https://github.com/coq-community/aac-tactics.git"
@@ -19,8 +19,8 @@ provided with the plugin."""
 build: ["dune" "build" "-p" name "-j" jobs]
 depends: [
   "ocaml" {>= "4.05.0"}
-  "dune" {>= "2.4"}
-  "coq" {= "dev"}
+  "dune" {>= "2.5"}
+  "coq" {>= "8.13" & < "8.14~"}
 ]
 
 tags: [
