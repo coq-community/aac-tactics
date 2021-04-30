@@ -85,6 +85,7 @@ Register aac_lift_equivalence as aac_tactics.internal.aac_lift_equivalence.
 
 (** simple instances, when we have a subrelation, or an equivalence *)
 
+#[global]
 Instance aac_lift_subrelation {X} {R} {E} {HE: Equivalence E}
   {HR: @Transitive X R} {HER: subrelation E R}: AAC_lift  R E | 3.
 Proof.
@@ -94,6 +95,7 @@ Proof.
    rewrite H, G. apply HER. symmetry. apply H'.
 Qed.
 
+#[global]
 Instance aac_lift_proper {X} {R : relation X} {E} {HE: Equivalence E}
   {HR: Proper (E==>E==>iff) R}: AAC_lift  R E | 4 := {}.
 
