@@ -211,7 +211,7 @@ let aac_normalise =
     [
       Unsafe.tclEVARS sigma;
       by_aac_normalise left lift ir tleft tright;
-      Tacinterp.eval_tactic (TacArg (CAst.(make @@ TacCall (make (norm_tac, [])))));
+      Tacinterp.eval_tactic (CAst.(make @@ TacArg (TacCall (make (norm_tac, [])))));
       Tactics.keep ids
     ])
 
