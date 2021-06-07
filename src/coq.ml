@@ -533,13 +533,13 @@ let rewrite ?(abort=false) hypinfo subst =
   let rew = build hypinfo subst in
   let tac =
     if not abort then    
-	  Equality.general_rewrite_bindings
-	    hypinfo.l2r
+	  Equality.general_rewrite ~where:None
+	    ~l2r:hypinfo.l2r
 	    Locus.AllOccurrences
-	    true (* tell if existing evars must be frozen for instantiation *)
-	    false
+	    ~freeze:true (* tell if existing evars must be frozen for instantiation *)
+	    ~dep:false
+	    ~with_evars:true
 	    (rew,Tactypes.NoBindings)
-	    true
     else
       Tacticals.New.tclIDTAC
   in tac
