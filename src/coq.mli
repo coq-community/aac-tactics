@@ -174,11 +174,11 @@ type hypinfo =
       l2r : bool; 			(** rewriting from left to right  *)
     }
 
-(** [get_hypinfo H ?check_type l2r] analyse the hypothesis H, and
+(** [get_hypinfo ?check_type H l2r] analyse the hypothesis H, and
     build the related hypinfo. Moreover, an optionnal
     function can be provided to check the type of every free
     variable of the body of the hypothesis.  *)
-val get_hypinfo : Environ.env -> Evd.evar_map ->  EConstr.constr -> ?check_type:(EConstr.types -> bool) -> l2r:bool -> hypinfo
+val get_hypinfo : Environ.env -> Evd.evar_map -> ?check_type:(EConstr.types -> bool) -> EConstr.constr -> l2r:bool -> hypinfo
  
 (** {2 Rewriting with bindings}
 

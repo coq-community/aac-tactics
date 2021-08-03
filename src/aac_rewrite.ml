@@ -346,7 +346,7 @@ let aac_rewrite_wrap  ?abort ?(l2r=true) ?(show = false) ?(in_left=true) ?strict
       let check_type x =
         Tacmach.New.pf_conv_x goal x rlt.Coq.Relation.carrier
       in
-      let hypinfo = Coq.Rewrite.get_hypinfo env sigma rew ~l2r ?check_type:(Some check_type) in      
+      let hypinfo = Coq.Rewrite.get_hypinfo env sigma ?check_type:(Some check_type) rew ~l2r in
       let sigma,rewinfo = dispatch env sigma in_left concl hypinfo in
       let sigma =
         match extra with
