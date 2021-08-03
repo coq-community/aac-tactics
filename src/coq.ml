@@ -352,7 +352,7 @@ type hypinfo =
       l2r : bool; 			(** rewriting from left to right  *)
     }
 
-let get_hypinfo env sigma c ?check_type ~l2r  : hypinfo =
+let get_hypinfo env sigma ?check_type c ~l2r : hypinfo =
   let ctype = Typing.unsafe_type_of env sigma c in
   let (rel_context, body_type) = decompose_prod_assum sigma ctype in
   let rec check f e =
