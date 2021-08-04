@@ -1,3 +1,6 @@
+# This file was generated from `meta.yml`, please do not edit manually.
+# Follow the instructions on https://github.com/coq-community/templates to regenerate.
+
 opam-version: "2.0"
 maintainer: "palmskog@gmail.com"
 version: "dev"
@@ -19,7 +22,7 @@ provided with the plugin."""
 build: ["dune" "build" "-p" name "-j" jobs]
 depends: [
   "ocaml" {>= "4.05.0"}
-  "dune" {>= "2.4"}
+  "dune" {>= "2.5"}
   "coq" {= "dev"}
 ]
 
