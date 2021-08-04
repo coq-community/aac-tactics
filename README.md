@@ -10,7 +10,7 @@ Follow the instructions on https://github.com/coq-community/templates to regener
 [![Zulip][zulip-shield]][zulip-link]
 [![DOI][doi-shield]][doi-link]
 
-[nix-action-shield]: https://github.com/coq-community/aac-tactics/workflows/Nix%20CI/badge.svg?branch=master
+[nix-action-shield]: https://github.com/coq-community/aac-tactics/workflows/Nix%20CI/badge.svg?branch=v8.14
 [nix-action-link]: https://github.com/coq-community/aac-tactics/actions?query=workflow:"Nix%20CI"
 
 [contributing-shield]: https://img.shields.io/badge/contributions-welcome-%23f7931e.svg
