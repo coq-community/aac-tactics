@@ -4,6 +4,7 @@ shortname: aac-tactics
 organization: coq-community
 community: true
 action: true
+travis: true
 nix: true
 plugin: true
 doi: 10.1007/978-3-642-25379-9_14
@@ -54,9 +55,6 @@ supported_coq_versions:
 supported_ocaml_versions:
     text: 4.05.0 or later
     opam: '{>= "4.05.0"}'
-
-tested_coq_nix_versions:
-- version_or_url: https://github.com/coq/coq-on-cachix/tarball/master
 
 tested_coq_opam_versions:
 - version: dev
