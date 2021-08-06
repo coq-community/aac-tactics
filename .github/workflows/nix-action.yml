@@ -15,8 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        version_or_url:
-          - 'https://github.com/coq/coq-on-cachix/tarball/v8.14'
+        coq_version:
+          - 'v8.14'
       fail-fast: false
     steps:
       - uses: cachix/install-nix-action@v12
@@ -24,7 +24,14 @@ jobs:
           nix_path: nixpkgs=channel:nixpkgs-unstable
       - uses: cachix/cachix-action@v8
         with:
-          # Name of a cachix cache to pull/substitute
           name: coq
+      - uses: cachix/cachix-action@v8
+        with:
+          name: coq-community
+          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+      - uses: cachix/cachix-action@v8
+        with:
+          name: math-comp
       - uses: actions/checkout@v2
-      - run: nix-build --argstr coq-version-or-url "${{ matrix.version_or_url }}"
+      - run: >
+          nix-build https://coq.inria.fr/nix/toolbox --argstr job aac-tactics --arg override '{coq = "'${{ matrix.coq_version }}'"; aac-tactics = builtins.filterSource (path: _: baseNameOf path != ".git") ./.;}'
