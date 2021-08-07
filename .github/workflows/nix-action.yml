@@ -15,8 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        coq_version:
-          - 'master'
+        overrides:
+          - 'coq = "master"'
       fail-fast: false
     steps:
       - uses: cachix/install-nix-action@v12
@@ -34,4 +34,4 @@ jobs:
           name: math-comp
       - uses: actions/checkout@v2
       - run: >
-          nix-build https://coq.inria.fr/nix/toolbox --argstr job aac-tactics --arg override '{coq = "'${{ matrix.coq_version }}'"; aac-tactics = builtins.filterSource (path: _: baseNameOf path != ".git") ./.;}'
+          nix-build https://coq.inria.fr/nix/toolbox --argstr job aac-tactics --arg override '{ ${{ matrix.overrides }}; aac-tactics = builtins.filterSource (path: _: baseNameOf path != ".git") ./.; }'
