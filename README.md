@@ -2,7 +2,6 @@
 This file was generated from `meta.yml`, please do not edit manually.
 Follow the instructions on https://github.com/coq-community/templates to regenerate.
 --->
-# AAC Tactics
 
 [![Docker CI][docker-action-shield]][docker-action-link]
 [![Nix CI][nix-action-shield]][nix-action-link]
