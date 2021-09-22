@@ -4,11 +4,15 @@ Follow the instructions on https://github.com/coq-community/templates to regener
 --->
 # AAC Tactics
 
+[![Docker CI][docker-action-shield]][docker-action-link]
 [![Nix CI][nix-action-shield]][nix-action-link]
 [![Contributing][contributing-shield]][contributing-link]
 [![Code of Conduct][conduct-shield]][conduct-link]
 [![Zulip][zulip-shield]][zulip-link]
 [![DOI][doi-shield]][doi-link]
+
+[docker-action-shield]: https://github.com/coq-community/aac-tactics/workflows/Docker%20CI/badge.svg?branch=v8.14
+[docker-action-link]: https://github.com/coq-community/aac-tactics/actions?query=workflow:"Docker%20CI"
 
 [nix-action-shield]: https://github.com/coq-community/aac-tactics/workflows/Nix%20CI/badge.svg?branch=v8.14
 [nix-action-link]: https://github.com/coq-community/aac-tactics/actions?query=workflow:"Nix%20CI"
