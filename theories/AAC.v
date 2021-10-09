@@ -9,7 +9,7 @@
 (** * Theory file for the aac_rewrite tactic
 
    We define several base classes to package associative and possibly
-   commutative operators, and define a data-type for reified (or
+   commutative/idempotent operators, and define a data-type for reified (or
    quoted) expressions (with morphisms).
 
    We then define a reflexive decision procedure to decide the
@@ -64,12 +64,15 @@ Class Associative (X:Type) (R:relation X) (dot: X -> X -> X) :=
   law_assoc : forall x y z, R (dot x (dot y z)) (dot (dot x y) z).
 Class Commutative (X:Type) (R: relation X) (plus: X -> X -> X) :=
   law_comm: forall x y, R (plus x y) (plus y x).
+Class Idempotent (X:Type) (R: relation X) (plus: X -> X -> X) :=
+  law_idem: forall x, R (plus x x) x.
 Class Unit (X:Type) (R:relation X) (op : X -> X -> X) (unit:X) := {
   law_neutral_left: forall x, R (op unit x) x;
   law_neutral_right: forall x, R (op x unit) x
                                                                }.
 Register Associative as aac_tactics.classes.Associative.
 Register Commutative as aac_tactics.classes.Commutative.
+Register Idempotent as aac_tactics.classes.Idempotent.
 Register Unit as aac_tactics.classes.Unit.
 
 
@@ -194,7 +197,8 @@ Module Bin.
       value:> X -> X -> X;
       compat: Proper (R ==> R ==> R) value;
       assoc: Associative R value;
-      comm: option (Commutative R value)
+      comm: option (Commutative R value);
+      idem: option (Idempotent R value)
                      }.
     
     Register pack as aac_tactics.bin.pack.
@@ -362,6 +366,10 @@ Section s.
   Definition is_commutative i :=
     match Bin.comm (e_bin i) with Some _ => true | None => false end.
 
+  (* is [i] idempotent ? *)
+  Definition is_idempotent i :=
+    match Bin.idem (e_bin i) with Some _ => true | None => false end.
+
 
   (** ** Normalisation *)
 
@@ -494,7 +502,11 @@ Section s.
  
   Fixpoint norm u {struct u}:=
     match u with
-      | sum i l => if is_commutative i then sum' i (norm_msets norm i l)  else u
+      | sum i l => if is_commutative i then
+                     if is_idempotent i then
+                        sum' i (reduce_mset (norm_msets norm i l))
+                     else sum' i (norm_msets norm i l)
+                   else u
       | prd i l => prd' i (norm_lists norm i l)
       | sym i l => sym i (vnorm l)
       | unit i => unit i
@@ -521,6 +533,13 @@ Section s.
   Proof.
     unfold is_commutative in H.
     destruct (Bin.comm (e_bin i)); auto.
+    discriminate.
+  Qed.
+
+  Instance Binvalue_Idempotent i (H :  is_idempotent i = true) : Idempotent R  (@Bin.value _ _ (e_bin i) ).
+  Proof.
+    unfold is_idempotent in H.
+    destruct (Bin.idem (e_bin i)); auto.
     discriminate.
   Qed.
 
@@ -730,6 +749,7 @@ Section s.
       rewrite z0 by auto.  rewrite eval_merge_bin. reflexivity.
     Qed.
   End sum_correctness.
+
   Lemma eval_norm_msets i norm
     (Comm : Commutative R (Bin.value (e_bin i)))
     (Hnorm: forall u, eval (norm u) == eval u) : forall h, eval (sum i (norm_msets norm i h)) == eval (sum i h).
@@ -748,6 +768,22 @@ Section s.
    
     apply H.
   Defined.
+
+  Lemma copy_idem i (Idem : Idempotent R (Bin.value (e_bin i))) n x:
+    copy (plus:=(Bin.value (e_bin i))) n x == x.
+  Proof.
+    induction n using Pos.peano_ind; simpl.
+    apply copy_xH.
+    rewrite copy_Psucc, IHn. apply law_idem.
+  Qed.
+  
+  Lemma eval_reduce_msets i (Idem : Idempotent R (Bin.value (e_bin i))) m:
+    eval (sum i (reduce_mset m)) == eval (sum i m).
+  Proof.
+    induction m as [[a n]|[a n] m IH].
+    - simpl. now rewrite 2copy_idem.
+    - simpl. rewrite IH. now rewrite 2copy_idem.
+  Qed.
  
   (** auxiliary lemmas about products  *)
 
@@ -887,8 +923,14 @@ Section s.
   Proof.
     induction u as [ p m | p l | ? | ?];  simpl norm.
     case_eq (is_commutative p); intros.
+    case_eq (is_idempotent p); intros.
+    rewrite sum'_sum.
+    rewrite eval_reduce_msets. 2: eauto with typeclass_instances. 
+    apply eval_norm_msets; auto.
+
     rewrite sum'_sum.
     apply eval_norm_msets; auto.
+
     reflexivity.
 
     rewrite prd'_prd.
