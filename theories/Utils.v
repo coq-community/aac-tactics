@@ -230,6 +230,9 @@ Section lists.
             in merge_aux
       end.
 
+    (* setting all multiplicities to one, in order to implement idempotency *)
+    Definition reduce_mset: mset A -> mset A := nelist_map (fun x => (fst x,xH)).
+
     (** interpretation of a list with a constant and a binary operation *)
 
     Variable B: Type.
