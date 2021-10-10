@@ -30,12 +30,12 @@ Follow the instructions on https://github.com/coq-community/templates to regener
 [doi-shield]: https://zenodo.org/badge/DOI/10.1007/978-3-642-25379-9_14.svg
 [doi-link]: https://doi.org/10.1007/978-3-642-25379-9_14
 
-This Coq plugin provides tactics for rewriting universally quantified
-equations, modulo associativity and commutativity of some operator.
-The tactics can be applied for custom operators by registering the
-operators and their properties as type class instances. Many common
-operator instances, such as for Z binary arithmetic and booleans, are
-provided with the plugin.
+This Coq plugin provides tactics for rewriting and proving universally
+quantified equations modulo associativity and commutativity of some operator,
+with idempotent commutative operators enabling additional simplifications.
+The tactics can be applied for custom operators by registering the operators and
+their properties as type class instances. Instances for many commonly used operators,
+such as for binary integer arithmetic and booleans, are provided with the plugin.
 
 ## Meta
 
@@ -77,9 +77,9 @@ make install
 
 The following example shows an application of the tactics for reasoning over Z binary numbers:
 ```coq
-Require Import AAC_tactics.AAC.
-Require AAC_tactics.Instances.
-Require Import ZArith.
+From AAC_tactics Require Import AAC.
+From AAC_tactics Require Instances.
+From Coq Require Import ZArith.
 
 Section ZOpp.
   Import Instances.Z.
@@ -87,6 +87,12 @@ Section ZOpp.
   Hypothesis H: forall x, x + Z.opp x = 0.
 
   Goal a + b + c + Z.opp (c + a) = b.
+    aac_rewrite H.
+    aac_reflexivity.
+  Qed.
+
+  Goal Z.max (b + c) (c + b) + a + Z.opp (c + b) = a.
+    aac_normalise.
     aac_rewrite H.
     aac_reflexivity.
   Qed.

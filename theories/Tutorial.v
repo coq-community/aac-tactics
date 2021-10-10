@@ -48,6 +48,30 @@ Section introduction.
      - here, ring would have done the job.
      *)
 
+  (** several associative/commutative operations can be used at the same time.
+      here, [Zmult] and [Zplus], which are both associative and commutative (AC)
+   *)
+  Goal (b + c) * (c + b) + a + Z.opp ((c + b) * (b + c)) = a.
+    aac_rewrite H.
+    aac_reflexivity.
+  Qed.
+
+  (** some commutative operations can be declared as idempotent, here [Z.max]
+      which is taken into account by the [aac_normalise] and [aac_reflexivity] tactics.
+      Note however that [aac_rewrite] does not match modulo idempotency.
+   *)
+  Goal Z.max (b + c) (c + b) + a + Z.opp (c + b) = a.
+    aac_normalise.
+    aac_rewrite H.
+    aac_reflexivity.
+  Qed.
+
+  Goal Z.max c (Z.max b c) + a + Z.opp (Z.max c b) = a.
+    aac_normalise.
+    aac_rewrite H.
+    aac_reflexivity.
+  Qed.
+  
 End introduction. 
 
 
