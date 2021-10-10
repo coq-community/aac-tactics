@@ -77,6 +77,16 @@ module Classes = struct
 
   end
 
+  module Idempotent = struct
+    let typ = Coq.find_global "classes.Idempotent"
+    let ty (rlt : Coq.Relation.t) (value : constr) =
+      mkApp (Coq.get_efresh typ, [| rlt.Coq.Relation.carrier;
+				rlt.Coq.Relation.r;
+				value
+			     |] )
+
+  end
+
   module Proper = struct
     let typeof =  Coq.find_global "internal.sym.type_of"
     let relof = Coq.find_global "internal.sym.rel_of"
@@ -190,6 +200,7 @@ module Bin =struct
 	       compat : Constr.t;
 	       assoc : Constr.t;
 	       comm : Constr.t option;
+	       idem : Constr.t option;
 	      }
 
   let typ = Coq.find_global "bin.pack"
@@ -198,11 +209,13 @@ module Bin =struct
   let mk_pack: Coq.Relation.t -> pack -> constr = fun (rlt) s ->
     let (x,r) = Coq.Relation.split rlt in
     let comm_ty = Classes.Commutative.ty rlt (EConstr.of_constr s.value) in
+    let idem_ty = Classes.Idempotent.ty rlt (EConstr.of_constr s.value) in
     mkApp (Coq.get_efresh mkPack , [| x ; r;
 				  EConstr.of_constr s.value;
 				  EConstr.of_constr s.compat ;
 				  EConstr.of_constr s.assoc;
-				  Coq.Option.of_option comm_ty (Option.map EConstr.of_constr s.comm)
+				  Coq.Option.of_option comm_ty (Option.map EConstr.of_constr s.comm);
+				  Coq.Option.of_option idem_ty (Option.map EConstr.of_constr s.idem)
 			       |])
   let mk_ty : Coq.Relation.t -> constr = fun rlt ->
    let (x,r) = Coq.Relation.split rlt in
@@ -319,12 +332,14 @@ module Trans = struct
       Constr.equal p1.value p2.value &&
       Constr.equal p1.compat p2.compat &&
       Constr.equal p1.assoc p2.assoc &&
-      Option.equal Constr.equal p1.comm p2.comm
+      Option.equal Constr.equal p1.comm p2.comm &&
+      Option.equal Constr.equal p1.idem p2.idem
+
 
     let hash_bin_pack p =
       let open Bin in
-      combine4 (Constr.hash p.value) (Constr.hash p.compat)
-        (Constr.hash p.assoc) (Option.hash Constr.hash p.comm)
+      combine5 (Constr.hash p.value) (Constr.hash p.compat)
+        (Constr.hash p.assoc) (Option.hash Constr.hash p.comm) (Option.hash Constr.hash p.idem)
 
     let eq_unit_of u1 u2 =
       let open Unit in
@@ -455,6 +470,7 @@ module Trans = struct
 	  : (Evd.evar_map * Bin.pack) option =
 	let assoc_ty = Classes.Associative.ty rlt op in
 	let comm_ty = Classes.Commutative.ty rlt op in
+	let idem_ty = Classes.Idempotent.ty rlt op in
 	let proper_ty  = Classes.Proper.ty rlt op 2 in
 	try
 	  let sigma, proper = Typeclasses.resolve_one_typeclass env sigma proper_ty in
@@ -466,11 +482,19 @@ module Trans = struct
 	    with Not_found ->
 	      sigma, None
 	  in
+	  let sigma, idem  =
+	    try
+	      let sigma,idem = Typeclasses.resolve_one_typeclass env sigma idem_ty in
+	      sigma, Some idem
+	    with Not_found ->
+	      sigma, None
+	  in
 	  let bin =
 	    {Bin.value = EConstr.to_constr sigma op;
 	     Bin.compat = EConstr.to_constr sigma proper;
 	     Bin.assoc = EConstr.to_constr sigma assoc;
-	     Bin.comm = Option.map (EConstr.to_constr sigma) comm }
+	     Bin.comm = Option.map (EConstr.to_constr sigma) comm;
+	     Bin.idem = Option.map (EConstr.to_constr sigma) idem }
 	  in
 	  Some (sigma,bin)
 	with |Not_found -> None
@@ -917,7 +941,8 @@ module Trans = struct
 	    Bin.value = EConstr.to_constr sigma op;
 	    Bin.compat = EConstr.to_constr sigma compat;
 	    Bin.assoc = EConstr.to_constr sigma assoc;
-	    Bin.comm = None
+	    Bin.comm = None;
+	    Bin.idem = None
 	  }
       with Not_found -> user_error @@ Pp.strbrk "Cannot infer a default A operator (required at least to be Proper and Associative)"
     in

@@ -48,6 +48,30 @@ Section introduction.
      - here, ring would have done the job.
      *)
 
+  (** several associative/commutative operations can be used at the same time.
+      here, [Zmult] and [Zplus], which are both associative and commutative (AC)
+   *)
+  Goal (b + c) * (c + b) + a + Z.opp ((c + b) * (b + c)) = a.
+    aac_rewrite H.
+    aac_reflexivity.
+  Qed.
+
+  (** some commutative operations can be declared as idempotent, here [Z.max]
+      which is taken into account by the [aac_normalise] and [aac_reflexivity] tactics.
+      Note however that [aac_rewrite] does not match modulo idempotency.
+   *)
+  Goal Z.max (b + c) (c + b) + a + Z.opp (c + b) = a.
+    aac_normalise.
+    aac_rewrite H.
+    aac_reflexivity.
+  Qed.
+
+  Goal Z.max c (Z.max b c) + a + Z.opp (Z.max c b) = a.
+    aac_normalise.
+    aac_rewrite H.
+    aac_reflexivity.
+  Qed.
+  
 End introduction. 
 
 
@@ -243,11 +267,22 @@ Section Peano.
   Instance aac_max_Comm : Commutative eq Max.max :=  Max.max_comm.
   Instance aac_max_Assoc : Associative eq Max.max := Max.max_assoc.
 
+  (** Commutative operations may additionally be declared as idempotent
+      this does not change the behaviour of [aac_rewrite], but this enables more simplifications in 
+      [aac_normalise] and [aac_reflexivity]
+   *)
+  Instance aac_max_Idem : Idempotent eq Max.max := Max.max_idempotent.
+
   Instance aac_zero_max : Unit eq Max.max  O :=
     Build_Unit eq Max.max 0 Max.max_0_l Max.max_0_r. 
 
   Variable a b c : nat.
   Goal Max.max (a + 0) 0 = a.
+    aac_reflexivity.
+  Qed.
+
+  (* here we use idempotency *)
+  Goal Max.max (a + 0) a = a.
     aac_reflexivity.
   Qed.
    
@@ -337,6 +372,12 @@ Section AAC_normalise.
     aac_normalise.
   Abort.
 
+  Print HintDb typeclass_instances.
+  Goal Z.max (a+b) (b+a) = a+b.
+    aac_reflexivity.
+    Show Proof.
+  Abort.
+  
 End AAC_normalise.
 
 

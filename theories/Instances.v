@@ -40,11 +40,15 @@ Module Peano.
   Instance aac_min_Comm : Commutative eq min :=  min_comm.
   #[global]
   Instance aac_min_Assoc : Associative eq min :=  min_assoc.
+  #[global]
+  Instance aac_min_Idem : Idempotent eq min :=  min_idempotent.
 
   #[global]
   Instance aac_max_Comm : Commutative eq max :=  max_comm.
   #[global]
   Instance aac_max_Assoc : Associative eq max :=  max_assoc.
+  #[global]
+  Instance aac_max_Idem : Idempotent eq max :=  max_idempotent.
  
   #[global]
   Instance aac_one : Unit eq mult 1 :=  Build_Unit eq mult 1 mult_1_l mult_1_r. 
@@ -80,11 +84,15 @@ Module Z.
   Instance aac_Zmin_Comm : Commutative eq Z.min :=  Z.min_comm.
   #[global]
   Instance aac_Zmin_Assoc : Associative eq Z.min :=  Z.min_assoc.
+  #[global]
+  Instance aac_Zmin_Idem : Idempotent eq Z.min :=  Z.min_idempotent.
 
   #[global]
   Instance aac_Zmax_Comm : Commutative eq Z.max :=  Z.max_comm.
   #[global]
   Instance aac_Zmax_Assoc : Associative eq Z.max :=  Z.max_assoc.
+  #[global]
+  Instance aac_Zmax_Idem : Idempotent eq Z.max :=  Z.max_idempotent.
  
   #[global]
   Instance aac_one : Unit eq Zmult 1 :=  Build_Unit eq Zmult 1 Zmult_1_l Zmult_1_r. 
@@ -132,11 +140,15 @@ Module N.
   Instance aac_Nmin_Comm : Commutative eq N.min :=  N.min_comm.
   #[global]
   Instance aac_Nmin_Assoc : Associative eq N.min :=  N.min_assoc.
+  #[global]
+  Instance aac_Nmin_Idem : Idempotent eq N.min :=  N.min_idempotent.
 
   #[global]
   Instance aac_Nmax_Comm : Commutative eq N.max :=  N.max_comm.
   #[global]
   Instance aac_Nmax_Assoc : Associative eq N.max :=  N.max_assoc.
+  #[global]
+  Instance aac_Nmax_Idem : Idempotent eq N.max :=  N.max_idempotent.
  
   #[global]
   Instance aac_one  : Unit eq Nmult (1)%N := Build_Unit eq Nmult (1)%N Nmult_1_l Nmult_1_r. 
@@ -170,11 +182,15 @@ Module P.
   Instance aac_Pmin_Comm : Commutative eq Pos.min :=  Pos.min_comm.
   #[global]
   Instance aac_Pmin_Assoc : Associative eq Pos.min :=  Pos.min_assoc.
+  #[global]
+  Instance aac_Pmin_Idem : Idempotent eq Pos.min :=  Pos.min_idempotent.
 
   #[global]
   Instance aac_Pmax_Comm : Commutative eq Pos.max :=  Pos.max_comm.
   #[global]
   Instance aac_Pmax_Assoc : Associative eq Pos.max :=  Pos.max_assoc.
+  #[global]
+  Instance aac_Pmax_Idem : Idempotent eq Pos.max :=  Pos.max_idempotent.
 
   (*  TODO : add this lemma in the stdlib *)
   Lemma Pmult_1_l (x : positive) : 1 * x = x.
@@ -208,11 +224,15 @@ Module Q.
   Instance aac_Qmin_Comm : Commutative Qeq Qmin :=  Q.min_comm.
   #[global]
   Instance aac_Qmin_Assoc : Associative Qeq Qmin :=  Q.min_assoc.
+  #[global]
+  Instance aac_Qmin_Idem : Idempotent Qeq Qmin :=  Q.min_idempotent.
 
   #[global]
   Instance aac_Qmax_Comm : Commutative Qeq Qmax :=  Q.max_comm.
   #[global]
   Instance aac_Qmax_Assoc : Associative Qeq Qmax :=  Q.max_assoc.
+  #[global]
+  Instance aac_Qmax_Idem : Idempotent Qeq Qmax :=  Q.max_idempotent.
  
   #[global]
   Instance aac_one : Unit Qeq Qmult 1 :=  Build_Unit Qeq Qmult 1 Qmult_1_l Qmult_1_r. 
@@ -233,9 +253,9 @@ Module Prop_ops.
   #[global]
   Instance aac_or_Comm : Commutative iff or. Proof.  unfold Commutative; tauto.  Qed.
   #[global]
-  Instance aac_and_Assoc : Associative iff and. Proof.  unfold Associative; tauto.  Qed.
+  Instance aac_or_Idem : Idempotent iff or. Proof.  unfold Idempotent; tauto.  Qed.
   #[global]
-  Instance aac_and_Comm : Commutative iff and. Proof.  unfold Commutative; tauto.  Qed.
+  Instance aac_and_Idem : Idempotent iff and. Proof.  unfold Idempotent; tauto.  Qed.
   #[global]
   Instance aac_True : Unit iff or False.  Proof.  constructor; firstorder.  Qed.
   #[global]
@@ -255,9 +275,13 @@ Module Bool.
   #[global]
   Instance aac_orb_Comm : Commutative eq orb. Proof.  unfold Commutative; firstorder with bool.  Qed.
   #[global]
+  Instance aac_orb_Idem : Idempotent eq orb. Proof.  intro; apply Bool.orb_diag.  Qed.
+  #[global]
   Instance aac_andb_Assoc : Associative eq andb. Proof.  unfold Associative; firstorder with bool.  Qed.
   #[global]
   Instance aac_andb_Comm : Commutative eq andb. Proof.  unfold Commutative; firstorder with bool.  Qed.
+  #[global]
+  Instance aac_andb_Idem : Idempotent eq andb. Proof.  intro; apply Bool.andb_diag.  Qed.
   #[global]
   Instance aac_true : Unit eq orb false.  Proof.  constructor; firstorder with bool.  Qed.
   #[global]
@@ -289,12 +313,16 @@ Module Relations.
   #[global]
   Instance aac_union_Assoc T : Associative (same_relation T) (union T). Proof. unfold Associative; compute; intuition.  Qed.
   #[global]
+  Instance aac_union_Idem T : Idempotent (same_relation T) (union T). Proof. unfold Idempotent; compute; intuition.  Qed.
+  #[global]
   Instance aac_bot T : Unit (same_relation T) (union T) (bot T). Proof. constructor; compute; intuition. Qed.
 
   #[global]
   Instance aac_inter_Comm T : Commutative (same_relation T) (inter T). Proof. unfold Commutative; compute; intuition.  Qed.
   #[global]
   Instance aac_inter_Assoc T : Associative (same_relation T) (inter T). Proof. unfold Associative; compute; intuition.  Qed.
+  #[global]
+  Instance aac_inter_Idem T : Idempotent (same_relation T) (inter T). Proof. unfold Idempotent; compute; intuition.  Qed.
   #[global]
   Instance aac_top T : Unit (same_relation T) (inter T) (top T). Proof. constructor; compute; intuition. Qed.
  
