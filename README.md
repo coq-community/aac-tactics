@@ -37,6 +37,10 @@ operators and their properties as type class instances. Many common
 operator instances, such as for Z binary arithmetic and booleans, are
 provided with the plugin.
 
+An additional tactic makes it possible to prove equations between
+expressions involving associative/commutative/idempotent operations
+and their potential units.
+
 ## Meta
 
 - Author(s):
@@ -87,6 +91,12 @@ Section ZOpp.
   Hypothesis H: forall x, x + Z.opp x = 0.
 
   Goal a + b + c + Z.opp (c + a) = b.
+    aac_rewrite H.
+    aac_reflexivity.
+  Qed.
+
+  Goal Z.max (b + c) (c + b) + a + Z.opp (c + b) = a.
+    aac_normalise.
     aac_rewrite H.
     aac_reflexivity.
   Qed.
