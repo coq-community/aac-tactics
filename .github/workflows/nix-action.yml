@@ -37,14 +37,9 @@ jobs:
           nix_path: nixpkgs=channel:nixpkgs-unstable
       - uses: cachix/cachix-action@v10
         with:
-          name: coq
-      - uses: cachix/cachix-action@v10
-        with:
           name: coq-community
           authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
-      - uses: cachix/cachix-action@v10
-        with:
-          name: math-comp
+          extraPullNames: coq, math-comp
       - uses: actions/checkout@v2
         with:
           ref: ${{ env.tested_ref }}
