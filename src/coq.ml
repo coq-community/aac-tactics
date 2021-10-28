@@ -26,7 +26,7 @@ let find_global s = lazy (aac_lib_ref s)
                   
 
 let new_monomorphic_global gr =
-  try UnivGen.constr_of_monomorphic_global gr
+  try UnivGen.constr_of_monomorphic_global (Global.env ()) gr
   with _e ->
     CErrors.anomaly Pp.(str "new_monomorphic_global raised an error on:" ++ Printer.pr_global gr)
        
