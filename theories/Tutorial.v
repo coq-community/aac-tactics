@@ -249,51 +249,51 @@ End base.
    already declared in file [Instances.v].) *)
 
 Section Peano.
-  Import Arith.
+  Import PeanoNat.Nat.
     
-  Instance aac_plus_Assoc : Associative eq plus := plus_assoc.
-  Instance aac_plus_Comm : Commutative eq plus :=  plus_comm.
+  Instance aac_plus_Assoc : Associative eq add := add_assoc.
+  Instance aac_plus_Comm : Commutative eq add :=  add_comm.
  
-  Instance aac_one : Unit eq mult 1 :=
-    Build_Unit eq mult 1 mult_1_l mult_1_r. 
+  Instance aac_one : Unit eq mul 1 :=
+    Build_Unit eq mult 1 mul_1_l mul_1_r. 
   Instance aac_zero_plus : Unit eq plus O :=
-    Build_Unit eq plus (O) plus_0_l plus_0_r.
+    Build_Unit eq plus (O) add_0_l add_0_r.
  
 
   (** Two (or more) operations may share the same units: in the
   following example, [0] is understood as the unit of [max] as well as
   the unit of [plus]. *)
 
-  Instance aac_max_Comm : Commutative eq Max.max :=  Max.max_comm.
-  Instance aac_max_Assoc : Associative eq Max.max := Max.max_assoc.
+  Instance aac_max_Comm : Commutative eq max :=  max_comm.
+  Instance aac_max_Assoc : Associative eq max := max_assoc.
 
   (** Commutative operations may additionally be declared as idempotent
       this does not change the behaviour of [aac_rewrite], but this enables more simplifications in 
       [aac_normalise] and [aac_reflexivity]
    *)
-  Instance aac_max_Idem : Idempotent eq Max.max := Max.max_idempotent.
+  Instance aac_max_Idem : Idempotent eq max := max_idempotent.
 
-  Instance aac_zero_max : Unit eq Max.max  O :=
-    Build_Unit eq Max.max 0 Max.max_0_l Max.max_0_r. 
+  Instance aac_zero_max : Unit eq max  O :=
+    Build_Unit eq max 0 max_0_l max_0_r. 
 
   Variable a b c : nat.
-  Goal Max.max (a + 0) 0 = a.
+  Goal max (a + 0) 0 = a.
     aac_reflexivity.
   Qed.
 
   (* here we use idempotency *)
-  Goal Max.max (a + 0) a = a.
+  Goal max (a + 0) a = a.
     aac_reflexivity.
   Qed.
    
   (** Furthermore, several operators can be mixed: *)
 
-  Hypothesis H : forall x y z, Max.max (x + y) (x + z) = x+ Max.max y z.
+  Hypothesis H : forall x y z, max (x + y) (x + z) = x + max y z.
  
-  Goal Max.max (a + b) (c + (a * 1)) = Max.max c b + a.
+  Goal max (a + b) (c + (a * 1)) = max c b + a.
     aac_instances H. aac_rewrite H. aac_reflexivity.
   Qed. 
-  Goal Max.max (a + b) (c + Max.max (a*1+0) 0) = a + Max.max b c.
+  Goal max (a + b) (c + max (a*1+0) 0) = a + max b c.
     aac_instances H. aac_rewrite H. aac_reflexivity.
   Qed.
 
@@ -336,7 +336,7 @@ Section Peano.
   Qed.
 
   (** [aac_reflexivity] deals with "trivial" inequations too *)
-  Goal Max.max (a + b) (c + a) <= Max.max (b + a) (c + 1*a).
+  Goal max (a + b) (c + a) <= max (b + a) (c + 1*a).
     aac_reflexivity.
   Qed.
 

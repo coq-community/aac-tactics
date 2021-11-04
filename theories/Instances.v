@@ -7,7 +7,7 @@
 (***************************************************************************)
 
 Require List.
-Require Arith NArith Max Min.
+(* Require Arith NArith Max Min. *)
 Require ZArith Zminmax.
 Require QArith Qminmax.
 Require Relations.
@@ -25,16 +25,16 @@ Proof. intros x y ->. reflexivity. Qed.
 (* At the moment, all the instances are exported even if they are packaged into modules. Even using LocalInstances in fact*)
 
 Module Peano.
-  Import Arith NArith Max Min.
+  Import PeanoNat.Nat.
   #[global]
-  Instance aac_plus_Assoc : Associative eq plus := plus_assoc.
+  Instance aac_add_Assoc : Associative eq add := add_assoc.
   #[global]
-  Instance aac_plus_Comm : Commutative eq plus :=  plus_comm.
- 
+  Instance aac_add_Comm : Commutative eq add := add_comm.
+
   #[global]
-  Instance aac_mult_Comm : Commutative eq mult :=  mult_comm.
+  Instance aac_mult_Comm : Commutative eq mult :=  mul_comm.
   #[global]
-  Instance aac_mult_Assoc : Associative eq mult :=  mult_assoc.
+  Instance aac_mult_Assoc : Associative eq mult :=  mul_assoc.
  
   #[global]
   Instance aac_min_Comm : Commutative eq min :=  min_comm.
@@ -51,9 +51,9 @@ Module Peano.
   Instance aac_max_Idem : Idempotent eq max :=  max_idempotent.
  
   #[global]
-  Instance aac_one : Unit eq mult 1 :=  Build_Unit eq mult 1 mult_1_l mult_1_r. 
+  Instance aac_one : Unit eq mult 1 :=  Build_Unit eq mul 1 mul_1_l mul_1_r. 
   #[global]
-  Instance aac_zero_plus  : Unit eq plus O := Build_Unit eq plus (O) plus_0_l plus_0_r.
+  Instance aac_zero_add  : Unit eq add O := Build_Unit eq add (O) add_0_l add_0_r.
   #[global]
   Instance aac_zero_max  :  Unit eq max  O := Build_Unit eq max 0 max_0_l max_0_r. 
 
