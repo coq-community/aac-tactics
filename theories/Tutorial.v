@@ -12,12 +12,10 @@
    lines, or add them to your .coqrc files, replacing "."  with the
    path to the [aac_tactics] library. *)
 
-Require Arith ZArith Lia.
+Require PeanoNat ZArith Lia.
 
-From AAC_tactics
-Require Import AAC.
-From AAC_tactics
-Require Instances.
+From AAC_tactics Require Import AAC.
+From AAC_tactics Require Instances.
 
 (** ** Introductory example 
 
@@ -249,51 +247,50 @@ End base.
    already declared in file [Instances.v].) *)
 
 Section Peano.
-  Import PeanoNat.Nat.
-    
-  Instance aac_plus_Assoc : Associative eq add := add_assoc.
-  Instance aac_plus_Comm : Commutative eq add :=  add_comm.
- 
-  Instance aac_one : Unit eq mul 1 :=
-    Build_Unit eq mult 1 mul_1_l mul_1_r. 
-  Instance aac_zero_plus : Unit eq plus O :=
-    Build_Unit eq plus (O) add_0_l add_0_r.
- 
+  Import PeanoNat.
+
+  Instance aac_plus_Assoc : Associative eq Nat.add := Nat.add_assoc.
+  Instance aac_plus_Comm : Commutative eq Nat.add :=  Nat.add_comm.
+
+  Instance aac_one : Unit eq Nat.mul 1 :=
+    Build_Unit eq Nat.mul 1 Nat.mul_1_l Nat.mul_1_r.
+  Instance aac_zero_plus : Unit eq Nat.add O :=
+    Build_Unit eq Nat.add (O) Nat.add_0_l Nat.add_0_r.
 
   (** Two (or more) operations may share the same units: in the
   following example, [0] is understood as the unit of [max] as well as
   the unit of [plus]. *)
 
-  Instance aac_max_Comm : Commutative eq max :=  max_comm.
-  Instance aac_max_Assoc : Associative eq max := max_assoc.
+  Instance aac_max_Comm : Commutative eq Nat.max :=  Nat.max_comm.
+  Instance aac_max_Assoc : Associative eq Nat.max := Nat.max_assoc.
 
   (** Commutative operations may additionally be declared as idempotent
       this does not change the behaviour of [aac_rewrite], but this enables more simplifications in 
       [aac_normalise] and [aac_reflexivity]
    *)
-  Instance aac_max_Idem : Idempotent eq max := max_idempotent.
+  Instance aac_max_Idem : Idempotent eq Nat.max := Nat.max_idempotent.
 
-  Instance aac_zero_max : Unit eq max  O :=
-    Build_Unit eq max 0 max_0_l max_0_r. 
+  Instance aac_zero_max : Unit eq Nat.max O :=
+    Build_Unit eq Nat.max 0 Nat.max_0_l Nat.max_0_r.
 
   Variable a b c : nat.
-  Goal max (a + 0) 0 = a.
+  Goal Nat.max (a + 0) 0 = a.
     aac_reflexivity.
   Qed.
 
   (* here we use idempotency *)
-  Goal max (a + 0) a = a.
+  Goal Nat.max (a + 0) a = a.
     aac_reflexivity.
   Qed.
    
   (** Furthermore, several operators can be mixed: *)
 
-  Hypothesis H : forall x y z, max (x + y) (x + z) = x + max y z.
+  Hypothesis H : forall x y z, Nat.max (x + y) (x + z) = x + Nat.max y z.
  
-  Goal max (a + b) (c + (a * 1)) = max c b + a.
+  Goal Nat.max (a + b) (c + (a * 1)) = Nat.max c b + a.
     aac_instances H. aac_rewrite H. aac_reflexivity.
   Qed. 
-  Goal max (a + b) (c + max (a*1+0) 0) = a + max b c.
+  Goal Nat.max (a + b) (c + Nat.max (a*1+0) 0) = a + Nat.max b c.
     aac_instances H. aac_rewrite H. aac_reflexivity.
   Qed.
 
@@ -336,14 +333,14 @@ Section Peano.
   Qed.
 
   (** [aac_reflexivity] deals with "trivial" inequations too *)
-  Goal max (a + b) (c + a) <= max (b + a) (c + 1*a).
+  Goal Nat.max (a + b) (c + a) <= Nat.max (b + a) (c + 1*a).
     aac_reflexivity.
   Qed.
 
   (** In the last three examples, there were no equivalence relation
      involved in the goal. However, we actually had to guess the
      equivalence relation with respect to which the operators
-     ([plus,max,0]) were AC.  In this case, it was Leibniz equality
+     ([add,max,0]) were AC.  In this case, it was Leibniz equality
      [eq] so that it was automatically inferred; more generally, one
      can specify which equivalence relation to use by declaring
      instances of the [AAC_lift] type class: *)
@@ -352,9 +349,7 @@ Section Peano.
   (** (This instance is automatically inferred because [eq] is always a
      valid candidate, here for [le].) *)
 
-
 End Peano.
-
 
 (** *** Normalising goals
 

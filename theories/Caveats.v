@@ -13,12 +13,10 @@
    with the path to the [aac_tactics] library
 *)
 
-Require NArith Minus.
+Require NArith PeanoNat.
 
-From AAC_tactics
-Require Import AAC.
-From AAC_tactics
-Require Instances.
+From AAC_tactics Require Import AAC.
+From AAC_tactics Require Instances.
 
 (** ** Limitations *)
 
@@ -78,30 +76,30 @@ End parameters.
    type [T] to some other type [T']. *)
 
 Section morphism.
-  Import NArith PeanoNat.Nat.
+  Import NArith PeanoNat.
   Open Scope nat_scope.
 
   (** Typically, although [N_of_nat] is a proper morphism from
      [@eq nat] to [@eq N], we cannot rewrite under [N_of_nat] *)
   Goal forall a b: nat, N_of_nat (a+b-(b+a)) = 0%N.
     intros.
-    Fail aac_rewrite sub_diag.
+    Fail aac_rewrite Nat.sub_diag.
   Abort.
 
 
   (* More generally, this prevents us from rewriting under
      propositional contexts *)
-  Context {P} {HP : Proper (eq ==> iff) P}.
+  Context {P} {HP : Proper (@eq nat ==> iff) P}.
   Hypothesis H : P 0.
 
   Goal forall a b, P (a + b - (b + a)).
     intros a b.
-    Fail aac_rewrite sub_diag.
+    Fail aac_rewrite Nat.sub_diag.
     (** a solution is to introduce an evar to replace the part to be
        rewritten. This tiresome process should be improved in the
        future. Here, it can be done using eapply and the morphism. *)
     eapply HP.
-    aac_rewrite sub_diag.
+    aac_rewrite Nat.sub_diag.
      reflexivity.
      exact H.
   Qed.
@@ -110,8 +108,8 @@ Section morphism.
     intros.
     (** similarly, we need to bring equations to the toplevel before
     being able to rewrite *)
-    Fail aac_rewrite sub_diag.
-    split; aac_rewrite sub_diag; reflexivity.
+    Fail aac_rewrite Nat.sub_diag.
+    split; aac_rewrite Nat.sub_diag; reflexivity.
   Qed.
    
 End morphism.
