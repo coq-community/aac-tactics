@@ -7,7 +7,7 @@
 (***************************************************************************)
 
 Require List.
-(* Require Arith NArith Max Min. *)
+Require PeanoNat NArith.
 Require ZArith Zminmax.
 Require QArith Qminmax.
 Require Relations.
