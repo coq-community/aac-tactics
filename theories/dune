@@ -3,4 +3,4 @@
  (package coq-aac-tactics)
  (synopsis "Coq plugin providing tactics for rewriting universally quantified equations, modulo associative (and possibly commutative) operators")
  (libraries coq-aac-tactics.plugin)
- (flags -w +default))
+ (flags :standard -w +default))
