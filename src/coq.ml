@@ -99,7 +99,7 @@ let cps_mk_letin
 : Proofview.V82.tac =
   fun goal ->
     let name = (Id.of_string name) in
-    let name =  Tactics.fresh_id Id.Set.empty name goal in
+    let name =  Tactics.fresh_id_in_env Id.Set.empty name (Tacmach.pf_env goal) in
     let letin = (Proofview.V82.of_tactic (Tactics.letin_tac None  (Name name) c None nowhere)) in
     Tacticals.tclTHENLIST [retype c; letin; (k (mkVar name))] goal
 
