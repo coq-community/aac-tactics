@@ -308,7 +308,7 @@ let match_as_equation ?(context = Context.Rel.empty) env sigma equation : (const
 	let left  =  ca.(n-2) in
 	let right =  ca.(n-1) in
 	let r = (mkApp (c, Array.sub ca 0 (n - 2))) in
-	let carrier =  Typing.unsafe_type_of env sigma left in
+        let carrier =  Retyping.get_type_of env sigma left in
 	let rlt =Std.Relation.make carrier r
 	in
 	Some (left, right, rlt )
@@ -353,7 +353,7 @@ type hypinfo =
     }
 
 let get_hypinfo env sigma ?check_type c ~l2r : hypinfo =
-  let ctype = Typing.unsafe_type_of env sigma c in
+  let ctype = Retyping.get_type_of env sigma c in
   let (rel_context, body_type) = decompose_prod_assum sigma ctype in
   let rec check f e =
     match decomp_term sigma e with
