@@ -144,7 +144,7 @@ let by_aac_reflexivity zero
   <*> tclTac_or_exn apply_tac Coq.user_error (Pp.strbrk "unification failure")
   <*> tclTac_or_exn (time_tac "vm_norm" Tactics.normalise_in_concl) Coq.anomaly "vm_compute failure"
   <*> tclORELSE Tactics.reflexivity
-	(fun _ -> Tacticals.New.tclFAIL 0 (Pp.str "Not an equality modulo A/AC"))
+	(fun _ -> Tacticals.tclFAIL 0 (Pp.str "Not an equality modulo A/AC"))
   
 
 
@@ -169,7 +169,7 @@ let by_aac_normalise zero lift ir t t' =
   let convert_to = mkApp (rlt.Coq.Relation.r, [| mkApp (eval,[| t |]); mkApp (eval, [|t'|])|])   in
   let convert = Tactics.convert_concl ~cast:true ~check:true convert_to Constr.VMcast in
   let apply_tac = Tactics.apply normalise_thm in
-  Tacticals.New.tclTHENLIST
+  Tacticals.tclTHENLIST
     [ Coq.tclRETYPE normalise_thm; Coq.tclRETYPE convert_to;
        convert ;
        apply_tac;
@@ -202,12 +202,12 @@ let aac_normalise =
   let open Proofview.Notations in
   let open Proofview in
   Proofview.Goal.enter (fun goal -> 
-      let ids = Tacmach.New.pf_ids_of_hyps goal in
+      let ids = Tacmach.pf_ids_of_hyps goal in
       let env = Proofview.Goal.env goal in
       tclEVARMAP >>= fun sigma ->
       let concl = Proofview.Goal.concl goal in
       let sigma,left,lift,ir,tleft,tright = aac_conclude env sigma concl in
-      Tacticals.New.tclTHENLIST
+      Tacticals.tclTHENLIST
     [
       Unsafe.tclEVARS sigma;
       by_aac_normalise left lift ir tleft tright;
@@ -273,7 +273,7 @@ let lift_transitivity in_left (step:constr) preorder lifting (using_eq : Coq.Equ
 	         right;
 	       |])
       in
-      Tacticals.New.tclTHENLIST
+      Tacticals.tclTHENLIST
         [ Coq.tclRETYPE lift_transitivity;
           Tactics.apply lift_transitivity
         ]
@@ -294,7 +294,7 @@ let core_aac_rewrite ?abort
         lift_transitivity rewinfo.in_left tr rewinfo.rlt rewinfo.lifting.lift rewinfo.eqt
       in
       let rew = Coq.Rewrite.rewrite ?abort rewinfo.hypinfo subst in
-      Tacticals.New.tclTHENS
+      Tacticals.tclTHENS
         (tclTac_or_exn (tran_tac) Coq.anomaly "Unable to make the transitivity step")
         (
 	  if rewinfo.in_left
@@ -344,7 +344,7 @@ let aac_rewrite_wrap  ?abort ?(l2r=true) ?(show = false) ?(in_left=true) ?strict
         | Some (left, right, rlt) -> left,right,rlt
       in
       let check_type x =
-        Tacmach.New.pf_conv_x goal x rlt.Coq.Relation.carrier
+        Tacmach.pf_conv_x goal x rlt.Coq.Relation.carrier
       in
       let hypinfo = Coq.Rewrite.get_hypinfo env sigma ?check_type:(Some check_type) rew ~l2r in
       let sigma,rewinfo = dispatch env sigma in_left concl hypinfo in
@@ -382,7 +382,7 @@ let aac_rewrite_wrap  ?abort ?(l2r=true) ?(show = false) ?(in_left=true) ?strict
                core_aac_rewrite ?abort rewinfo subst by_aac_reflexivity tr_step_raw tr_step subject
              with
              | NoSolutions ->
-                Tacticals.New.tclFAIL 0
+                Tacticals.tclFAIL 0
 	          (Pp.str (if occ_subterm = None && occ_sol = None
 		           then "No matching occurrence modulo AC found"
 		           else "No such solution"))
