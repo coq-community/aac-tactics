@@ -72,7 +72,7 @@ let print rlt ir m (context : EConstr.rel_context) : unit Proofview.tactic =
   if Search_monad.count m = 0
   then
     (
-      Tacticals.New.tclFAIL 0  (Pp.str "No subterm modulo AC")
+      Tacticals.tclFAIL 0  (Pp.str "No subterm modulo AC")
     )
   else
     let _ = Feedback.msg_notice (Pp.str "All solutions:") in
@@ -101,5 +101,5 @@ let print rlt ir m (context : EConstr.rel_context) : unit Proofview.tactic =
 	 (fun t -> Printer.pr_letype_env env sigma (Theory.Trans.raw_constr_of_t ir rlt  context  t)) m
       )
     in
-    Tacticals.New.tclIDTAC
+    Tacticals.tclIDTAC
      

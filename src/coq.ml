@@ -48,7 +48,7 @@ let tclEVARS sigma gl =
   { it = [gl.it]; sigma }
 
 let retype c gl =
-  let sigma, _ = Tacmach.pf_apply Typing.type_of gl c in
+  let sigma, _ = Tacmach.Old.pf_apply Typing.type_of gl c in
   tclEVARS sigma gl
 
 (* similar to retype above. No Idea when/why this is needed, I smell some ugly hack.
@@ -99,9 +99,9 @@ let cps_mk_letin
 : Proofview.V82.tac =
   fun goal ->
     let name = (Id.of_string name) in
-    let name =  Tactics.fresh_id_in_env Id.Set.empty name (Tacmach.pf_env goal) in
+    let name =  Tactics.fresh_id_in_env Id.Set.empty name (Tacmach.Old.pf_env goal) in
     let letin = (Proofview.V82.of_tactic (Tactics.letin_tac None  (Name name) c None nowhere)) in
-    Tacticals.tclTHENLIST [retype c; letin; (k (mkVar name))] goal
+    Tacticals.Old.tclTHENLIST [retype c; letin; (k (mkVar name))] goal
 
 let mk_letin (name:string) (c: constr) : constr Proofview.tactic =
   let open Proofview.Notations in
@@ -118,17 +118,17 @@ let mk_letin (name:string) (c: constr) : constr Proofview.tactic =
 
 type goal_sigma =  Goal.goal Evd.sigma
 let goal_update (goal : goal_sigma) evar_map : goal_sigma =
-  let it = Tacmach.sig_it goal in
-  Tacmach.re_sig it evar_map
+  let it = Tacmach.Old.sig_it goal in
+  Tacmach.Old.re_sig it evar_map
      
 let resolve_one_typeclass goal ty : constr*goal_sigma=
-  let env = Tacmach.pf_env goal in
-  let evar_map = Tacmach.project goal in
+  let env = Tacmach.Old.pf_env goal in
+  let evar_map = Tacmach.Old.project goal in
   let em,c = Typeclasses.resolve_one_typeclass env evar_map ty in
     c, (goal_update goal em)
 
 let cps_resolve_one_typeclass ?error : types -> (constr  -> Proofview.V82.tac) -> Proofview.V82.tac = fun t k  goal  ->
-  Tacmach.pf_apply
+  Tacmach.Old.pf_apply
     (fun env em -> let em ,c =  
 		  try Typeclasses.resolve_one_typeclass env em t
 		  with Not_found ->
@@ -137,12 +137,12 @@ let cps_resolve_one_typeclass ?error : types -> (constr  -> Proofview.V82.tac) -
 		      | Some x -> CErrors.user_err x
 		    end
 		in
-		Tacticals.tclTHENLIST [tclEVARS em; k c] goal
+		Tacticals.Old.tclTHENLIST [tclEVARS em; k c] goal
     )	goal
 
 
 let nf_evar goal c : constr=
-  let evar_map = Tacmach.project goal in
+  let evar_map = Tacmach.Old.project goal in
   Evarutil.nf_evar evar_map c
 
   (* TODO: refactor following similar functions*)
@@ -541,7 +541,7 @@ let rewrite ?(abort=false) hypinfo subst =
 	    ~with_evars:true
 	    (rew,Tactypes.NoBindings)
     else
-      Tacticals.New.tclIDTAC
+      Tacticals.tclIDTAC
   in tac
    
 
