@@ -13,6 +13,10 @@ open EConstr
 open Names
 open Context.Rel.Declaration
 
+open Proofview.Notations
+
+type tactic = unit Proofview.tactic
+
 let mkArrow x y = mkArrow x Sorts.Relevant y
 (* The kernel will fix the relevance if needed. Also as an equality
    tactic we probably are only called on relevant terms. *)
@@ -43,18 +47,15 @@ let nowhere =
     Locus.concl_occs = Locus.NoOccurrences
   }
 
-let tclEVARS sigma gl =
-  let open Evd in
-  { it = [gl.it]; sigma }
-
-let retype c gl =
-  let sigma, _ = Tacmach.Old.pf_apply Typing.type_of gl c in
-  tclEVARS sigma gl
+let retype c =
+  Proofview.Goal.enter begin fun gl ->
+  let sigma, _ = Typing.type_of (Proofview.Goal.env gl) (Proofview.Goal.sigma gl) c in
+  Proofview.Unsafe.tclEVARS sigma
+  end
 
 (* similar to retype above. No Idea when/why this is needed, I smell some ugly hack.
   Apparently, it has to do with the need to recompute universe constrains if we just compose terms *)
 let tclRETYPE c=
-  let open Proofview.Notations in
   let open Proofview in
   tclEVARMAP >>= fun sigma ->
   Proofview.Goal.enter (fun goal ->
@@ -65,11 +66,13 @@ let tclRETYPE c=
   
 (** {1 Tacticals}  *)
 
-let tclTIME msg tac = fun gl ->
+let tclTIME msg tac =
+  Proofview.Goal.enter begin fun gl ->
   let u = Sys.time () in
-  let r = tac gl in
+  tac >>= fun r ->
   let _ = Feedback.msg_notice (Pp.str (Printf.sprintf "%s:%fs" msg (Sys.time ()-.  u))) in
-    r
+  Proofview.tclUNIT r
+  end
 
 let tclDEBUG msg =
   let open Proofview in
@@ -95,16 +98,16 @@ let show_proof pstate : unit =
 let cps_mk_letin
     (name:string)
     (c: constr)
-    (k : constr -> Proofview.V82.tac)
-: Proofview.V82.tac =
-  fun goal ->
+    (k : constr -> tactic)
+: tactic =
+  Proofview.Goal.enter begin fun goal ->
     let name = (Id.of_string name) in
-    let name =  Tactics.fresh_id_in_env Id.Set.empty name (Tacmach.Old.pf_env goal) in
-    let letin = (Proofview.V82.of_tactic (Tactics.letin_tac None  (Name name) c None nowhere)) in
-    Tacticals.Old.tclTHENLIST [retype c; letin; (k (mkVar name))] goal
+    let name =  Tactics.fresh_id_in_env Id.Set.empty name (Tacmach.pf_env goal) in
+    let letin = Tactics.letin_tac None (Name name) c None nowhere in
+    Tacticals.tclTHENLIST [retype c; letin; (k (mkVar name))]
+  end
 
 let mk_letin (name:string) (c: constr) : constr Proofview.tactic =
-  let open Proofview.Notations in
   let open Proofview in
   let name = (Id.of_string name) in
   Proofview.Goal.enter_one (fun goal ->
@@ -116,34 +119,24 @@ let mk_letin (name:string) (c: constr) : constr Proofview.tactic =
     )
 (** {1 General functions}  *)
 
-type goal_sigma =  Goal.goal Evd.sigma
-let goal_update (goal : goal_sigma) evar_map : goal_sigma =
-  let it = Tacmach.Old.sig_it goal in
-  Tacmach.Old.re_sig it evar_map
-     
-let resolve_one_typeclass goal ty : constr*goal_sigma=
-  let env = Tacmach.Old.pf_env goal in
-  let evar_map = Tacmach.Old.project goal in
-  let em,c = Typeclasses.resolve_one_typeclass env evar_map ty in
-    c, (goal_update goal em)
+let resolve_one_typeclass env sigma ty : constr * Evd.evar_map =
+  let sigma, c = Typeclasses.resolve_one_typeclass env sigma ty in
+  c, sigma
 
-let cps_resolve_one_typeclass ?error : types -> (constr  -> Proofview.V82.tac) -> Proofview.V82.tac = fun t k  goal  ->
-  Tacmach.Old.pf_apply
-    (fun env em -> let em ,c =  
-		  try Typeclasses.resolve_one_typeclass env em t
-		  with Not_found ->
-		    begin match error with
-		      | None -> CErrors.anomaly (Pp.str "Cannot resolve a typeclass : please report")
-		      | Some x -> CErrors.user_err x
-		    end
-		in
-		Tacticals.Old.tclTHENLIST [tclEVARS em; k c] goal
-    )	goal
-
-
-let nf_evar goal c : constr=
-  let evar_map = Tacmach.Old.project goal in
-  Evarutil.nf_evar evar_map c
+let cps_resolve_one_typeclass ?error : types -> (constr -> tactic) -> tactic = fun t k ->
+  Proofview.Goal.enter begin fun gl ->
+  let env = Proofview.Goal.env gl in
+  let em = Proofview.Goal.sigma gl in
+  let em, c =
+  try Typeclasses.resolve_one_typeclass env em t
+  with Not_found ->
+    begin match error with
+      | None -> CErrors.anomaly (Pp.str "Cannot resolve a typeclass : please report")
+      | Some x -> CErrors.user_err x
+    end
+  in
+  Tacticals.tclTHENLIST [Proofview.Unsafe.tclEVARS em; k c]
+  end
 
   (* TODO: refactor following similar functions*)
  
@@ -283,12 +276,12 @@ module Equivalence = struct
 	equivalence : constr;	
       }
   let make ty eq equivalence = {carrier = ty; eq = eq; equivalence = equivalence}
-  let infer goal ty eq  =
+  let infer env sigma ty eq  =
     let ask = Classes.mk_equivalence ty eq in
-    let equivalence , goal = resolve_one_typeclass goal ask in
-      make ty eq equivalence, goal 	 
-  let from_relation goal rlt =
-    infer goal (rlt.Relation.carrier) (rlt.Relation.r)
+    let equivalence, sigma = resolve_one_typeclass env sigma ask in
+      make ty eq equivalence, sigma
+  let from_relation env sigma rlt =
+    infer env sigma (rlt.Relation.carrier) (rlt.Relation.r)
   let to_relation t =
     {Relation.carrier = t.carrier; Relation.r = t.eq}
   let split t =
@@ -518,8 +511,8 @@ let build
 (* let build_with_evar
  *     (h : hypinfo)
  *     (subst : (int *constr) list)
- *     (k :constr -> Proofview.V82.tac)
- *     : Proofview.V82.tac
+ *     (k :constr -> tactic)
+ *     : tactic
  *     = fun goal ->
  *       Tacmach.pf_apply
  * 	(fun env em ->

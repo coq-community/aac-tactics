@@ -21,6 +21,8 @@
 
 *)
 
+type tactic = unit Proofview.tactic
+
 (** {2 Getting Coq terms from the environment}  *)
 type lazy_ref = Names.GlobRef.t Lazy.t
 
@@ -32,18 +34,15 @@ val find_global : string -> lazy_ref
 
 (** {2 General purpose functions} *)
 
-type goal_sigma =  Goal.goal Evd.sigma
-val resolve_one_typeclass : Goal.goal Evd.sigma -> EConstr.types -> EConstr.constr * goal_sigma
-val cps_resolve_one_typeclass: ?error:Pp.t -> EConstr.types -> (EConstr.constr  -> Proofview.V82.tac) -> Proofview.V82.tac
-val nf_evar : goal_sigma -> EConstr.constr -> EConstr.constr
+val cps_resolve_one_typeclass: ?error:Pp.t -> EConstr.types -> (EConstr.constr  -> tactic) -> tactic
 val evar_binary: Environ.env -> Evd.evar_map -> EConstr.constr -> Evd.evar_map * EConstr.constr
 val evar_relation: Environ.env -> Evd.evar_map -> EConstr.constr -> Evd.evar_map * EConstr.constr
 
 (** [cps_mk_letin name v] binds the constr [v] using a letin tactic  *)
-val cps_mk_letin : string -> EConstr.constr -> ( EConstr.constr -> Proofview.V82.tac) -> Proofview.V82.tac
+val cps_mk_letin : string -> EConstr.constr -> ( EConstr.constr -> tactic) -> tactic
 val mk_letin : string -> EConstr.constr -> EConstr.constr Proofview.tactic
 
-val retype : EConstr.constr -> Proofview.V82.tac
+val retype : EConstr.constr -> tactic
 val tclRETYPE : EConstr.constr -> unit Proofview.tactic
 
 val decomp_term : Evd.evar_map -> EConstr.constr -> (EConstr.constr , EConstr.types, EConstr.ESorts.t, EConstr.EInstance.t) Constr.kind_of_term
@@ -114,8 +113,8 @@ module Equivalence : sig
 	equivalence : EConstr.constr;
       } 
   val make  : EConstr.constr -> EConstr.constr -> EConstr.constr -> t
-  val infer  : goal_sigma -> EConstr.constr -> EConstr.constr -> t  * goal_sigma
-  val from_relation : goal_sigma -> Relation.t -> t * goal_sigma
+  val infer  : Environ.env -> Evd.evar_map -> EConstr.constr -> EConstr.constr -> t  * Evd.evar_map
+  val from_relation : Environ.env -> Evd.evar_map -> Relation.t -> t * Evd.evar_map
   val to_relation : t -> Relation.t
   val split : t -> EConstr.constr * EConstr.constr * EConstr.constr
 end
@@ -127,7 +126,7 @@ val match_as_equation  : ?context:EConstr.rel_context -> Environ.env -> Evd.evar
 (** {2 Some tacticials}  *)
 
 (** time the execution of a tactic *)
-val tclTIME : string -> Proofview.V82.tac -> Proofview.V82.tac
+val tclTIME : string -> tactic -> tactic
 
 (** emit debug messages to see which tactics are failing *)
 val tclDEBUG : string -> unit Proofview.tactic
@@ -198,7 +197,7 @@ val get_hypinfo : Environ.env -> Evd.evar_map -> ?check_type:(EConstr.types -> b
 val build :  hypinfo ->  (int * EConstr.constr) list ->  EConstr.constr
 
 (** build the constr to rewrite, in CPS style, with evars  *)
-(* val build_with_evar :  hypinfo ->  (int * EConstr.constr) list ->  (EConstr.constr -> Proofview.V82.tac) -> Proofview.V82.tac *)
+(* val build_with_evar :  hypinfo ->  (int * EConstr.constr) list ->  (EConstr.constr -> tactic) -> tactic *)
 
 (** [rewrite ?abort hypinfo subst] builds the rewriting tactic
     associated with the given [subst] and [hypinfo]. 
