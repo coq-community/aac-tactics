@@ -1,3 +1,4 @@
+META.coq-aac-tactics.in
 -Q theories AAC_tactics
 -Q src AAC_tactics
 -I src

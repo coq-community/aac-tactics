@@ -8,7 +8,7 @@
 
 (** aac -- Reasoning modulo associativity and commutativity *)
 
-DECLARE PLUGIN "aac_plugin"
+DECLARE PLUGIN "coq-aac-tactics.plugin"
 
 {
 

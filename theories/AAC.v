@@ -995,4 +995,4 @@ Section t.
 
 End t.
        
-Declare ML Module "aac_plugin".
+Declare ML Module "coq-aac-tactics.plugin".
