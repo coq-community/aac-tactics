@@ -1,9 +1,0 @@
-package "plugin" (
-  requires = "coq-core.plugins.ltac"
-  archive(byte) = "aac_plugin.cma"
-  archive(native) = "aac_plugin.cmxa"
-  plugin(byte) = "aac_plugin.cma"
-  plugin(native) = "aac_plugin.cmxs"
-  directory = "src"
-)
-directory = "."

@@ -1,4 +1,4 @@
-META.coq-aac-tactics.in
+-generate-meta-for-package coq-aac-tactics
 -Q theories AAC_tactics
 -Q src AAC_tactics
 -I src
