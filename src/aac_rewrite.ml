@@ -144,7 +144,7 @@ let by_aac_reflexivity zero
   <*> tclTac_or_exn apply_tac Coq.user_error (Pp.strbrk "unification failure")
   <*> tclTac_or_exn (time_tac "vm_norm" Tactics.normalise_in_concl) Coq.anomaly "vm_compute failure"
   <*> tclORELSE Tactics.reflexivity
-	(fun _ -> Tacticals.tclFAIL 0 (Pp.str "Not an equality modulo A/AC"))
+	(fun _ -> Tacticals.tclFAIL (Pp.str "Not an equality modulo A/AC"))
   
 
 
@@ -382,7 +382,7 @@ let aac_rewrite_wrap  ?abort ?(l2r=true) ?(show = false) ?(in_left=true) ?strict
                core_aac_rewrite ?abort rewinfo subst by_aac_reflexivity tr_step_raw tr_step subject
              with
              | NoSolutions ->
-                Tacticals.tclFAIL 0
+                Tacticals.tclFAIL
 	          (Pp.str (if occ_subterm = None && occ_sol = None
 		           then "No matching occurrence modulo AC found"
 		           else "No such solution"))
