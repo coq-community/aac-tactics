@@ -72,7 +72,7 @@ let print rlt ir m (context : EConstr.rel_context) : unit Proofview.tactic =
   if Search_monad.count m = 0
   then
     (
-      Tacticals.tclFAIL 0  (Pp.str "No subterm modulo AC")
+      Tacticals.tclFAIL (Pp.str "No subterm modulo AC")
     )
   else
     let _ = Feedback.msg_notice (Pp.str "All solutions:") in
