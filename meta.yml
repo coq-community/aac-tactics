@@ -54,6 +54,9 @@ supported_ocaml_versions:
     text: 4.05.0 or later
     opam: '{>= "4.05.0"}'
 
+tested_coq_nix_versions:
+- coq_version: 'master'
+
 tested_coq_opam_versions:
 - version: dev
 
