@@ -23,7 +23,7 @@ build: ["dune" "build" "-p" name "-j" jobs]
 depends: [
   "ocaml" {>= "4.05.0"}
   "dune" {>= "2.5"}
-  "coq" {= "dev"}
+  "coq" {>= "8.15" & < "8.16~"}
 ]
 
 tags: [
