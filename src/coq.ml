@@ -83,8 +83,7 @@ let tclDEBUG msg =
 let tclPRINT =
   let open Proofview in
   Proofview.Goal.enter (fun goal ->
-      let _ = Feedback.msg_notice (Printer.pr_goal (Proofview.Goal.print goal)) in                  
-      tclUNIT ())
+      let _ = Feedback.msg_notice (Printer.Debug.pr_goal goal) in tclUNIT ())
 
 let show_proof pstate : unit =
   let sigma, env = Declare.Proof.get_current_context pstate in
