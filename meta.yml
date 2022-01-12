@@ -55,10 +55,10 @@ supported_ocaml_versions:
     opam: '{>= "4.05.0"}'
 
 tested_coq_opam_versions:
-- version: dev
+- version: '8.15'
 
 tested_coq_nix_versions:
-- coq_version: 'v8.15'
+- coq_version: '8.15'
 
 namespace: AAC_tactics
 
