@@ -108,10 +108,11 @@ Namely, it contains instances for:
 
 - Peano naturals	(`Import Instances.Peano.`)
 - Z binary numbers	(`Import Instances.Z.`)
+- Lists    		(`Import Instances.Lists.`)
 - N binary numbers	(`Import Instances.N.`)
 - P binary numbers	(`Import Instances.P.`)
 - Rational numbers	(`Import Instances.Q.`)
-- Prop			(`Import Instances.Prop_ops.`)
+- Prop    		(`Import Instances.Prop_ops.`)
 - Booleans		(`Import Instances.Bool.`)
 - Relations		(`Import Instances.Relations.`)
 - all of the above	(`Import Instances.All.`)
