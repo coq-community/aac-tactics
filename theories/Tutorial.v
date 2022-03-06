@@ -12,7 +12,7 @@
    lines, or add them to your .coqrc files, replacing "."  with the
    path to the [aac_tactics] library. *)
 
-Require PeanoNat ZArith Lia.
+Require PeanoNat ZArith List Permutation Lia.
 
 From AAC_tactics Require Import AAC.
 From AAC_tactics Require Instances.
@@ -434,4 +434,11 @@ Section Examples.
 
 End Examples.
 
+Section Permut.
+  Import List ListNotations Permutation.
+  Import Instances.Lists.
 
+  Goal Permutation ([1] ++ [2]) ([2] ++ [1]).
+    aac_reflexivity.
+  Qed.
+End Permut.

@@ -5,8 +5,7 @@
 (*                                                                         *)
 (*       Copyright 2009-2010: Thomas Braibant, Damien Pous.                *)
 (***************************************************************************)
-
-Require List.
+Require List Permutation.
 Require PeanoNat NArith.
 Require ZArith Zminmax.
 Require QArith Qminmax.
@@ -16,7 +15,6 @@ From AAC_tactics
 Require Export AAC.
 
 (** Instances for aac_rewrite.*)
-
 
 (* This one is not declared as an instance: this interferes badly with setoid_rewrite *)
 Lemma eq_subr {X} {R} `{@Reflexive X R}: subrelation eq R.
@@ -51,7 +49,6 @@ Module Peano.
 
 End Peano.
 
-
 Module Z.
   Import ZArith Zminmax.
   Open Scope Z_scope.
@@ -79,17 +76,25 @@ Module Z.
 End Z.
 
 Module Lists.
-   Import List.
+  Import List Permutation.
   #[global] Instance aac_append_Assoc {A} : Associative eq (@app A) := @app_assoc A.
-  #[global] Instance aac_nil_append  {A} : @Unit (list A) eq (@app A) (@nil A) := Build_Unit _ (@app A) (@nil A) (@app_nil_l A) (@app_nil_r A).
+  #[global] Instance aac_nil_append  {A} : Unit eq (@app A) (@nil A) :=
+    Build_Unit _ (@app A) (@nil A) (@app_nil_l A) (@app_nil_r A).
   #[global] Instance aac_append_Proper {A} : Proper (eq ==> eq ==> eq) (@app A).
-   Proof.
-     repeat intro.
-     subst.
-     reflexivity.
-   Qed.
-End Lists.
+  Proof.
+    repeat intro.
+    subst.
+    reflexivity.
+  Qed.
 
+  #[global] Instance aac_append_Permutation_Assoc {A} : Associative (@Permutation A) (@app A) :=
+    fun x y z => eq_ind_r (fun l => Permutation l _) (Permutation_refl (app (app x y) z)) (app_assoc x y z).
+  #[global] Instance aac_append_Permutation_Comm {A} : Commutative (@Permutation A) (@app A) :=
+    @Permutation_app_comm A.
+  #[global] Instance aac_nil_Permutation_append {A} : Unit (@Permutation A) (@app A) (@nil A) :=
+    Build_Unit (@Permutation A) (@app A) (@nil A) (fun x => Permutation_refl x)
+     (fun x => eq_ind_r (fun l => Permutation l _) (Permutation_refl x) (app_nil_r x)).
+End Lists.
 
 Module N.
   Import NArith.
@@ -274,13 +279,14 @@ End Relations.
 Module All.
   Export Peano.
   Export Z.
+  Export Lists.
   Export P.
   Export N.
   Export Prop_ops.
   Export Bool.
   Export Relations.
 End All.
- 
+
 (* Here, we should not see any instance of our classes.
    Print HintDb typeclass_instances.
 *)
