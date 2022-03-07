@@ -77,6 +77,7 @@ End parameters.
 
 Section morphism.
   Import NArith PeanoNat.
+  Import Instances.N Instances.Peano.
   Open Scope nat_scope.
 
   (** Typically, although [N_of_nat] is a proper morphism from
@@ -285,6 +286,7 @@ End V.
 
 (** *** 5. Rewriting too much things.  *)
 Section W.
+  Import Instances.Peano.
   Variables a b c: nat.
   Hypothesis H: 0 = c.
 
@@ -310,6 +312,7 @@ End W.
 
 (** *** 6. Rewriting nullifiable patterns.  *)
 Section Z.
+  Import Instances.Peano.
 
 (** If the pattern of the rewritten hypothesis does not contain "hard"
 symbols (like constants, function symbols, AC or A symbols without
@@ -371,4 +374,3 @@ still unclear how to handle properly this kind of situation : we plan
 to investigate on this in the future *)
 
 End Z.
-

@@ -32,8 +32,7 @@ Require Import FMapPositive FMapFacts.
 Require Import RelationClasses Equality.
 Require Export Morphisms.
 
-From AAC_tactics
-Require Import Utils Constants.
+From AAC_tactics Require Import Utils Constants.
 
 Set Implicit Arguments.
 Set Asymmetric Patterns.
@@ -88,9 +87,8 @@ Register aac_lift_equivalence as aac_tactics.internal.aac_lift_equivalence.
 
 (** simple instances, when we have a subrelation, or an equivalence *)
 
-#[global]
-Instance aac_lift_subrelation {X} {R} {E} {HE: Equivalence E}
-  {HR: @Transitive X R} {HER: subrelation E R}: AAC_lift  R E | 3.
+#[export] Instance aac_lift_subrelation {X} {R} {E} {HE: Equivalence E}
+ {HR: @Transitive X R} {HER: subrelation E R} : AAC_lift R E | 3.
 Proof.
   constructor; trivial.
   intros ? ? H ? ? H'. split; intro G.
@@ -98,11 +96,8 @@ Proof.
    rewrite H, G. apply HER. symmetry. apply H'.
 Qed.
 
-#[global]
-Instance aac_lift_proper {X} {R : relation X} {E} {HE: Equivalence E}
-  {HR: Proper (E==>E==>iff) R}: AAC_lift  R E | 4 := {}.
-
-
+#[export] Instance aac_lift_proper {X} {R : relation X} {E}
+ {HE: Equivalence E} {HR: Proper (E==>E==>iff) R} : AAC_lift  R E | 4 := {}.
 
 Module Internal.
 (** * Utilities for the evaluation function *)
@@ -132,7 +127,7 @@ Section copy.
   Lemma copy_Psucc : forall n x, R (copy (Pos.succ n) x) (plus x (copy n x)).
   Proof. intros; unfold copy; rewrite Prect_succ. reflexivity. Qed.
 
-  Global Instance copy_compat n: Proper (R ==> R) (copy n).
+  #[export] Instance copy_compat n: Proper (R ==> R) (copy n).
   Proof.
     unfold copy.
     induction n using Pind; intros x y H.
