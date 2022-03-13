@@ -363,10 +363,10 @@ Section AAC_normalise.
     aac_normalise.
   Abort.
 
-  Print HintDb typeclass_instances.
+  (* Print HintDb typeclass_instances. *)
   Goal Z.max (a+b) (b+a) = a+b.
     aac_reflexivity.
-    Show Proof.
+    (* Show Proof. *)
   Abort.
   
 End AAC_normalise.
