@@ -36,13 +36,15 @@ Set Asymmetric Patterns.
 
 Local Open Scope signature_scope.
 
+Universe u.
+
 (** ** Environments for the reification process
 
   We use positive maps to index elements. *)
 
 Section sigma.
   Definition sigma := PositiveMap.t.
-  Definition sigma_get A (null : A) (map : sigma A) (n : positive) : A :=
+  Definition sigma_get (A:Type) (null : A) (map : sigma A) (n : positive) : A :=
     match PositiveMap.find n map with
       | None => null
       | Some x => x
@@ -75,7 +77,7 @@ Register Unit as aac_tactics.classes.Unit.
 (** Class used to find the equivalence relation on which operations
    are A or AC, starting from the relation appearing in the goal *)
 
-Class AAC_lift X (R: relation X) (E : relation X) := {
+Class AAC_lift (X:Type) (R: relation X) (E : relation X) := {
   aac_lift_equivalence : Equivalence E;
   aac_list_proper : Proper (E ==> E ==> iff) R
                                                     }.
@@ -84,7 +86,7 @@ Register aac_lift_equivalence as aac_tactics.internal.aac_lift_equivalence.
 
 (** simple instances, when we have a subrelation, or an equivalence *)
 
-#[export] Instance aac_lift_subrelation {X} {R} {E} {HE: Equivalence E}
+#[export] Instance aac_lift_subrelation {X:Type} {R} {E} {HE: Equivalence E}
  {HR: @Transitive X R} {HER: subrelation E R} : AAC_lift R E | 3.
 Proof.
   constructor; trivial.
@@ -93,7 +95,7 @@ Proof.
    rewrite H, G. apply HER. symmetry. apply H'.
 Qed.
 
-#[export] Instance aac_lift_proper {X} {R : relation X} {E}
+#[export] Instance aac_lift_proper {X:Type} {R : relation X} {E}
  {HE: Equivalence E} {HR: Proper (E==>E==>iff) R} : AAC_lift  R E | 4 := {}.
 
 (** ** Utilities for the evaluation function *)
@@ -102,7 +104,7 @@ Module Internal.
 
 Section copy.
 
-  Context {X} {R} {HR: @Equivalence X R} {plus}
+  Context {X:Type} {R} {HR: @Equivalence X R} {plus}
    (op: Associative R plus) (op': Commutative R plus) (po: Proper (R ==> R ==> R) plus).
 
   (* copy n x = x+...+x (n times) *)
@@ -141,7 +143,7 @@ End copy.
 
 Module Sym.
   Section t.
-    Context {X} {R : relation X} .
+    Context {X:Type} {R : relation X} .
    
     (** type of an arity  *)
     Fixpoint type_of  (n: nat) :=
@@ -186,7 +188,7 @@ End Sym.
 
 Module Bin.
   Section t.
-    Context {X} {R: relation X}.
+    Context {X:Type} {R: relation X}.
 
     Record pack := mk_pack {
       value:> X -> X -> X;
@@ -207,7 +209,7 @@ End Bin.
 (** ** Reification, normalisation, and decision  *)
 
 Section s.
-  Context {X} {R: relation X} {E: @Equivalence X R}.
+  Context {X:Type@{u}} {R: relation X} {E: @Equivalence X R}.
   Infix "==" := R (at level 80).
 
   (* We use environments to store the various operators and the
@@ -370,18 +372,18 @@ Section s.
   (** *** Normalisation *)
 
   #[universes(template)]
-  Inductive discr {A} : Type :=
+  Inductive discr {A:Type} : Type :=
   | Is_op : A -> discr
   | Is_unit : idx -> discr
   | Is_nothing : discr .
  
   (* This is called sum in the std lib *)
   #[universes(template)]
-  Inductive m {A} {B} :=
+  Inductive m {A B:Type} :=
   | left : A -> m
   | right : B -> m.
 
-  Definition comp A B (merge : B -> B -> B) (l : B) (l' : @m A B) : @m A B :=
+  Definition comp (A B:Type) (merge : B -> B -> B) (l : B) (l' : @m A B) : @m A B :=
     match l' with
       | left _ => right l
       | right l' => right (merge l l')
@@ -968,9 +970,8 @@ Local Ltac internal_normalize :=
 
 
 (** ** Lemmas for performing transitivity steps given an AAC_lift instance *)
-
 Section t.
-  Context `{AAC_lift}.
+  Context {X:Type@{u}} `{AAC_lift X}.
 
   Lemma lift_transitivity_left  (y x z : X): E x y -> R y z -> R x z.
   Proof. destruct H as [Hequiv Hproper]; intros G;rewrite G. trivial. Qed.
@@ -984,7 +985,6 @@ Section t.
   Register lift_transitivity_left as aac_tactics.internal.lift_transitivity_left.
   Register lift_transitivity_right as aac_tactics.internal.lift_transitivity_right.
   Register lift_reflexivity as aac_tactics.internal.lift_reflexivity.
-
 End t.
        
 Declare ML Module "aac_plugin:coq-aac-tactics.plugin".
