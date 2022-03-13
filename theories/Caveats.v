@@ -6,21 +6,16 @@
 (*       Copyright 2009-2010: Thomas Braibant, Damien Pous.                *)
 (***************************************************************************)
 
-(** * Currently known caveats and limitations of the [aac_tactics] library.
+(** * Currently known caveats and limitations of AAC Tactics *)
 
-   Depending on your installation, either uncomment the following two
-   lines, or add them to your .coqrc files, replacing "."
-   with the path to the [aac_tactics] library
-*)
-
-Require NArith PeanoNat.
-
+From Coq Require NArith PeanoNat.
 From AAC_tactics Require Import AAC.
 From AAC_tactics Require Instances.
 
 (** ** Limitations *)
 
-(** *** 1. Dependent parameters
+(** *** Dependent parameters
+
    The type of the rewriting hypothesis must be of the form
 
    [forall (x_1: T_1) ... (x_n: T_n), R l r],
@@ -70,7 +65,7 @@ Section parameters.
 End parameters.
 
 
-(** *** 2. Exogeneous morphisms
+(** *** Exogeneous morphisms
 
    We do not handle `exogeneous' morphisms: morphisms that move from
    type [T] to some other type [T']. *)
@@ -116,7 +111,7 @@ Section morphism.
 End morphism.
 
 
-(** *** 3. Treatment of variance with inequations.
+(** *** Treatment of variance with inequations
 
    We do not take variance into account when we compute the set of
    solutions to a matching problem modulo AC. As a consequence,
@@ -146,11 +141,10 @@ Section ineq.
 
 End ineq. 
 
-
-
 (** ** Caveats  *)
 
-(** *** 1. Special treatment for units.
+(** *** Special treatment for units
+
    [S O] is considered as a unit for multiplication whenever a [Peano.mult]
    appears in the goal. The downside is that [S x] does not match [1],
    and [1] does not match [S(0+0)] whenever [Peano.mult] appears in
@@ -193,11 +187,12 @@ End Peano.
 
 
 
-(** *** 2. Existential variables.
-We implemented an algorithm for _matching_ modulo AC, not for
-_unifying_ modulo AC. As a consequence, existential variables
-appearing in a goal are considered as constants, they will not be
-instantiated. *)
+(** *** Existential variables
+
+  We implemented an algorithm for _matching_ modulo AC, not for
+  _unifying_ modulo AC. As a consequence, existential variables
+  appearing in a goal are considered as constants, they will not be
+  instantiated. *)
 
 Section evars.
   Import ZArith.
@@ -221,7 +216,7 @@ Section evars.
 End evars.
 
 
-(** *** 3. Distinction between [aac_rewrite] and [aacu_rewrite] *)
+(** *** Distinction between [aac_rewrite] and [aacu_rewrite] *)
 
 Section U.
   Context {X} {R} {E: @Equivalence X R}
@@ -256,7 +251,7 @@ Section U.
 
 End U.
 
-(** *** 4. Rewriting units *)
+(** *** Rewriting units *)
 Section V.
   Context {X} {R} {E: @Equivalence X R}
   {dot}  {dot_A: Associative R dot} {dot_Proper: Proper (R ==> R ==> R) dot}
@@ -284,7 +279,7 @@ Section V.
   Qed.
 End V.
 
-(** *** 5. Rewriting too much things.  *)
+(** *** Rewriting too many things  *)
 Section W.
   Import Instances.Peano.
   Variables a b c: nat.
@@ -310,7 +305,7 @@ Section W.
 
 End W.
 
-(** *** 6. Rewriting nullifiable patterns.  *)
+(** *** Rewriting nullifiable patterns *)
 Section Z.
   Import Instances.Peano.
 
@@ -338,14 +333,12 @@ Goal a+b*c = c.
      *)
 Abort.
 
-(** **** If the pattern is a unit or can be instantiated to be equal
-   to a unit:
+(** *** If the pattern is a unit or can be instantiated to be equal to a unit
   
    The heuristic is to make the unit appear at each possible position
    in the term, e.g. transforming [a] into [1*a] and [a*1], but this
    process is not recursive (we will not transform [1*a]) into
    [(1+0*1)*a] *)
-
 Goal a+b+c = c.
  
   aac_instances H0 [mult].            
@@ -355,7 +348,10 @@ Goal a+b+c = c.
   (** 7 solutions, we miss solutions like [(a+b+c+0*(1+0*[]))]*)
 Abort.
 
-(** *** Another example of the former case is the following, where the hypothesis can be instantiated to be equal to [1] *)
+(** *** Another example of the former case
+ 
+  In the following, the hypothesis can be instantiated
+  to be equal to [1]. *)
 Hypothesis H : forall x y, (x+y)*x = x*x + y *x.
 Goal a*a+b*a + c = c.
   (** Here, only one solution if we use the aac_instance tactic  *)
