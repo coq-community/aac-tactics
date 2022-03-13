@@ -379,11 +379,11 @@ Section s.
  
   (* This is called sum in the std lib *)
   #[universes(template)]
-  Inductive m {A B:Type} :=
+  Inductive m {A:Type} {B:Type} :=
   | left : A -> m
   | right : B -> m.
 
-  Definition comp (A B:Type) (merge : B -> B -> B) (l : B) (l' : @m A B) : @m A B :=
+  Definition comp (A:Type) (B:Type) (merge : B -> B -> B) (l : B) (l' : @m A B) : @m A B :=
     match l' with
       | left _ => right l
       | right l' => right (merge l l')
