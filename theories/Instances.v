@@ -5,21 +5,16 @@
 (*                                                                         *)
 (*       Copyright 2009-2010: Thomas Braibant, Damien Pous.                *)
 (***************************************************************************)
-Require List Permutation.
-Require PeanoNat NArith.
-Require ZArith Zminmax.
-Require QArith Qminmax.
-Require Relations.
 
+(** * Instances for AAC Tactics *)
+
+From Coq Require PeanoNat ZArith Zminmax NArith List Permutation.
+From Coq Require QArith Qminmax Relations.
 From AAC_tactics Require Export AAC.
-
-(** Instances for aac_rewrite.*)
 
 (* This one is not declared as an instance: this interferes badly with setoid_rewrite *)
 Lemma eq_subr {X} {R} `{@Reflexive X R}: subrelation eq R.
 Proof. intros x y ->. reflexivity. Qed.
-
-(* At the moment, all the instances are exported even if they are packaged into modules. Even using LocalInstances in fact*)
 
 Module Peano.
   Import PeanoNat.
@@ -86,14 +81,10 @@ Module Lists.
   #[export] Instance aac_nil_append  {A} : Unit eq (@app A) (@nil A) :=
     Build_Unit _ (@app A) (@nil A) (@app_nil_l A) (@app_nil_r A).
   #[export] Instance aac_append_Proper {A} : Proper (eq ==> eq ==> eq) (@app A).
-  Proof.
-    repeat intro.
-    subst.
-    reflexivity.
-  Qed.
+  Proof. repeat intro; subst; reflexivity. Qed.
 
-  #[export] Instance aac_append_Permutation_Assoc {A} : Associative (@Permutation A) (@app A) :=
-    fun x y z => eq_ind_r (fun l => Permutation l _) (Permutation_refl (app (app x y) z)) (app_assoc x y z).
+  #[export] Instance aac_append_Permutation_Assoc {A} : Associative (@Permutation A) (@app A).
+  Proof. repeat intro; rewrite app_assoc; apply Permutation_refl. Qed.
   #[export] Instance aac_append_Permutation_Comm {A} : Commutative (@Permutation A) (@app A) :=
     @Permutation_app_comm A.
   #[export] Instance aac_nil_Permutation_append {A} : Unit (@Permutation A) (@app A) (@nil A) :=
@@ -123,7 +114,7 @@ Module N.
   #[export] Instance aac_zero  : Unit eq Nplus (0)%N :=
     Build_Unit eq Nplus (0)%N Nplus_0_l Nplus_0_r.
   #[export] Instance aac_zero_max : Unit eq N.max 0 :=
-    Build_Unit eq N.max 0 N.max_0_l N.max_0_r. 
+    Build_Unit eq N.max 0 N.max_0_l N.max_0_r.
    
   (* We also provide liftings from le to eq *)
   #[export] Instance preorder_le : PreOrder N.le :=
@@ -149,7 +140,7 @@ Module P.
   #[export] Instance aac_Pmax_Assoc : Associative eq Pos.max :=  Pos.max_assoc.
   #[export] Instance aac_Pmax_Idem : Idempotent eq Pos.max :=  Pos.max_idempotent.
 
-  (*  TODO : add this lemma in the stdlib *)
+  (* TODO: add this lemma in the stdlib *)
   Lemma Pmult_1_l (x : positive) : 1 * x = x.
   Proof. reflexivity. Qed.
 
@@ -295,15 +286,15 @@ Module Relations.
   #[export] Instance clos_refl_trans_incr T : Proper (inclusion T ==> inclusion T) (clos_refl_trans T).
   Proof.
     intros R S H x y Hxy. induction Hxy.
-      constructor 1. apply H. assumption.
-      constructor 2.
-      econstructor 3; eauto 3.
+    constructor 1. apply H. assumption.
+    constructor 2.
+    econstructor 3; eauto 3.
   Qed.
   #[export] Instance clos_refl_trans_compat T : Proper (same_relation T ==> same_relation T) (clos_refl_trans T).
   Proof. intros R S H; split; apply clos_refl_trans_incr, H. Qed.
 
   #[export] Instance preorder_inclusion T : PreOrder (inclusion T).
-  Proof. constructor; unfold Reflexive, Transitive, inclusion; intuition.   Qed.
+  Proof. constructor; unfold Reflexive, Transitive, inclusion; intuition. Qed.
 
   #[export] Program Instance lift_inclusion_same_relation T : AAC_lift (inclusion T) (same_relation T) :=
     Build_AAC_lift (eq_same_relation T) _.

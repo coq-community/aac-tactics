@@ -6,7 +6,7 @@
 (*       Copyright 2009-2010: Thomas Braibant, Damien Pous.                *)
 (***************************************************************************)
 
-(** * Theory file for the aac_rewrite tactic
+(** * Theory for AAC Tactics
 
    We define several base classes to package associative and possibly
    commutative/idempotent operators, and define a data-type for reified (or
@@ -26,12 +26,9 @@
    where one occurrence of [+] operates on nat while the other one
    operates on positive. *)
 
-Require Import Arith NArith.
-Require Import List.
-Require Import FMapPositive FMapFacts.
-Require Import RelationClasses Equality.
-Require Export Morphisms.
-
+From Coq Require Import Arith NArith List.
+From Coq Require Import FMapPositive FMapFacts RelationClasses Equality.
+From Coq Require Export Morphisms.
 From AAC_tactics Require Import Utils Constants.
 
 Set Implicit Arguments.
@@ -39,7 +36,9 @@ Set Asymmetric Patterns.
 
 Local Open Scope signature_scope.
 
-(** * Environments for the reification process: we use positive maps to index elements *)
+(** ** Environments for the reification process
+
+  We use positive maps to index elements. *)
 
 Section sigma.
   Definition sigma := PositiveMap.t.
@@ -56,8 +55,7 @@ Section sigma.
   Register sigma_empty as aac_tactics.sigma.empty.
 End sigma.
 
-
-(** * Classes for properties of operators *)
+(** ** Classes for properties of operators *)
 
 Class Associative (X:Type) (R:relation X) (dot: X -> X -> X) :=
   law_assoc : forall x y z, R (dot x (dot y z)) (dot (dot x y) z).
@@ -73,7 +71,6 @@ Register Associative as aac_tactics.classes.Associative.
 Register Commutative as aac_tactics.classes.Commutative.
 Register Idempotent as aac_tactics.classes.Idempotent.
 Register Unit as aac_tactics.classes.Unit.
-
 
 (** Class used to find the equivalence relation on which operations
    are A or AC, starting from the relation appearing in the goal *)
@@ -99,8 +96,9 @@ Qed.
 #[export] Instance aac_lift_proper {X} {R : relation X} {E}
  {HE: Equivalence E} {HR: Proper (E==>E==>iff) R} : AAC_lift  R E | 4 := {}.
 
+(** ** Utilities for the evaluation function *)
+
 Module Internal.
-(** * Utilities for the evaluation function *)
 
 Section copy.
 
@@ -137,9 +135,9 @@ Section copy.
 
 End copy.
 
-(** * Packaging structures *)
+(** ** Packaging structures *)
 
-(** ** free symbols  *)
+(** *** Free symbols  *)
 
 Module Sym.
   Section t.
@@ -184,7 +182,7 @@ Module Sym.
 
 End Sym.
   
-(** ** binary operations *)
+(** *** Binary operations *)
 
 Module Bin.
   Section t.
@@ -206,7 +204,7 @@ Module Bin.
 End Bin.
 
 
-(** * Reification, normalisation, and decision  *)
+(** ** Reification, normalisation, and decision  *)
 
 Section s.
   Context {X} {R: relation X} {E: @Equivalence X R}.
@@ -242,8 +240,9 @@ Section s.
   #[local]
   Hint Resolve e_bin e_unit: typeclass_instances.
 
-  (** ** Almost normalised syntax
-     a term in [T] is in normal form if:
+  (** *** Almost normalised syntax
+
+     A term in [T] is in normal form if:
      - sums do not contain sums
      - products do not contain products
      - there are no unary sums or products
@@ -298,7 +297,7 @@ Section s.
  
 
 
-  (** ** Evaluation from syntax to the abstract domain *)
+  (** *** Evaluation from syntax to the abstract domain *)
 
   Fixpoint eval u: X :=
     match u with
@@ -368,7 +367,7 @@ Section s.
     match Bin.idem (e_bin i) with Some _ => true | None => false end.
 
 
-  (** ** Normalisation *)
+  (** *** Normalisation *)
 
   #[universes(template)]
   Inductive discr {A} : Type :=
@@ -514,7 +513,7 @@ Section s.
       | vcons _ u l => vcons (norm u) (vnorm l)
     end.
 
-  (** ** Correctness *)
+  (** *** Correctness *)
 
   Lemma is_unit_of_Unit  : forall i j : idx,
    is_unit_of i j = true -> Unit R (Bin.value (e_bin i)) (eval (unit j)).
@@ -549,17 +548,16 @@ Section s.
   Proof.
     destruct ((e_bin i)); auto.
   Qed.
-  #[local]
-  Hint Resolve Binvalue_Proper Binvalue_Associative Binvalue_Commutative : core.
+  #[local] Hint Resolve Binvalue_Proper Binvalue_Associative Binvalue_Commutative : core.
 
   (** auxiliary lemmas about sums  *)
 
-  #[local]
-  Hint Resolve is_unit_of_Unit : core.
+  #[local] Hint Resolve is_unit_of_Unit : core.
   Section sum_correctness.
     Variable i : idx.
     Variable is_unit : idx -> bool.
-    Hypothesis is_unit_sum_Unit : forall j, is_unit j = true->  @Unit X R (Bin.value (e_bin i)) (eval (unit j)).
+    Hypothesis is_unit_sum_Unit : forall j, is_unit j = true ->
+      @Unit X R (Bin.value (e_bin i)) (eval (unit j)).
 
     Inductive is_sum_spec_ind : T ->  @discr (mset T) -> Prop :=
     | is_sum_spec_op : forall j l, j = i -> is_sum_spec_ind (sum j l) (Is_op l)
@@ -969,8 +967,7 @@ Local Ltac internal_normalize :=
   compute [Internal.eval Utils.fold_map Internal.copy Prect]; simpl.
 
 
-(** * Lemmas for performing transitivity steps
-   given an instance of AAC_lift *)
+(** ** Lemmas for performing transitivity steps given an AAC_lift instance *)
 
 Section t.
   Context `{AAC_lift}.

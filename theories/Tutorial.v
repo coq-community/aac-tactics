@@ -6,14 +6,9 @@
 (*       Copyright 2009-2010: Thomas Braibant, Damien Pous.                *)
 (***************************************************************************)
 
-(** * Tutorial for using the [aac_tactics] library.
+(** * Tutorial for using the AAC Tactics library *)
 
-   Depending on your installation, either modify the following two
-   lines, or add them to your .coqrc files, replacing "."  with the
-   path to the [aac_tactics] library. *)
-
-Require PeanoNat ZArith List Permutation Lia.
-
+From Coq Require PeanoNat ZArith List Permutation Lia.
 From AAC_tactics Require Import AAC.
 From AAC_tactics Require Instances.
 
