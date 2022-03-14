@@ -232,7 +232,8 @@ let aac_reflexivity : unit Proofview.tactic =
         mkApp (Coq.get_efresh (Theory.Stubs.lift_reflexivity),
 	       [| x; r; lift.e.Coq.Equivalence.eq; lift.lift; reflexive |])
       in
-      Unsafe.tclEVARS sigma 
+      Unsafe.tclEVARS sigma
+      <*> Coq.tclRETYPE lift_reflexivity
       <*> Tactics.apply lift_reflexivity
       <*> (let concl = Goal.concl goal in
            tclEVARMAP >>= fun sigma ->

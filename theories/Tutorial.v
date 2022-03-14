@@ -432,7 +432,7 @@ Section Lists.
   Import List Permutation.
   Import Instances.Lists.
 
-  Variables (X : Set) (l1 l2 l3 : list X).
+  Variables (X : Type) (l1 l2 l3 : list X).
 
   Goal l1 ++ (l2 ++ l3) = (l1 ++ l2) ++ l3.
     aac_reflexivity.
