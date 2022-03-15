@@ -6,19 +6,20 @@
 (*       Copyright 2009-2010: Thomas Braibant, Damien Pous.                *)
 (***************************************************************************)
 
+(** * Utility functions and results *)
 
-Require Import Arith NArith.
-Require Import List.
-Require Import FMapPositive FMapFacts.
-Require Import RelationClasses Equality.
+From Coq Require Import Arith NArith List.
+From Coq Require Import FMapPositive FMapFacts RelationClasses Equality.
 
 Set Implicit Arguments.
 Set Asymmetric Patterns.
 
-(** * Utilities for positive numbers
-   which we use as:
-     - indices for morphisms and symbols
-     - multiplicity of terms in sums *)
+(** ** Utilities for positive numbers
+
+ We use positive numbers as:
+ - indices for morphisms and symbols
+ - multiplicity of terms in sums
+*)
 
 Notation idx := positive.
 
@@ -67,7 +68,7 @@ Proof. induction i; destruct j; simpl; try constructor; case (IHi j); intros; co
 Lemma idx_compare_reflect_eq: forall i j, idx_compare i j = Eq -> i=j.
 Proof. intros i j. case (pos_compare_weak_spec i j); intros; congruence. Qed.
 
-(** * Dependent types utilities *)
+(** ** Dependent types utilities *)
 
 Notation cast T H u := (eq_rect _ T u _ H).
 
@@ -97,7 +98,7 @@ Section dep.
 End dep.
 
 
-(** * Utilities about (non-empty) lists and multisets  *)
+(** ** Utilities about (non-empty) lists and multisets  *)
 
 #[universes(template)]
 Inductive nelist (A : Type) : Type :=

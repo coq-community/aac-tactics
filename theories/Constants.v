@@ -13,15 +13,15 @@ Register Init.Datatypes.list as aac_tactics.list.typ.
 Register Init.Datatypes.nil as aac_tactics.list.nil.
 Register Init.Datatypes.cons as aac_tactics.list.cons.
 
-Require BinNums.
+From Coq Require BinNums.
 Register BinNums.positive as aac_tactics.pos.typ.
 Register BinNums.xI as aac_tactics.pos.xI.
 Register BinNums.xO as aac_tactics.pos.xO.
 Register BinNums.xH as aac_tactics.pos.xH.
 
-Require Coq.Classes.Morphisms.
+From Coq Require Classes.Morphisms.
 Register Morphisms.Proper as aac_tactics.coq.classes.morphisms.Proper.
-Require Coq.Classes.RelationClasses.
+From Coq Require Classes.RelationClasses.
 
 Register RelationClasses.Equivalence as aac_tactics.coq.RelationClasses.Equivalence.
 Register RelationClasses.Reflexive as aac_tactics.coq.RelationClasses.Reflexive.
