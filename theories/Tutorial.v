@@ -441,4 +441,10 @@ Section Lists.
   Goal Permutation (l1 ++ l2) (l2 ++ l1).
     aac_reflexivity.
   Qed.
+
+  Hypothesis H : Permutation l1 l2.
+  Goal Permutation (l1 ++ l3) (l3 ++ l2).
+    aac_rewrite H.
+    aac_reflexivity.
+  Qed.
 End Lists.
