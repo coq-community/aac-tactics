@@ -6,14 +6,9 @@
 (*       Copyright 2009-2010: Thomas Braibant, Damien Pous.                *)
 (***************************************************************************)
 
-(** * Tutorial for using the [aac_tactics] library.
+(** * Tutorial for using the AAC Tactics library *)
 
-   Depending on your installation, either modify the following two
-   lines, or add them to your .coqrc files, replacing "."  with the
-   path to the [aac_tactics] library. *)
-
-Require PeanoNat ZArith Lia.
-
+From Coq Require PeanoNat ZArith List Permutation Lia.
 From AAC_tactics Require Import AAC.
 From AAC_tactics Require Instances.
 
@@ -249,12 +244,15 @@ End base.
 Section Peano.
   Import PeanoNat.
 
-  Instance aac_plus_Assoc : Associative eq Nat.add := Nat.add_assoc.
-  Instance aac_plus_Comm : Commutative eq Nat.add :=  Nat.add_comm.
+  Instance aac_add_Assoc : Associative eq Nat.add := Nat.add_assoc.
+  Instance aac_add_Comm : Commutative eq Nat.add :=  Nat.add_comm.
+
+  Instance aac_mul_Comm : Commutative eq Nat.mul := Nat.mul_comm.
+  Instance aac_mul_Assoc : Associative eq Nat.mul := Nat.mul_assoc.
 
   Instance aac_one : Unit eq Nat.mul 1 :=
     Build_Unit eq Nat.mul 1 Nat.mul_1_l Nat.mul_1_r.
-  Instance aac_zero_plus : Unit eq Nat.add O :=
+  Instance aac_zero_add : Unit eq Nat.add O :=
     Build_Unit eq Nat.add (O) Nat.add_0_l Nat.add_0_r.
 
   (** Two (or more) operations may share the same units: in the
@@ -264,9 +262,9 @@ Section Peano.
   Instance aac_max_Comm : Commutative eq Nat.max :=  Nat.max_comm.
   Instance aac_max_Assoc : Associative eq Nat.max := Nat.max_assoc.
 
-  (** Commutative operations may additionally be declared as idempotent
-      this does not change the behaviour of [aac_rewrite], but this enables more simplifications in 
-      [aac_normalise] and [aac_reflexivity]
+  (** Commutative operations may additionally be declared as idempotent.
+      This does not change the behaviour of [aac_rewrite], but this enables
+      more simplifications in [aac_normalise] and [aac_reflexivity].
    *)
   Instance aac_max_Idem : Idempotent eq Nat.max := Nat.max_idempotent.
 
@@ -278,13 +276,12 @@ Section Peano.
     aac_reflexivity.
   Qed.
 
-  (* here we use idempotency *)
+  (** Here, we use idempotency. *)
   Goal Nat.max (a + 0) a = a.
     aac_reflexivity.
   Qed.
    
   (** Furthermore, several operators can be mixed: *)
-
   Hypothesis H : forall x y z, Nat.max (x + y) (x + z) = x + Nat.max y z.
  
   Goal Nat.max (a + b) (c + (a * 1)) = Nat.max c b + a.
@@ -293,7 +290,6 @@ Section Peano.
   Goal Nat.max (a + b) (c + Nat.max (a*1+0) 0) = a + Nat.max b c.
     aac_instances H. aac_rewrite H. aac_reflexivity.
   Qed.
-
  
   (** *** Working with inequations
 
@@ -375,9 +371,6 @@ Section AAC_normalise.
   
 End AAC_normalise.
 
-
-
-
 (** ** Examples from the web page *)
 Section Examples.
 
@@ -434,4 +427,24 @@ Section Examples.
 
 End Examples.
 
+(** ** List examples *)
+Section Lists.
+  Import List Permutation.
+  Import Instances.Lists.
 
+  Variables (X : Type) (l1 l2 l3 : list X).
+
+  Goal l1 ++ (l2 ++ l3) = (l1 ++ l2) ++ l3.
+    aac_reflexivity.
+  Qed.
+
+  Goal Permutation (l1 ++ l2) (l2 ++ l1).
+    aac_reflexivity.
+  Qed.
+
+  Hypothesis H : Permutation l1 l2.
+  Goal Permutation (l1 ++ l3) (l3 ++ l2).
+    aac_rewrite H.
+    aac_reflexivity.
+  Qed.
+End Lists.
