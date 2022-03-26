@@ -1,12 +1,12 @@
-(***************************************************************************)
+(* *********************************************************************** *)
 (*  This is part of aac_tactics, it is distributed under the terms of the  *)
 (*         GNU Lesser General Public License version 3                     *)
 (*              (see file LICENSE for more details)                        *)
 (*                                                                         *)
 (*       Copyright 2009-2010: Thomas Braibant, Damien Pous.                *)
-(***************************************************************************)
+(* *********************************************************************** *)
 
-(** * Tutorial for using the AAC Tactics library *)
+(** * Tutorial for using AAC Tactics *)
 
 From Coq Require PeanoNat ZArith List Permutation Lia.
 From AAC_tactics Require Import AAC.
@@ -143,14 +143,14 @@ Section base.
     Hypothesis H : forall x, x + x == x.
 
     Goal f(a+a)+f(a+a) == f a.
-      (** in case there are several possible solutions, one can print
+      (* in case there are several possible solutions, one can print
         the different solutions using the [aac_instances] tactic (in
         ProofGeneral, look at the *coq* buffer): *)
       aac_instances H.
-      (** the default choice is the occurrence with the smallest
-       possible context (number 0), but one can choose the desired one *)
+      (* the default choice is the occurrence with the smallest
+        possible context (number 0), but one can choose the desired one *)
       aac_rewrite H at 1.           
-      (** now the goal is [f a + f a  == f a], there is only one solution *)     
+      (* now the goal is [f a + f a  == f a], there is only one solution *)     
       aac_rewrite H.
       reflexivity.
     Qed.
@@ -163,9 +163,9 @@ Section base.
     Hypothesis H': forall x, x + x == x.
    
     Goal a*c*d*c*d*b  == a*c*d*b.
-      (** here, there is only one possible occurrence, but several substitutions: *)
+      (* here, there is only one possible occurrence, but several substitutions: *)
       aac_instances H.
-      (** one can select them with the proper keyword: *)
+      (* one can select them with the proper keyword: *)
       aac_rewrite H subst 1.
       aac_rewrite H'.
       aac_reflexivity.
@@ -207,10 +207,10 @@ Section base.
     Hypothesis H: forall x, a*x*a == x.
 
     Goal a*a == 1.
-      (** here, [x] must be instantiated with [1], so that the [aac_*]
+      (* here, [x] must be instantiated with [1], so that the [aac_*]
         tactics give no solutions: *)
       try aac_instances H.           
-      (** while we get solutions with the [aacu_*] tactics: *)     
+      (* while we get solutions with the [aacu_*] tactics: *)     
       aacu_instances H.
       aacu_rewrite H.
       reflexivity.
@@ -220,10 +220,10 @@ Section base.
       out dummy cases in common situations: *)
     Hypothesis H': forall x y z,  x*y + x*z == x*(y+z).
     Goal a*b*c + a*c + a*b == a*(c+b*(1+c)).
-      (** 6 solutions without units  *)
+      (* 6 solutions without units  *)
       aac_instances H'.        
       aac_rewrite H' at 0.
-      (** more than 52 with units *)
+      (* more than 52 with units *)
       aacu_instances H'.
     Abort.
 
@@ -373,7 +373,7 @@ Section AAC_normalise.
   
 End AAC_normalise.
 
-(** ** Examples from the web page *)
+(** ** Examples from previous website *)
 
 Section Examples.
 

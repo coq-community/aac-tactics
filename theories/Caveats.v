@@ -1,12 +1,12 @@
-(***************************************************************************)
+(* *********************************************************************** *)
 (*  This is part of aac_tactics, it is distributed under the terms of the  *)
 (*         GNU Lesser General Public License version 3                     *)
 (*              (see file LICENSE for more details)                        *)
 (*                                                                         *)
 (*       Copyright 2009-2010: Thomas Braibant, Damien Pous.                *)
-(***************************************************************************)
+(* *********************************************************************** *)
 
-(** * Currently known caveats and limitations of AAC Tactics *)
+(** * Currently known limitations and caveats of AAC Tactics *)
 
 From Coq Require NArith PeanoNat.
 From AAC_tactics Require Import AAC.

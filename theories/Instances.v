@@ -1,10 +1,10 @@
-(***************************************************************************)
+(* *********************************************************************** *)
 (*  This is part of aac_tactics, it is distributed under the terms of the  *)
 (*         GNU Lesser General Public License version 3                     *)
 (*              (see file LICENSE for more details)                        *)
 (*                                                                         *)
 (*       Copyright 2009-2010: Thomas Braibant, Damien Pous.                *)
-(***************************************************************************)
+(* *********************************************************************** *)
 
 (** * Instances for AAC Tactics *)
 
@@ -18,6 +18,8 @@ Proof. intros x y ->. reflexivity. Qed.
 
 Module Peano.
   Import PeanoNat.
+
+  (** ** Peano instances *)
 
   #[export] Instance aac_add_Assoc : Associative eq Nat.add := Nat.add_assoc.
   #[export] Instance aac_add_Comm : Commutative eq Nat.add := Nat.add_comm.
@@ -51,6 +53,8 @@ Module Z.
   Import ZArith Zminmax.
   Open Scope Z_scope.
 
+  (** ** Z instances *)
+
   #[export] Instance aac_Zplus_Assoc : Associative eq Zplus :=  Zplus_assoc.
   #[export] Instance aac_Zplus_Comm : Commutative eq Zplus :=  Zplus_comm.
  
@@ -80,6 +84,8 @@ End Z.
 Module Lists.
   Import List Permutation.
 
+  (** ** List instances *)
+
   #[export] Instance aac_append_Assoc {A} : Associative eq (@app A) := @app_assoc A.
   #[export] Instance aac_nil_append  {A} : Unit eq (@app A) (@nil A) :=
     Build_Unit _ (@app A) (@nil A) (@app_nil_l A) (@app_nil_r A).
@@ -98,6 +104,8 @@ End Lists.
 Module N.
   Import NArith.
   Open Scope N_scope.
+
+  (** ** N instances *)
 
   #[export] Instance aac_Nplus_Assoc : Associative eq Nplus := Nplus_assoc.
   #[export] Instance aac_Nplus_Comm : Commutative eq Nplus := Nplus_comm.
@@ -130,6 +138,8 @@ End N.
 Module P.
   Import NArith.
   Open Scope positive_scope.
+
+  (** ** Positive instances *)
 
   #[export] Instance aac_Pplus_Assoc : Associative eq Pplus := Pplus_assoc.
   #[export] Instance aac_Pplus_Comm : Commutative eq Pplus := Pplus_comm.
@@ -164,6 +174,8 @@ End P.
 Module Q.
   Import QArith Qminmax.
 
+  (** ** Q instances *)
+
   #[export] Instance aac_Qplus_Assoc : Associative Qeq Qplus := Qplus_assoc.
   #[export] Instance aac_Qplus_Comm : Commutative Qeq Qplus := Qplus_comm.
  
@@ -191,6 +203,8 @@ Module Q.
 End Q.
 
 Module Prop_ops.
+  (** ** Prop instances *)
+
   #[export] Instance aac_or_Assoc : Associative iff or.
   Proof. unfold Associative; tauto. Qed.
   #[export] Instance aac_or_Comm : Commutative iff or.
@@ -213,6 +227,8 @@ Module Prop_ops.
 End Prop_ops.
 
 Module Bool.
+  (** ** Boolean instances *)
+
   #[export] Instance aac_orb_Assoc : Associative eq orb.
   Proof. unfold Associative; firstorder with bool. Qed.
   #[export] Instance aac_orb_Comm : Commutative eq orb.
@@ -235,6 +251,9 @@ End Bool.
 
 Module Relations.
   Import Relations.Relations.
+
+  (** ** Relation instances *)
+
   Section defs.
     Variable T : Type.
     Variables R S: relation T.

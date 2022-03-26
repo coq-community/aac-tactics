@@ -1,0 +1,20 @@
+GLOBFILES = $(VFILES:.v=.glob)
+CSSFILES = resources/coqdoc.css resources/coqdocjs.css
+JSFILES = resources/config.js resources/coqdocjs.js
+HTMLFILES = resources/header.html resources/footer.html
+COQDOCDIR = docs/coqdoc
+
+COQDOCHTMLFLAGS = --toc --toc-depth 3 --index indexpage --html -s \
+  --interpolate --no-lib-name --parse-comments \
+  --with-header resources/header.html --with-footer resources/footer.html
+
+coqdoc: $(GLOBFILES) $(VFILES) $(CSSFILES) $(JSFILES) $(HTMLFILES)
+	$(SHOW)'COQDOC -d $(COQDOCDIR)'
+	$(HIDE)mkdir -p $(COQDOCDIR)
+	$(HIDE)$(COQDOC) $(COQDOCHTMLFLAGS) $(COQDOCLIBS) -d $(COQDOCDIR) $(VFILES)
+	$(SHOW)'COPY resources'
+	$(HIDE)cp $(CSSFILES) $(JSFILES) $(COQDOCDIR)
+.PHONY: coqdoc
+
+resources/index.html: resources/index.md
+	pandoc -s -o $@ $<

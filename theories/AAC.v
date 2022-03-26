@@ -1,10 +1,10 @@
-(***************************************************************************)
+(* *********************************************************************** *)
 (*  This is part of aac_tactics, it is distributed under the terms of the  *)
 (*         GNU Lesser General Public License version 3                     *)
 (*              (see file LICENSE for more details)                        *)
 (*                                                                         *)
 (*       Copyright 2009-2010: Thomas Braibant, Damien Pous.                *)
-(***************************************************************************)
+(* *********************************************************************** *)
 
 (** * Theory for AAC Tactics
 
@@ -39,7 +39,7 @@ Local Open Scope signature_scope.
 
 (** ** Environments for the reification process *)
 
-(** Positive maps for indexing elements *)
+(** positive maps are used to index elements *)
 Section sigma.
   Definition sigma := PositiveMap.t.
   Definition sigma_get A (null : A) (map : sigma A) (n : positive) : A :=
@@ -73,7 +73,7 @@ Register Idempotent as aac_tactics.classes.Idempotent.
 Register Unit as aac_tactics.classes.Unit.
 
 (** class used to find the equivalence relation on which operations
-   are A or AC, starting from the relation appearing in the goal. *)
+   are A or AC, starting from the relation appearing in the goal *)
 Class AAC_lift X (R: relation X) (E : relation X) := {
   aac_lift_equivalence : Equivalence E;
   aac_list_proper : Proper (E ==> E ==> iff) R
@@ -82,7 +82,6 @@ Register AAC_lift as aac_tactics.internal.AAC_lift.
 Register aac_lift_equivalence as aac_tactics.internal.aac_lift_equivalence.
 
 (** simple instances, when we have a subrelation or an equivalence *)
-
 #[export] Instance aac_lift_subrelation {X} {R} {E} {HE: Equivalence E}
  {HR: @Transitive X R} {HER: subrelation E R} : AAC_lift R E | 3.
 Proof.
@@ -91,7 +90,6 @@ Proof.
    rewrite <- H, G. apply HER, H'.
    rewrite H, G. apply HER. symmetry. apply H'.
 Qed.
-
 #[export] Instance aac_lift_proper {X} {R : relation X} {E}
  {HE: Equivalence E} {HR: Proper (E==>E==>iff) R} : AAC_lift  R E | 4 := {}.
 
@@ -201,8 +199,7 @@ Module Bin.
     Register pack as aac_tactics.bin.pack.
     Register mk_pack as aac_tactics.bin.mkPack.
   End t.
-  (** see #<a href="Instances.html">Instances.v</a># for
-    concrete instances of these classes *)
+  (** see the Instances module for concrete instances of these classes *)
 End Bin.
 
 
@@ -213,7 +210,7 @@ Section s.
   Infix "==" := R (at level 80).
 
   (** we use environments to store the various operators
-    and the morphisms*)
+    and the morphisms *)
  
   Variable e_sym: idx -> @Sym.pack X R.
   Variable e_bin: idx -> @Bin.pack X R.
@@ -330,7 +327,7 @@ Section s.
       case (list_compare_weak_spec compare tcompare_weak_spec n n0); intros; try constructor.
     - destruct v0; simpl; try constructor.
       case_eq (idx_compare i i0); intro Hi; try constructor.
-      (** the [symmetry] is required! *)
+      (* the [symmetry] is required! *)
       apply idx_compare_reflect_eq in Hi. symmetry in Hi. subst.       
       case_eq (vcompare v v0); intro Hv; try constructor.
       rewrite <- (vcompare_reflect_eqdep _ _ _ _ eq_refl Hv). constructor.
@@ -341,7 +338,7 @@ Section s.
       apply cast_eq, eq_nat_dec.
       injection H; intro Hn.
       revert Huv; case (tcompare_weak_spec t t0); intros; try discriminate.
-      (** symmetry required *)
+      (* symmetry required *)
       symmetry in Hn. subst.
       rewrite <- (IHus _ _ eq_refl Huv).
       apply cast_eq, eq_nat_dec.
