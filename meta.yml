@@ -7,6 +7,8 @@ action: true
 plugin: true
 doi: 10.1007/978-3-642-25379-9_14
 branch: master
+coqdoc: true
+coqdoc_index: docs/coqdoc/toc.html
 
 synopsis: >-
   Coq tactics for rewriting universally quantified equations, modulo
@@ -116,6 +118,9 @@ documentation: |
   - Booleans		(`Import Instances.Bool.`)
   - Relations		(`Import Instances.Relations.`)
   - all of the above	(`Import Instances.All.`)
+
+  See also the [latest coqdoc
+  documentation](https://coq-community.org/aac-tactics/docs/coqdoc/toc.html).
   
   To understand the inner workings of the tactics, please refer to
   the `.mli` files as the main source of information on each `.ml` file.

@@ -8,6 +8,7 @@ Follow the instructions on https://github.com/coq-community/templates to regener
 [![Contributing][contributing-shield]][contributing-link]
 [![Code of Conduct][conduct-shield]][conduct-link]
 [![Zulip][zulip-shield]][zulip-link]
+[![coqdoc][coqdoc-shield]][coqdoc-link]
 [![DOI][doi-shield]][doi-link]
 
 [docker-action-shield]: https://github.com/coq-community/aac-tactics/workflows/Docker%20CI/badge.svg?branch=master
@@ -22,6 +23,8 @@ Follow the instructions on https://github.com/coq-community/templates to regener
 [zulip-shield]: https://img.shields.io/badge/chat-on%20zulip-%23c1272d.svg
 [zulip-link]: https://coq.zulipchat.com/#narrow/stream/237663-coq-community-devs.20.26.20users
 
+[coqdoc-shield]: https://img.shields.io/badge/docs-coqdoc-blue.svg
+[coqdoc-link]: https://coq-community.org/aac-tactics/docs/coqdoc/toc.html
 
 [doi-shield]: https://zenodo.org/badge/DOI/10.1007/978-3-642-25379-9_14.svg
 [doi-link]: https://doi.org/10.1007/978-3-642-25379-9_14
@@ -112,6 +115,9 @@ Namely, it contains instances for:
 - Booleans		(`Import Instances.Bool.`)
 - Relations		(`Import Instances.Relations.`)
 - all of the above	(`Import Instances.All.`)
+
+See also the [latest coqdoc
+documentation](https://coq-community.org/aac-tactics/docs/coqdoc/toc.html).
 
 To understand the inner workings of the tactics, please refer to
 the `.mli` files as the main source of information on each `.ml` file.
