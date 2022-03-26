@@ -1,3 +1,11 @@
+(* *********************************************************************** *)
+(*  This is part of aac_tactics, it is distributed under the terms of the  *)
+(*         GNU Lesser General Public License version 3                     *)
+(*              (see file LICENSE for more details)                        *)
+(*                                                                         *)
+(*       Copyright 2009-2010: Thomas Braibant, Damien Pous.                *)
+(* *********************************************************************** *)
+
 Register Init.Datatypes.O as aac_tactics.nat.O.
 Register Init.Datatypes.S as aac_tactics.nat.S.
 Register Init.Datatypes.nat as aac_tactics.nat.type.

@@ -25,3 +25,4 @@ Makefile.coq
 Makefile.coq.conf
 META.coq-aac-tactics
 _build
+docs/
