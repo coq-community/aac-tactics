@@ -9,7 +9,7 @@ on:
       - '**'
 
 jobs:
-  build-js:
+  build-coqdoc:
     runs-on: ubuntu-latest
     steps:
       - name: Set up Git repository
