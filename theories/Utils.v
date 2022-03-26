@@ -44,7 +44,7 @@ Fixpoint idx_compare i j :=
 
 Notation pos_compare := idx_compare (only parsing).
 
-(** Specification predicate for boolean binary functions *)
+(** specification predicate for boolean binary functions *)
 Inductive decide_spec {A} {B} (R : A -> B -> Prop) (x : A) (y : B) : bool -> Prop :=
 | decide_true : R x y -> decide_spec R x y true
 | decide_false : ~(R x y) -> decide_spec R x y false.
@@ -56,14 +56,17 @@ Proof.
    case (IHi j); constructor; congruence.
 Qed.
 
-(** weak specification predicate for comparison functions: only the 'Eq' case is specified *)
+(** weak specification predicate for comparison functions: only the [Eq] case is specified *)
 Inductive compare_weak_spec A: A -> A -> comparison -> Prop :=
 | pcws_eq: forall i, compare_weak_spec i i Eq
 | pcws_lt: forall i j, compare_weak_spec i j Lt
 | pcws_gt: forall i j, compare_weak_spec i j Gt.
 
 Lemma pos_compare_weak_spec: forall i j, compare_weak_spec i j (pos_compare i j).
-Proof. induction i; destruct j; simpl; try constructor; case (IHi j); intros; constructor. Qed.
+Proof.
+  induction i; destruct j; simpl; try constructor;
+    case (IHi j); intros; constructor.
+Qed.
 
 Lemma idx_compare_reflect_eq: forall i j, idx_compare i j = Eq -> i=j.
 Proof. intros i j. case (pos_compare_weak_spec i j); intros; congruence. Qed.
@@ -76,15 +79,14 @@ Section dep.
   Variable U: Type.
   Variable T: U -> Type.
 
-  Lemma cast_eq: (forall u v: U, {u=v}+{u<>v}) ->
-    forall A (H: A=A) (u: T A), cast T H u = u.
+  Lemma cast_eq: (forall u v: U, {u=v}+{u<>v}) -> forall A (H: A=A) (u: T A), cast T H u = u.
   Proof. intros. rewrite <- Eqdep_dec.eq_rect_eq_dec; trivial. Qed.
 
   Variable f: forall A B, T A -> T B -> comparison.
   Definition reflect_eqdep := forall A u B v (H: A=B), @f A B u v = Eq -> cast T H u = v.
 
-  (* these lemmas have to remain transparent to get structural recursion
-     in the lemma [tcompare_weak_spec] below *)
+  (** these lemmas have to remain transparent to get structural recursion
+    in the lemma [tcompare_weak_spec] below *)
   Lemma reflect_eqdep_eq: reflect_eqdep ->
     forall A u v, @f A A u v = Eq -> u = v.
   Proof. intros H A u v He. apply (H _ _ _ _ eq_refl He). Defined.
@@ -97,7 +99,6 @@ Section dep.
   Defined.
 End dep.
 
-
 (** ** Utilities about (non-empty) lists and multisets  *)
 
 #[universes(template)]
@@ -107,7 +108,6 @@ Inductive nelist (A : Type) : Type :=
 
 Register nil as aac_tactics.nelist.nil.
 Register cons as aac_tactics.nelist.cons.
-
 
 Notation "x :: y" := (cons x y).
 
@@ -131,11 +131,9 @@ Definition mset A := nelist (A*positive).
 (** lexicographic composition of comparisons (this is a notation to keep it lazy) *)
 Notation lex e f := (match e with Eq => f | _ => e end).  
 
-
 Section lists.
 
   (** comparison functions *)
-
   Section c.
     Variables A B: Type.
     Variable compare: A -> B -> comparison.
@@ -147,6 +145,7 @@ Section lists.
         | u::h, v::k => lex (compare u v) (list_compare h k)
       end. 
   End c.
+
   Definition mset_compare A B compare: mset A -> mset B -> comparison :=
     list_compare (fun un vm =>
       let '(u,n) := un in
@@ -157,8 +156,8 @@ Section lists.
     Variable A: Type.
     Variable compare: A -> A -> comparison.
     Hypothesis Hcompare: forall u v, compare_weak_spec u v (compare u v).
-    (* this lemma has to remain transparent to get structural recursion
-       in the lemma [tcompare_weak_spec] below *)
+    (** this lemma has to remain transparent to get structural recursion
+       in the lemma [tcompare_weak_spec] below **)
     Lemma list_compare_weak_spec: forall h k,
       compare_weak_spec h k (list_compare compare h k).
     Proof.
@@ -174,8 +173,8 @@ Section lists.
     Variable A: Type.
     Variable compare: A -> A -> comparison.
     Hypothesis Hcompare: forall u v, compare_weak_spec u v (compare u v).
-    (* this lemma has to remain transparent to get structural recursion
-       in the lemma [tcompare_weak_spec] below *)
+    (** this lemma has to remain transparent to get structural recursion
+      in the lemma [tcompare_weak_spec] below *)
     Lemma mset_compare_weak_spec: forall h k,
       compare_weak_spec h k (mset_compare compare h k).
     Proof.
@@ -186,8 +185,7 @@ Section lists.
     Defined.
   End mset_compare_weak_spec.
 
-  (** (sorted) merging functions  *)
-
+  (** (sorted) merging functions *)
   Section m.
     Variable A: Type.
     Variable compare: A -> A -> comparison.
@@ -231,11 +229,10 @@ Section lists.
             in merge_aux
       end.
 
-    (* setting all multiplicities to one, in order to implement idempotency *)
+    (** setting all multiplicities to one, in order to implement idempotency *)
     Definition reduce_mset: mset A -> mset A := nelist_map (fun x => (fst x,xH)).
 
     (** interpretation of a list with a constant and a binary operation *)
-
     Variable B: Type.
     Variable map: A -> B.
     Variable b2: B -> B -> B.
