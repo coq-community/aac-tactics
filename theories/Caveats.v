@@ -372,6 +372,6 @@ Section Z.
   Abort.
 
   (** The behavior of the tactic is not satisfying in this case. It is
-    still unclear how to handle properly this kind of situation : we plan
-    to investigate on this in the future. *)
+    still unclear how to handle properly this kind of situation; we plan
+    to investigate this in the future. *)
 End Z.
