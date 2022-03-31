@@ -55,19 +55,19 @@ Module Z.
 
   (** ** Z instances *)
 
-  #[export] Instance aac_Zplus_Assoc : Associative eq Zplus :=  Zplus_assoc.
-  #[export] Instance aac_Zplus_Comm : Commutative eq Zplus :=  Zplus_comm.
+  #[export] Instance aac_Zplus_Assoc : Associative eq Zplus := Zplus_assoc.
+  #[export] Instance aac_Zplus_Comm : Commutative eq Zplus := Zplus_comm.
  
-  #[export] Instance aac_Zmult_Comm : Commutative eq Zmult :=  Zmult_comm.
-  #[export] Instance aac_Zmult_Assoc : Associative eq Zmult :=  Zmult_assoc.
+  #[export] Instance aac_Zmult_Comm : Commutative eq Zmult := Zmult_comm.
+  #[export] Instance aac_Zmult_Assoc : Associative eq Zmult := Zmult_assoc.
  
-  #[export] Instance aac_Zmin_Comm : Commutative eq Z.min :=  Z.min_comm.
-  #[export] Instance aac_Zmin_Assoc : Associative eq Z.min :=  Z.min_assoc.
-  #[export] Instance aac_Zmin_Idem : Idempotent eq Z.min :=  Z.min_idempotent.
+  #[export] Instance aac_Zmin_Comm : Commutative eq Z.min := Z.min_comm.
+  #[export] Instance aac_Zmin_Assoc : Associative eq Z.min := Z.min_assoc.
+  #[export] Instance aac_Zmin_Idem : Idempotent eq Z.min := Z.min_idempotent.
 
-  #[export] Instance aac_Zmax_Comm : Commutative eq Z.max :=  Z.max_comm.
-  #[export] Instance aac_Zmax_Assoc : Associative eq Z.max :=  Z.max_assoc.
-  #[export] Instance aac_Zmax_Idem : Idempotent eq Z.max :=  Z.max_idempotent.
+  #[export] Instance aac_Zmax_Comm : Commutative eq Z.max := Z.max_comm.
+  #[export] Instance aac_Zmax_Assoc : Associative eq Z.max := Z.max_assoc.
+  #[export] Instance aac_Zmax_Idem : Idempotent eq Z.max := Z.max_idempotent.
  
   #[export] Instance aac_one : Unit eq Zmult 1 :=
     Build_Unit eq Zmult 1 Zmult_1_l Zmult_1_r. 

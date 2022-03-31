@@ -364,13 +364,11 @@ Section AAC_normalise.
     aac_normalise.
   Abort.
 
-  Print HintDb typeclass_instances.
-
   Goal Z.max (a+b) (b+a) = a+b.
     aac_reflexivity.
     Show Proof.
   Abort.
-  
+
 End AAC_normalise.
 
 (** ** Examples from previous website *)
@@ -411,9 +409,12 @@ Section Examples.
   Notation "x ^2" := (x*x) (at level 40).
   Notation "2 ⋅ x" := (x+x) (at level 41).
 
-  Lemma Hbin1: forall x y, (x+y)^2   = x^2 + y^2 +  2⋅x*y. Proof. intros; ring. Qed.
-  Lemma Hbin2: forall x y, x^2 + y^2 = (x+y)^2   + -(2⋅x*y). Proof. intros; ring.  Qed.
-  Lemma Hopp : forall x, x + -x = 0. Proof. apply Zplus_opp_r. Qed.
+  Lemma Hbin1: forall x y, (x+y)^2   = x^2 + y^2 +  2⋅x*y.
+  Proof. intros; ring. Qed.
+  Lemma Hbin2: forall x y, x^2 + y^2 = (x+y)^2   + -(2⋅x*y).
+  Proof. intros; ring. Qed.
+  Lemma Hopp : forall x, x + -x = 0.
+  Proof. apply Zplus_opp_r. Qed.
  
   Variables a b c : Z.
   Hypothesis H : c^2 + 2⋅(a+1)*b  = (a+1+b)^2.

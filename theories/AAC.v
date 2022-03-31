@@ -57,16 +57,17 @@ End sigma.
 
 (** ** Classes for properties of operators *)
 
-Class Associative (X:Type) (R:relation X) (dot: X -> X -> X) :=
+Class Associative (X : Type) (R : relation X) (dot : X -> X -> X) :=
   law_assoc : forall x y z, R (dot x (dot y z)) (dot (dot x y) z).
-Class Commutative (X:Type) (R: relation X) (plus: X -> X -> X) :=
+Class Commutative (X : Type) (R : relation X) (plus : X -> X -> X) :=
   law_comm: forall x y, R (plus x y) (plus y x).
-Class Idempotent (X:Type) (R: relation X) (plus: X -> X -> X) :=
+Class Idempotent (X : Type) (R : relation X) (plus : X -> X -> X) :=
   law_idem: forall x, R (plus x x) x.
-Class Unit (X:Type) (R:relation X) (op : X -> X -> X) (unit:X) := {
+Class Unit (X : Type) (R : relation X) (op : X -> X -> X) (unit : X) := {
   law_neutral_left: forall x, R (op unit x) x;
   law_neutral_right: forall x, R (op x unit) x
-                                                               }.
+}.
+
 Register Associative as aac_tactics.classes.Associative.
 Register Commutative as aac_tactics.classes.Commutative.
 Register Idempotent as aac_tactics.classes.Idempotent.
@@ -74,10 +75,11 @@ Register Unit as aac_tactics.classes.Unit.
 
 (** class used to find the equivalence relation on which operations
    are A or AC, starting from the relation appearing in the goal *)
-Class AAC_lift X (R: relation X) (E : relation X) := {
+Class AAC_lift (X : Type) (R : relation X) (E : relation X) := {
   aac_lift_equivalence : Equivalence E;
   aac_list_proper : Proper (E ==> E ==> iff) R
-                                                    }.
+}.
+
 Register AAC_lift as aac_tactics.internal.AAC_lift.
 Register aac_lift_equivalence as aac_tactics.internal.aac_lift_equivalence.
 
@@ -624,7 +626,8 @@ Section s.
           apply proper; [apply law_comm|reflexivity].     
       - induction k as [[b m]|[b m] k IHk]; simpl; simpl in IHh.
         * destruct (tcompare_weak_spec a b) as [a|a b|a b]; simpl.
-          rewrite  (law_comm _ (copy m (eval a))), law_assoc, <- copy_plus, Pplus_comm; auto.
+          rewrite  (law_comm _ (copy m (eval a))).
+          rewrite law_assoc, <- copy_plus, Pplus_comm; auto.
           rewrite <- law_assoc, IHh. reflexivity.
           rewrite law_comm. reflexivity.
         * simpl in IHk.
@@ -700,8 +703,7 @@ Section s.
     Proof.
       intros; unfold return_sum, run_msets.
       case (is_sum_spec); intros; subst.
-      - rewrite copy_mset_copy.
-        reflexivity.     
+      - rewrite copy_mset_copy; reflexivity.
       - rewrite eval_sum_nil. apply copy_n_unit. auto.
       - reflexivity.
     Qed.
@@ -768,7 +770,7 @@ Section s.
     | is_prd_spec_op :
       forall j l, j = i -> is_prd_spec_ind (prd j l) (Is_op l)
     | is_prd_spec_unit :
-      forall j, is_unit j = true ->  is_prd_spec_ind (unit j) (Is_unit j)
+      forall j, is_unit j = true -> is_prd_spec_ind (unit j) (Is_unit j)
     | is_prd_spec_nothing :
       forall u, is_prd_spec_ind u (Is_nothing).
    
