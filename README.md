@@ -12,10 +12,10 @@ Follow the instructions on https://github.com/coq-community/templates to regener
 [![coqdoc][coqdoc-shield]][coqdoc-link]
 [![DOI][doi-shield]][doi-link]
 
-[docker-action-shield]: https://github.com/coq-community/aac-tactics/workflows/Docker%20CI/badge.svg?branch=master
+[docker-action-shield]: https://github.com/coq-community/aac-tactics/workflows/Docker%20CI/badge.svg?branch=v8.16
 [docker-action-link]: https://github.com/coq-community/aac-tactics/actions?query=workflow:"Docker%20CI"
 
-[nix-action-shield]: https://github.com/coq-community/aac-tactics/workflows/Nix%20CI/badge.svg?branch=master
+[nix-action-shield]: https://github.com/coq-community/aac-tactics/workflows/Nix%20CI/badge.svg?branch=v8.16
 [nix-action-link]: https://github.com/coq-community/aac-tactics/actions?query=workflow:"Nix%20CI"
 
 [contributing-shield]: https://img.shields.io/badge/contributions-welcome-%23f7931e.svg
@@ -49,8 +49,8 @@ such as for binary integer arithmetic and booleans, are provided with the plugin
 - Coq-community maintainer(s):
   - Karl Palmskog ([**@palmskog**](https://github.com/palmskog))
 - License: [GNU Lesser General Public License v3.0 or later](LICENSE)
-- Compatible Coq versions: master (use the corresponding branch or release for other Coq versions)
-- Compatible OCaml versions: 4.05.0 or later
+- Compatible Coq versions: 8.16 (use the corresponding branch or release for other Coq versions)
+- Compatible OCaml versions: 4.09.0 or later
 - Additional dependencies: none
 - Coq namespace: `AAC_tactics`
 - Related publication(s):
