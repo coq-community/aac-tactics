@@ -18,15 +18,14 @@ From AAC_tactics Require Instances.
 
    The type of the rewriting hypothesis must be of the form
 
-   [forall (x_1: T_1) ... (x_n: T_n), R l r],
+   [forall (x_1: T_1) ... (x_n: T_n), R l r]
 
-   where [R] is a relation over some type [T] and such that for all
-   variable [x_i] appearing in the left-hand side ([l]), we actually
-   have [T_i]=[T]. The goal should be of the form [S g d], where [S]
-   is a relation on [T].
+   where <<R>> is a relation over some type <<T>> and such that for all
+   variable <<x_i>> appearing in the left-hand side (<<l>>), we actually
+   have <<T_i = T>>. The goal should be of the form <<S g d>>, where
+   <<S>> is a relation on <<T>>.
 
-   In other words, we cannot instantiate arguments of an exogeneous
-   type.
+   In other words, we cannot instantiate arguments of an exogeneous type.
 *)
 
 Section parameters.
@@ -42,7 +41,10 @@ Section parameters.
 
   Variable f : nat -> X -> X.
 
-  (** in [Hf], the parameter [n] has type [nat], it cannot be instantiated automatically *)
+  (**
+    In [Hf], since the parameter [n] has type [nat],
+    it cannot be instantiated automatically
+  *)
   Hypothesis Hf: forall n x, f n x + x == x.
   Hypothesis Hf': forall n, Proper (R ==> R) (f n).
 
@@ -55,7 +57,7 @@ Section parameters.
     aac_reflexivity.
   Qed.
 
-  (** for the same reason, we cannot handle higher-order parameters (here, [g]) *)
+  (** For the same reason, we cannot handle higher-order parameters (here, [g]) *)
   Hypothesis H : forall g x y, g x + g y == g (x + y).
   Variable g : X -> X.
   Hypothesis Hg : Proper (R ==> R) g.
@@ -70,8 +72,8 @@ End parameters.
 
 (** *** Exogeneous morphisms
 
-   We do not handle `exogeneous' morphisms: morphisms that move from
-   type [T] to some other type [T']. 
+   We do not handle "exogeneous" morphisms: morphisms that move from
+   type <<T>> to some other type <<T'>>.
 *)
 
 Section morphism.
@@ -80,15 +82,19 @@ Section morphism.
 
   Open Scope nat_scope.
 
-  (** typically, although [N_of_nat] is a proper morphism from
-     [@eq nat] to [@eq N], we cannot rewrite under [N_of_nat] *)
+  (**
+   Typically, although [N_of_nat] is a proper morphism from
+   [@eq nat] to [@eq N], we cannot rewrite under [N_of_nat]
+  *)
   Goal forall a b: nat, N_of_nat (a+b-(b+a)) = 0%N.
     intros.
     Fail aac_rewrite Nat.sub_diag.
   Abort.
 
-  (** more generally, this prevents us from rewriting under
-    propositional contexts *)
+  (**
+    More generally, this prevents us from rewriting under
+    propositional contexts
+  *)
   Context {P} {HP : Proper (@eq nat ==> iff) P}.
   Hypothesis H : P 0.
 
@@ -116,10 +122,10 @@ End morphism.
 
 (** *** Treatment of variance with inequations
 
-   We do not take variance into account when we compute the set of
-   solutions to a matching problem modulo AC. As a consequence,
-   [aac_instances] may propose solutions for which [aac_rewrite] will
-   fail, due to the lack of adequate morphisms. 
+  We do not take variance into account when we compute the set of
+  solutions to a matching problem modulo AC. As a consequence,
+  [aac_instances] may propose solutions for which [aac_rewrite] will
+  fail, due to the lack of adequate morphisms.
 *)
 
 Section ineq. 
@@ -150,10 +156,11 @@ End ineq.
 
 (** *** Special treatment for units
 
-   [S O] is considered as a unit for multiplication whenever a [Peano.mult]
-   appears in the goal. The downside is that [S x] does not match [1],
-   and [1] does not match [S(0+0)] whenever [Peano.mult] appears in
-   the goal. *)
+  [S O] is considered as a unit for multiplication whenever a [mul]
+  appears in the goal. The downside is that [S x] does not match [1],
+  and [1] does not match [S (0 + 0)] whenever [mul] appears in
+  the goal.
+*)
 
 Section Peano.
   Import Instances.Peano.
@@ -161,39 +168,41 @@ Section Peano.
   Hypothesis H : forall x, x + S x = S (x+x).
 
   Goal 1 = 1.
-  (** ok (no multiplication around), [x] is instantiated with [O] *)
+  (** OK (no multiplication around), [x] is instantiated with [O] *)
     aacu_rewrite H.
   Abort.
 
-  Goal 1*1 = 1.
+  Goal 1 * 1 = 1.
   (** fails since 1 is seen as a unit, not the application of the
-     morphism [S] to the constant [O] *)
+    morphism [S] to the constant [O] *)
     Fail aacu_rewrite H.
   Abort.
 
-  Hypothesis H': forall x, x+1 = 1+x.
+  Hypothesis H': forall x, x + 1 = 1 + x.
 
-  Goal forall a, a+S(0+0) = 1+a.
-  (** ok (no multiplication around), [x] is instantiated with [a] *)
+  Goal forall a, a + S (0+0) = 1 + a.
+  (** OK (no multiplication around), [x] is instantiated with [a] *)
     intro. aac_rewrite H'.
   Abort.
 
-  Goal forall a, a*a+S(0+0) = 1+a*a.
-  (** fails: although [S(0+0)] is understood as the application of
+  Goal forall a, a * a + S (0+0) = 1 + a * a.
+  (** fails: although [S (0+0)] is understood as the application of
     the morphism [S] to the constant [O], it is not recognised
     as the unit [S O] of multiplication *)
     intro. Fail aac_rewrite H'.
   Abort.
 
-  (** more generally, similar counter-intuitive behaviours can appear
-     when declaring an applied morphism as an unit *)
+  (**
+    More generally, similar counter-intuitive behaviours can appear
+    when declaring an applied morphism as a unit
+  *)
 End Peano.
 
 (** *** Existential variables
 
   We implemented an algorithm for _matching_ modulo AC, not for
   _unifying_ modulo AC. As a consequence, existential variables
-  appearing in a goal are considered as constants, they will not be
+  appearing in a goal are considered as constants and will not be
   instantiated. *)
 
 Section evars.
@@ -201,21 +210,24 @@ Section evars.
   Import Instances.Z.
 
   Variable P: Prop.
-  Hypothesis H: forall x y, x+y+x = x -> P.
-  Hypothesis idem: forall x, x+x = x.
+  Hypothesis H: forall x y, x + y + x = x -> P.
+  Hypothesis idem: forall x, x + x = x.
 
   Goal P.
     eapply H.
-    aac_rewrite idem. (** this works: [x] is instantiated with an evar *)
+    (** this works: [x] is instantiated with an evar *)
+    aac_rewrite idem.
     instantiate (2 := 0).
-    symmetry. aac_reflexivity. (** this does work but there are remaining evars in the end *)
+    (** this does work but there are remaining evars in the end *)
+    symmetry. aac_reflexivity.
   Abort.
 
   Hypothesis H': forall x, 3+x = x -> P.
 
   Goal P.
     eapply H'.
-    Fail aac_rewrite idem. (** this fails since we do not instantiate evars *)
+    (** this fails since we do not instantiate evars *)
+    Fail aac_rewrite idem.
   Abort.
 
 End evars.
@@ -265,15 +277,16 @@ Section V.
   Infix "*"    := dot.
   Notation "1" := one.
  
-  (** [aac_rewrite] uses the symbols appearing in the goal and the
-     hypothesis to infer the AC and A operations. In the following
-     example, [dot] appears neither in the left-hand-side of the goal,
-     nor in the right-hand side of the hypothesis. Hence, 1 is not
-     recognised as a unit. To circumvent this problem, we can force
-     [aac_rewrite] to take into account a given operation, by giving
-     it an extra argument. This extra argument seems useful only in
-     this peculiar case. 
-   *)
+  (**
+    [aac_rewrite] uses the symbols appearing in the goal and the
+    hypothesis to infer the AC and A operations. In the following
+    example, [dot] appears neither in the left-hand-side of the goal,
+    nor in the right-hand side of the hypothesis. Hence, 1 is not
+    recognised as a unit. To circumvent this problem, we can force
+    [aac_rewrite] to take into account a given operation, by giving
+    it an extra argument. This extra argument seems useful only in
+    this peculiar case.
+  *)
 
   Lemma inv_unique: forall x y y', x*y == 1 -> y'*x == 1 -> y==y'.
   Proof.
@@ -301,9 +314,9 @@ Section W.
      rewritten into [S c]) *)
     aac_rewrite H.
     (** to this end, we provide a companion tactic to [aac_rewrite]
-    and [aacu_rewrite], that makes the transitivity step, but not the
-    setoid_rewrite; this allows the user to select the relevant
-    occurrences in which to rewrite: *)
+     and [aacu_rewrite], that makes the transitivity step, but not the
+     setoid_rewrite; this allows the user to select the relevant
+     occurrences in which to rewrite: *)
     aac_pattern H at 2. setoid_rewrite H at 1.
   Abort.
 
@@ -314,21 +327,23 @@ End W.
 Section Z.
   Import Instances.Peano.
 
-  (** If the pattern of the rewritten hypothesis does not contain "hard"
-     symbols (like constants, function symbols, AC or A symbols without
-     units), there can be infinitely many subterms such that the pattern
-     matches: it is possible to build "subterms" modulo ACU that make the
-     size of the term increase (by making neutral elements appear in a
-     layered fashion). Hence, we settled with heuristics to propose only
-     "some" of these solutions. In such cases, the tactic displays a
-     (conservative) warning. *)
+  (**
+    If the pattern of the rewritten hypothesis does not contain "hard"
+    symbols (like constants, function symbols, AC or A symbols without
+    units), there can be infinitely many subterms such that the pattern
+    matches: it is possible to build "subterms" modulo ACU that make the
+    size of the term increase (by making neutral elements appear in a
+    layered fashion). Hence, we settled with heuristics to propose only
+    "some" of these solutions. In such cases, the tactic displays a
+    (conservative) warning.
+  *)
 
   Variables a b c: nat.
   Variable f: nat -> nat.
   Hypothesis H0: forall x, 0 = x - x.
   Hypothesis H1: forall x, 1 = x * x.
 
-  Goal a+b*c = c.
+  Goal a + b * c = c.
     aac_instances H0.
     (** in this case, only three solutions are proposed, while there are
       infinitely many solutions, for example:
@@ -338,11 +353,11 @@ Section Z.
   Abort.
 
   (** *** If the pattern is a unit or can be instantiated to be equal to a unit
-  
-   The heuristic is to make the unit appear at each possible position
-   in the term, e.g. transforming [a] into [1*a] and [a*1], but this
-   process is not recursive (we will not transform [1*a]) into
-   [(1+0*1)*a]. 
+
+    The heuristic is to make the unit appear at each possible position
+    in the term, e.g. transforming [a] into [1*a] and [a*1], but this
+    process is not recursive (we will not transform [1*a]) into
+    [(1+0*1)*a].
   *)
 
   Goal a+b+c = c.
@@ -356,9 +371,9 @@ Section Z.
  
     In the following, the hypothesis can be instantiated
     to be equal to [1]. 
-   *)
+  *)
 
-  Hypothesis H : forall x y, (x+y)*x = x*x + y *x.
+  Hypothesis H : forall x y, (x+y)*x = x*x + y*x.
 
   Goal a*a+b*a + c = c.
     (** here, only one solution if we use the aac_instance tactic *)
@@ -371,7 +386,9 @@ Section Z.
     aacu_instances H1.
   Abort.
 
-  (** The behavior of the tactic is not satisfying in this case. It is
+  (**
+    The behavior of the tactic is not satisfying in this case. It is
     still unclear how to handle properly this kind of situation; we plan
-    to investigate this in the future. *)
+    to investigate this in the future.
+  *)
 End Z.
