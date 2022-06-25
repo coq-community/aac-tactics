@@ -12,7 +12,7 @@ From Coq Require PeanoNat ZArith Zminmax NArith List Permutation.
 From Coq Require QArith Qminmax Relations.
 From AAC_tactics Require Export AAC.
 
-(** this one is not declared as an instance; this would interfere badly with setoid_rewrite *)
+(** This one is not declared as an instance; this would interfere badly with setoid_rewrite *)
 Lemma eq_subr {X} {R} `{@Reflexive X R} : subrelation eq R.
 Proof. intros x y ->. reflexivity. Qed.
 
@@ -42,7 +42,7 @@ Module Peano.
   #[export] Instance aac_zero_max : Unit eq Nat.max  O :=
     Build_Unit eq Nat.max 0 Nat.max_0_l Nat.max_0_r.
 
-  (** we also provide liftings from le to eq *)
+  (** We also provide liftings from  [le] to [eq] *)
   #[export] Instance preorder_le : PreOrder le :=
     Build_PreOrder _ Nat.le_refl Nat.le_trans.
   #[export] Instance lift_le_eq : AAC_lift le eq :=
@@ -74,7 +74,7 @@ Module Z.
   #[export] Instance aac_zero_Zplus : Unit eq Zplus 0 :=
     Build_Unit eq Zplus 0 Zplus_0_l Zplus_0_r.
 
-  (** we also provide liftings from le to eq *)
+  (** We also provide liftings from [Z.le] to [eq] *)
   #[export] Instance preorder_Zle : PreOrder Z.le :=
     Build_PreOrder _ Z.le_refl Z.le_trans.
   #[export] Instance lift_le_eq : AAC_lift Z.le eq :=
@@ -89,6 +89,7 @@ Module Lists.
   #[export] Instance aac_append_Assoc {A} : Associative eq (@app A) := @app_assoc A.
   #[export] Instance aac_nil_append  {A} : Unit eq (@app A) (@nil A) :=
     Build_Unit _ (@app A) (@nil A) (@app_nil_l A) (@app_nil_r A).
+  (* TODO: add this instance in the stdlib *)
   #[export] Instance aac_append_Proper {A} : Proper (eq ==> eq ==> eq) (@app A).
   Proof. repeat intro; subst; reflexivity. Qed.
 
@@ -99,6 +100,7 @@ Module Lists.
   #[export] Instance aac_nil_Permutation_append {A} : Unit (@Permutation A) (@app A) (@nil A) :=
     Build_Unit (@Permutation A) (@app A) (@nil A) (fun x => Permutation_refl x)
      (fun x => eq_ind_r (fun l => Permutation l _) (Permutation_refl x) (app_nil_r x)).
+  (** [Permutation_app'] in the stdlib provides a [Proper] instance *)
 End Lists.
 
 Module N.
@@ -121,14 +123,14 @@ Module N.
   #[export] Instance aac_Nmax_Assoc : Associative eq N.max := N.max_assoc.
   #[export] Instance aac_Nmax_Idem : Idempotent eq N.max := N.max_idempotent.
  
-  #[export] Instance aac_one  : Unit eq Nmult (1)%N :=
+  #[export] Instance aac_one : Unit eq Nmult (1)%N :=
     Build_Unit eq Nmult (1)%N Nmult_1_l Nmult_1_r.
-  #[export] Instance aac_zero  : Unit eq Nplus (0)%N :=
+  #[export] Instance aac_zero : Unit eq Nplus (0)%N :=
     Build_Unit eq Nplus (0)%N Nplus_0_l Nplus_0_r.
   #[export] Instance aac_zero_max : Unit eq N.max 0 :=
     Build_Unit eq N.max 0 N.max_0_l N.max_0_r.
    
-  (* We also provide liftings from le to eq *)
+  (* We also provide liftings from [N.le] to [eq] *)
   #[export] Instance preorder_le : PreOrder N.le :=
     Build_PreOrder N.le N.le_refl N.le_trans.
   #[export] Instance lift_le_eq : AAC_lift N.le eq :=
@@ -164,7 +166,7 @@ Module P.
   #[export] Instance aac_one_max : Unit eq Pos.max 1 :=
     Build_Unit eq Pos.max 1 Pos.max_1_l Pos.max_1_r.
 
-  (** we also provide liftings from le to eq *)
+  (** We also provide liftings from [Pos.le] to [eq] *)
   #[export] Instance preorder_le : PreOrder Pos.le :=
     Build_PreOrder Pos.le Pos.le_refl Pos.le_trans.
   #[export] Instance lift_le_eq : AAC_lift Pos.le eq :=
@@ -227,6 +229,7 @@ Module Prop_ops.
 End Prop_ops.
 
 Module Bool.
+
   (** ** Boolean instances *)
 
   #[export] Instance aac_orb_Assoc : Associative eq orb.
@@ -286,7 +289,7 @@ Module Relations.
   #[export] Instance aac_top T : Unit (same_relation T) (inter T) (top T).
   Proof. constructor; compute; intuition. Qed.
  
-  (** note that we use [eq] directly as a neutral element for composition *)
+  (** Note that we use [eq] directly as a neutral element for composition *)
   #[export] Instance aac_compo T : Associative (same_relation T) (compo T).
   Proof. unfold Associative; compute; firstorder. Qed.
   #[export] Instance aac_eq T : Unit (same_relation T) (compo T) (eq).
@@ -345,6 +348,7 @@ Module All.
   Export Relations.
 End All.
 
-(** here, we should not see any instance of our classes:
+(**
+  Here, we should not see any instance of our classes:
   Print HintDb typeclass_instances.
 *)

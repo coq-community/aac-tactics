@@ -9,8 +9,8 @@
 (** * Theory for AAC Tactics
 
    We define several base classes to package associative and possibly
-   commutative/idempotent operators, and define a data-type for reified (or
-   quoted) expressions (with morphisms).
+   commutative/idempotent operators, and define a data-type for reified
+   (or quoted) expressions (with morphisms).
 
    We then define a reflexive decision procedure to decide the
    equality of reified terms: first normalise reified terms, then
@@ -21,10 +21,10 @@
    single fixed type. In particular, this means that we cannot handle
    situations like  
 
-   [H: forall x y, nat_of_pos (pos_of_nat (x) + y) + x = ....]
+   [H: forall x y, nat_of_pos (pos_of_nat (x) + y) + x = ...]
 
-   where one occurrence of [+] operates on nat while the other one
-   operates on positive. 
+   where one occurrence of <<+>> operates on [nat] while the other one
+   operates on [positive].
 *)
 
 From Coq Require Import Arith NArith List.
@@ -39,7 +39,7 @@ Local Open Scope signature_scope.
 
 (** ** Environments for the reification process *)
 
-(** positive maps are used to index elements *)
+(** Positive maps are used to index elements *)
 Section sigma.
   Definition sigma := PositiveMap.t.
   Definition sigma_get A (null : A) (map : sigma A) (n : positive) : A :=
@@ -73,8 +73,10 @@ Register Commutative as aac_tactics.classes.Commutative.
 Register Idempotent as aac_tactics.classes.Idempotent.
 Register Unit as aac_tactics.classes.Unit.
 
-(** class used to find the equivalence relation on which operations
-   are A or AC, starting from the relation appearing in the goal *)
+(**
+ Class used to find the equivalence relation on which operations
+ are A or AC, starting from the relation appearing in the goal
+*)
 Class AAC_lift (X : Type) (R : relation X) (E : relation X) := {
   aac_lift_equivalence : Equivalence E;
   aac_list_proper : Proper (E ==> E ==> iff) R
@@ -83,7 +85,7 @@ Class AAC_lift (X : Type) (R : relation X) (E : relation X) := {
 Register AAC_lift as aac_tactics.internal.AAC_lift.
 Register aac_lift_equivalence as aac_tactics.internal.aac_lift_equivalence.
 
-(** simple instances, when we have a subrelation or an equivalence *)
+(** Simple instances for when we have a subrelation or an equivalence *)
 #[export] Instance aac_lift_subrelation {X} {R} {E} {HE: Equivalence E}
  {HR: @Transitive X R} {HER: subrelation E R} : AAC_lift R E | 3.
 Proof.
@@ -105,7 +107,7 @@ Section copy.
    (op: Associative R plus) (op': Commutative R plus)
    (po: Proper (R ==> R ==> R) plus).
 
-  (** copy n x = x+...+x (n times) *)
+  (** <<copy n x = x+...+x>> (<<n>> times) *)
   Fixpoint copy' n x :=
     match n with
       | xH => x
@@ -113,7 +115,7 @@ Section copy.
       | xO n => let xn := copy' n x in (plus xn xn)
     end.
   Definition copy n x := Prect (fun _ => X) x (fun _ xn => plus x xn) n.
-     
+
   Lemma copy_plus : forall n m x, R (copy (n+m) x) (plus (copy n x) (copy m x)).
   Proof.
     unfold copy.
@@ -123,8 +125,10 @@ Section copy.
     rewrite Pplus_succ_permute_l. rewrite 2Prect_succ.
     rewrite IHn. apply op.
   Qed.
+
   Lemma copy_xH : forall x, R (copy 1 x) x.
   Proof. intros; unfold copy; rewrite Prect_base. reflexivity. Qed.
+
   Lemma copy_Psucc : forall n x, R (copy (Pos.succ n) x) (plus x (copy n x)).
   Proof. intros; unfold copy; rewrite Prect_succ. reflexivity. Qed.
 
@@ -146,14 +150,14 @@ Module Sym.
   Section t.
     Context {X} {R : relation X} .
    
-    (** type of an arity *)
+    (** Type of an arity *)
     Fixpoint type_of  (n: nat) :=
       match n with
         | O => X
         | S n => X -> type_of  n
       end.
 
-    (** relation to be preserved at an arity  *)
+    (** Relation to be preserved at an arity *)
     Fixpoint rel_of n : relation (type_of n) :=
       match n with
         | O => R
@@ -163,7 +167,7 @@ Module Sym.
     Register type_of as aac_tactics.internal.sym.type_of.
     Register rel_of as aac_tactics.internal.sym.rel_of.
 
-  (** a symbol package contains:
+  (** A symbol package contains:
     - an arity,
     - a value of the corresponding type, and
     - a proof that the value is a proper morphism *)
@@ -176,8 +180,9 @@ Module Sym.
   Register pack as aac_tactics.sym.pack.
   Register mkPack as aac_tactics.sym.mkPack.
 
-  (** helper to build default values, when filling reification environments *)
+  (** Helper to build default values, when filling reification environments *)
   Definition null: pack := mkPack 1 (fun x => x) (fun _ _ H => H).
+
   Register null as aac_tactics.sym.null.
 
   End t.
@@ -196,12 +201,12 @@ Module Bin.
       assoc: Associative R value;
       comm: option (Commutative R value);
       idem: option (Idempotent R value)
-                     }.
+    }.
     
     Register pack as aac_tactics.bin.pack.
     Register mk_pack as aac_tactics.bin.mkPack.
   End t.
-  (** see the Instances module for concrete instances of these classes *)
+  (** See the <<Instances>> module for concrete instances of these classes *)
 End Bin.
 
 
@@ -211,14 +216,15 @@ Section s.
   Context {X} {R: relation X} {E: @Equivalence X R}.
   Infix "==" := R (at level 80).
 
-  (** we use environments to store the various operators
-    and the morphisms *)
- 
+  (**
+    We use environments to store the various operators
+    and the morphisms
+  *)
+
   Variable e_sym: idx -> @Sym.pack X R.
   Variable e_bin: idx -> @Bin.pack X R.
-
  
-  (** packaging units (depends on e_bin) *)
+  (** Packaging units (depends on [e_bin]) *)
 
   Record unit_of u := mk_unit_for {
     uf_idx: idx;
@@ -228,13 +234,12 @@ Section s.
   Record unit_pack := mk_unit_pack {
     u_value:> X;
     u_desc: list (unit_of u_value)
-                        }.
+  }.
 
   Register unit_of as aac_tactics.internal.unit_of.
   Register mk_unit_for as aac_tactics.internal.mk_unit_for.
   Register unit_pack as aac_tactics.internal.unit_pack.
   Register mk_unit_pack as aac_tactics.internal.mk_unit_pack.
-
   
   Variable e_unit: positive -> unit_pack.
 
@@ -247,9 +252,9 @@ Section s.
      - products do not contain products
      - there are no unary sums or products
      - lists and msets are lexicographically sorted according to the order we define below
-    
-     [vT n] denotes the set of term vectors of size [n] (the mutual dependency
-     could be removed).
+
+     [vT n] denotes the set of term vectors of size <<n>>
+     (the mutual dependency could be removed).
 
      Note that [T] and [vT] depend on the [e_sym] environment (which
      contains, among other things, the arity of symbols).
@@ -273,7 +278,7 @@ Section s.
   Register vnil as aac_tactics.internal.vnil.
   Register vcons as aac_tactics.internal.vcons.
 
-  (** lexicographic rpo over the normalised syntax *)
+  (** Lexicographic rpo over the normalised syntax *)
   Fixpoint compare (u v: T) :=
     match u,v with
       | sum i l, sum j vs => lex (idx_compare i j) (mset_compare compare l vs)
@@ -314,8 +319,10 @@ Section s.
 
   Register eval as aac_tactics.internal.eval.
 
-  (** we need to show that compare reflects equality (this is because
-     we work with msets rather than lists with arities) *)
+  (**
+    We need to show that [compare] reflects equality (this is because
+    we work with msets rather than with lists with arities)
+  *)
   Fixpoint tcompare_weak_spec u : forall (v : T), compare_weak_spec u v (compare u v)
   with vcompare_reflect_eqdep i us : forall j vs (H: i=j),
     vcompare us vs = Eq -> cast vT H us = vs.
@@ -329,7 +336,7 @@ Section s.
       case (list_compare_weak_spec compare tcompare_weak_spec n n0); intros; try constructor.
     - destruct v0; simpl; try constructor.
       case_eq (idx_compare i i0); intro Hi; try constructor.
-      (* the [symmetry] is required! *)
+      (* the [symmetry] is required *)
       apply idx_compare_reflect_eq in Hi. symmetry in Hi. subst.       
       case_eq (vcompare v v0); intro Hv; try constructor.
       rewrite <- (vcompare_reflect_eqdep _ _ _ _ eq_refl Hv). constructor.
@@ -340,7 +347,7 @@ Section s.
       apply cast_eq, eq_nat_dec.
       injection H; intro Hn.
       revert Huv; case (tcompare_weak_spec t t0); intros; try discriminate.
-      (* symmetry required *)
+      (* the [symmetry] is required *)
       symmetry in Hn. subst.
       rewrite <- (IHus _ _ eq_refl Huv).
       apply cast_eq, eq_nat_dec.
@@ -353,15 +360,15 @@ Section s.
     apply IHl, H. reflexivity.
   Qed.
  
-  (** is [i] a unit for [j]? *)
+  (** Is <<i>> a unit for <<j>>? *)
   Definition is_unit_of j i :=
     List.existsb (fun p => eq_idx_bool j (uf_idx p)) (u_desc (e_unit i)).
 
-  (** is [i] commutative? *)
+  (** Is <<i>> commutative? *)
   Definition is_commutative i :=
     match Bin.comm (e_bin i) with Some _ => true | None => false end.
 
-  (** is [i] idempotent? *)
+  (** Is <<i>> idempotent? *)
   Definition is_idempotent i :=
     match Bin.idem (e_bin i) with Some _ => true | None => false end.
 
@@ -373,7 +380,7 @@ Section s.
   | Is_unit : idx -> discr
   | Is_nothing : discr.
  
-  (** this is called sum in the stdlib *)
+  (** This is called [Datatypes.sum] in the stdlib *)
   #[universes(template)]
   Inductive m {A} {B} :=
   | left : A -> m
@@ -385,8 +392,7 @@ Section s.
       | right l' => right (merge l l')
     end.
  
-  (** auxiliary functions, to clean up sums *)
-
+  (** Auxiliary functions, to clean up sums *)
   Section sums.
     Variable i : idx.
     Variable is_unit : idx -> bool.
@@ -397,10 +403,10 @@ Section s.
         | _ => sum i u
       end.
 
-    Definition is_sum  (u: T) : @discr (mset T) :=
+    Definition is_sum (u: T) : @discr (mset T) :=
     match u with
       | sum j l => if eq_idx_bool j i then Is_op l else Is_nothing
-      | unit j => if is_unit j   then Is_unit j else Is_nothing
+      | unit j => if is_unit j then Is_unit j else Is_nothing
       | _ => Is_nothing
     end.
 
@@ -431,8 +437,7 @@ Section s.
 
   End sums.
  
-  (** similar functions for products *)
-
+  (** Similar functions for products *)
   Section prds.
 
     Variable i : idx.
@@ -458,7 +463,7 @@ Section s.
         | Is_unit j => left j
       end.
    
-    Definition add_to_prd  u  (l : @m idx (nelist T))  :=
+    Definition add_to_prd u (l : @m idx (nelist T))  :=
       match is_prd  u with
         | Is_nothing => comp (@appne T) (nil (u)) l
         | Is_op l' => comp (@appne T) (l') l
@@ -545,10 +550,9 @@ Section s.
 
   #[local] Hint Resolve Binvalue_Proper Binvalue_Associative Binvalue_Commutative : core.
 
-  (** auxiliary lemmas about sums  *)
-
   #[local] Hint Resolve is_unit_of_Unit : core.
 
+  (** Auxiliary lemmas about sums *)
   Section sum_correctness.
     Variable i : idx.
     Variable is_unit : idx -> bool.
@@ -570,8 +574,10 @@ Section s.
 
     Instance assoc : @Associative X R (Bin.value (e_bin i)).
     Proof. destruct (e_bin i). simpl. assumption. Qed.
+
     Instance proper : Proper (R ==> R ==> R)(Bin.value (e_bin i)).
     Proof. destruct (e_bin i). simpl. assumption. Qed.
+
     Hypothesis comm : @Commutative X R (Bin.value (e_bin i)).
 
     Lemma sum'_sum : forall (l: mset T), eval (sum' i l) == eval (sum i l).
@@ -757,8 +763,7 @@ Section s.
     - simpl. rewrite IH. now rewrite 2copy_idem.
   Qed.
  
-  (** auxiliary lemmas about products  *)
-
+  (** Auxiliary lemmas about products *)
   Section prd_correctness.
 
     Variable i : idx.
@@ -790,9 +795,11 @@ Section s.
     Proof.
       rewrite <- prd'_prd. simpl. reflexivity.
     Qed.
+
     Lemma eval_prd_cons a : forall (l: nelist T),
       eval (prd i (a::l)) == @Bin.value _ _ (e_bin i) (eval a) (eval (prd i l)).
     Proof. intros  [|b l]; simpl; reflexivity. Qed.
+
     Lemma eval_prd_app : forall (h k: nelist T),
       eval (prd i (h++k)) == @Bin.value _ _ (e_bin i) (eval (prd i h)) (eval (prd i k)).
     Proof.
@@ -877,7 +884,7 @@ Section s.
     apply H.
   Defined.
 
-  (** correctness of the normalisation function *)
+  (** Correctness of the normalisation function *)
 
   Fixpoint eval_norm u: eval (norm u) == eval u
     with eval_norm_aux i l : forall (f: Sym.type_of i),
@@ -900,7 +907,7 @@ Section s.
       rewrite eval_norm. apply IHl, Hf; reflexivity.
   Qed.
 
-  (** corollaries, for goal normalisation or decision *)
+  (** Corollaries, for goal normalisation or decision *)
 
   Lemma normalise : forall (u v: T), eval (norm u) == eval (norm v) -> eval u == eval v.
   Proof. intros u v. rewrite 2 eval_norm. trivial. Qed.
