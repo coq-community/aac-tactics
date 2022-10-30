@@ -30,7 +30,8 @@ jobs:
               sudo chown -R coq:coq .
             endGroup
             startGroup "Build coqdoc"
-              make -j "$(nproc)" coqdoc
+              make -j "$(nproc)"
+              make coqdoc
             endGroup
 
       - name: Revert Coq user permissions
