@@ -889,7 +889,7 @@ module Trans = struct
 	  cap (mkProd_or_LetIn i c) q
     in
     let t,indices = raw_constr_of_t_debruijn ir t in
-      cap t (List.sort (Pervasives.compare) indices)
+      cap t (List.sort (Stdlib.compare) indices)
 
 
   (** {2 Building reified terms} *)

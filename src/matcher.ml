@@ -188,7 +188,7 @@ end
 
     (** {2 Comparison} *)
 
-    let nf_term_compare = Pervasives.compare
+    let nf_term_compare = Stdlib.compare
     let nf_equal a b = 
       a = b
 
