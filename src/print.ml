@@ -80,7 +80,7 @@ let print rlt ir m (context : EConstr.rel_context) : unit Proofview.tactic =
       (fun (i,t,envm) ->
 	let envm = Search_monad.(>>) envm ( fun env ->
 	  let l = Matcher.Subst.to_list env in
-	  let l = List.sort (fun (n,_) (n',_) -> Pervasives.compare n n') l in
+	  let l = List.sort (fun (n,_) (n',_) -> Stdlib.compare n n') l in
 	  let l =
 	    List.map (fun (v,t) ->
 	      get_name (Context.Rel.lookup v context), t

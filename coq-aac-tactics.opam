@@ -21,7 +21,7 @@ such as for binary integer arithmetic and booleans, are provided with the plugin
 
 build: ["dune" "build" "-p" name "-j" jobs]
 depends: [
-  "ocaml" {>= "4.05.0"}
+  "ocaml" {>= "4.09.0"}
   "dune" {>= "2.5"}
   "coq" {= "dev"}
 ]
