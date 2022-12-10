@@ -33,8 +33,9 @@ The current stable release of AAC Tactics can be [downloaded from GitHub](https:
 
 ## Documentation
 
-- [paper on initial version](https://arxiv.org/abs/1106.4448)
+- [paper on initial AAC Tactics version](https://arxiv.org/abs/1106.4448)
 - [latest coqdoc documentation](https://coq-community.org/aac-tactics/docs/coqdoc/toc.html)
+- [latest ocamldoc documentation](https://coq-community.org/aac-tactics/docs/ocamldoc/index.html)
 
 ## Help and contact
 

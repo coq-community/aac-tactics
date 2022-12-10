@@ -1,4 +1,4 @@
-name: Build and Deploy coqdoc
+name: Build and Deploy documentation
 
 on:
   push:
@@ -29,9 +29,14 @@ jobs:
             startGroup "Add permissions"
               sudo chown -R coq:coq .
             endGroup
-            startGroup "Build coqdoc"
+            startGroup "Build aac-tactics"
               make -j "$(nproc)"
+            endGroup
+            startGroup "Build coqdoc"
               make coqdoc
+            endGroup
+            startGroup "Build ocamldoc"
+              make ocamldoc
             endGroup
 
       - name: Revert Coq user permissions
