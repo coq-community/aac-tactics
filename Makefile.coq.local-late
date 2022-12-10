@@ -1,0 +1,6 @@
+CMTFILES = $(CMXFILES:.cmx=.cmt)
+CMTIFILES = $(MLIFILES:.mli=.cmti)
+
+clean::
+	$(HIDE)rm -f $(CMTFILES)
+	$(HIDE)rm -f $(CMTIFILES)
