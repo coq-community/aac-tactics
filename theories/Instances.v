@@ -70,7 +70,7 @@ Module Z.
   #[export] Instance aac_Zmax_Idem : Idempotent eq Z.max := Z.max_idempotent.
  
   #[export] Instance aac_one : Unit eq Zmult 1 :=
-    Build_Unit eq Zmult 1 Zmult_1_l Zmult_1_r. 
+    Build_Unit eq Zmult 1 Zmult_1_l Zmult_1_r.
   #[export] Instance aac_zero_Zplus : Unit eq Zplus 0 :=
     Build_Unit eq Zplus 0 Zplus_0_l Zplus_0_r.
 
@@ -86,12 +86,11 @@ Module Lists.
 
   (** ** List instances *)
 
-  #[export] Instance aac_append_Assoc {A} : Associative eq (@app A) := @app_assoc A.
+  #[export] Instance aac_append_Assoc {A} : Associative eq (@app A) :=
+    @app_assoc A.
   #[export] Instance aac_nil_append  {A} : Unit eq (@app A) (@nil A) :=
     Build_Unit _ (@app A) (@nil A) (@app_nil_l A) (@app_nil_r A).
-  (* TODO: add this instance in the stdlib *)
-  #[export] Instance aac_append_Proper {A} : Proper (eq ==> eq ==> eq) (@app A).
-  Proof. repeat intro; subst; reflexivity. Qed.
+  (** Exported [Morphisms] module provides a [Proper] instance *)
 
   #[export] Instance aac_append_Permutation_Assoc {A} : Associative (@Permutation A) (@app A).
   Proof. repeat intro; rewrite app_assoc; apply Permutation_refl. Qed.
@@ -100,7 +99,7 @@ Module Lists.
   #[export] Instance aac_nil_Permutation_append {A} : Unit (@Permutation A) (@app A) (@nil A) :=
     Build_Unit (@Permutation A) (@app A) (@nil A) (fun x => Permutation_refl x)
      (fun x => eq_ind_r (fun l => Permutation l _) (Permutation_refl x) (app_nil_r x)).
-  (** [Permutation_app'] in the stdlib provides a [Proper] instance *)
+  (** [Permutation_app'] in the Stdlib provides a [Proper] instance *)
 End Lists.
 
 Module N.
