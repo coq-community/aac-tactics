@@ -5,7 +5,7 @@ name: Nix CI
 on:
   push:
     branches:
-      - master
+      - v8.17
   pull_request:
     paths:
     - .github/workflows/**
@@ -17,7 +17,7 @@ jobs:
     strategy:
       matrix:
         overrides:
-          - 'coq = "master"'
+          - 'coq = "8.17"'
       fail-fast: false
     steps:
       - name: Determine which commit to test
@@ -40,7 +40,7 @@ jobs:
           name: coq-community
           authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
           extraPullNames: coq, math-comp
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: ${{ env.tested_commit }}
       - run: >
