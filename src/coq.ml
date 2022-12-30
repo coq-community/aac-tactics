@@ -144,7 +144,7 @@ let evar_binary env (sigma: Evd.evar_map) (x : constr) =
   Evarutil.new_evar env sigma ty
 
 let evar_relation env (sigma: Evd.evar_map) (x: constr) =
-  let ty = mkArrow x (mkArrow x (mkSort (ESorts.make Sorts.prop))) in
+  let ty = mkArrow x (mkArrow x (mkSort Sorts.prop)) in
   Evarutil.new_evar env sigma ty
 
 let decomp_term sigma c = kind sigma (Termops.strip_outer_cast sigma c)
