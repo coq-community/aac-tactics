@@ -43,7 +43,7 @@ Module Peano.
     Build_Unit eq Nat.max 0 Nat.max_0_l Nat.max_0_r.
 
   (** We also provide liftings from  [Nat.le] to [eq] *)
-  #[export] Instance aac_Nat_le_PreOrder : PreOrder Nat.le :=
+  #[export] Instance Nat_le_PreOrder : PreOrder Nat.le :=
     Build_PreOrder _ Nat.le_refl Nat.le_trans.
   #[export] Instance aac_Nat_le_eq_lift : AAC_lift Nat.le eq :=
     Build_AAC_lift eq_equivalence _.
@@ -75,7 +75,7 @@ Module Z.
     Build_Unit eq Z.add 0 Z.add_0_l Z.add_0_r.
 
   (** We also provide liftings from [Z.le] to [eq] *)
-  #[export] Instance aac_Z_le_preorder : PreOrder Z.le :=
+  #[export] Instance Z_le_PreOrder : PreOrder Z.le :=
     Build_PreOrder _ Z.le_refl Z.le_trans.
   #[export] Instance aac_Z_le_eq_lift : AAC_lift Z.le eq :=
     Build_AAC_lift eq_equivalence _.
@@ -130,7 +130,7 @@ Module N.
     Build_Unit eq N.max 0 N.max_0_l N.max_0_r.
 
   (* We also provide liftings from [N.le] to [eq] *)
-  #[export] Instance aac_N_le_PreOrder : PreOrder N.le :=
+  #[export] Instance N_le_PreOrder : PreOrder N.le :=
     Build_PreOrder N.le N.le_refl N.le_trans.
   #[export] Instance aac_N_le_eq_lift : AAC_lift N.le eq :=
     Build_AAC_lift eq_equivalence _.
@@ -162,7 +162,7 @@ Module P.
     Build_Unit eq Pos.max 1 Pos.max_1_l Pos.max_1_r.
 
   (** We also provide liftings from [Pos.le] to [eq] *)
-  #[export] Instance aac_Pos_le_PreOrder : PreOrder Pos.le :=
+  #[export] Instance Pos_le_PreOrder : PreOrder Pos.le :=
     Build_PreOrder Pos.le Pos.le_refl Pos.le_trans.
   #[export] Instance aac_Pos_le_eq_lift : AAC_lift Pos.le eq :=
     Build_AAC_lift eq_equivalence _.
@@ -193,7 +193,7 @@ Module Q.
     Build_Unit Qeq Qplus 0 Qplus_0_l Qplus_0_r.
 
   (** we also provide liftings from le to eq *)
-  #[export] Instance aac_Q_Qle_PreOrder : PreOrder Qle :=
+  #[export] Instance Q_Qle_PreOrder : PreOrder Qle :=
     Build_PreOrder Qle Qle_refl Qle_trans.
   #[export] Instance aac_Q_Qle_eq_lift : AAC_lift Qle Qeq :=
     Build_AAC_lift QOrderedType.QOrder.TO.eq_equiv _.
