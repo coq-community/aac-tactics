@@ -50,7 +50,7 @@ such as for binary integer arithmetic and booleans, are provided with the plugin
   - Karl Palmskog ([**@palmskog**](https://github.com/palmskog))
 - License: [GNU Lesser General Public License v3.0 or later](LICENSE)
 - Compatible Coq versions: master (use the corresponding branch or release for other Coq versions)
-- Compatible OCaml versions: 4.05.0 or later
+- Compatible OCaml versions: 4.09.0 or later
 - Additional dependencies: none
 - Coq namespace: `AAC_tactics`
 - Related publication(s):
@@ -109,22 +109,24 @@ The file [Instances.v](theories/Instances.v) defines several type class instance
 for frequent use-cases of this plugin, that should allow you to use it off-the-shelf.
 Namely, it contains instances for:
 
-- Peano naturals	(`Import Instances.Peano.`)
-- Z binary numbers	(`Import Instances.Z.`)
-- Lists    		(`Import Instances.Lists.`)
-- N binary numbers	(`Import Instances.N.`)
-- P binary numbers	(`Import Instances.P.`)
-- Rational numbers	(`Import Instances.Q.`)
-- Prop    		(`Import Instances.Prop_ops.`)
-- Booleans		(`Import Instances.Bool.`)
-- Relations		(`Import Instances.Relations.`)
-- all of the above	(`Import Instances.All.`)
-
-See also the [latest coqdoc
-documentation](https://coq-community.org/aac-tactics/docs/coqdoc/toc.html).
+- Peano naturals (`Import Instances.Peano.`)
+- Z binary numbers (`Import Instances.Z.`)
+- Lists (`Import Instances.Lists.`)
+- N binary numbers (`Import Instances.N.`)
+- Positive binary numbers (`Import Instances.P.`)
+- Rational numbers (`Import Instances.Q.`)
+- Prop (`Import Instances.Prop_ops.`)
+- Booleans (`Import Instances.Bool.`)
+- Relations (`Import Instances.Relations.`)
+- all of the above (`Import Instances.All.`)
 
 To understand the inner workings of the tactics, please refer to
 the `.mli` files as the main source of information on each `.ml` file.
+
+See also the [latest coqdoc
+documentation](https://coq-community.org/aac-tactics/docs/coqdoc/toc.html)
+and the [latest ocamldoc
+documentation](https://coq-community.org/aac-tactics/docs/ocamldoc/index.html).
 
 ## Acknowledgements
 
