@@ -16,7 +16,7 @@ From AAC_tactics Require Instances.
 
    Here is a first example with relative numbers ([Z]): one can
    rewrite an universally quantified hypothesis modulo the
-   associativity and commutativity of [Zplus]. *)
+   associativity and commutativity of [Z.add]. *)
 
 Section introduction.
   Import ZArith.
@@ -36,14 +36,14 @@ Section introduction.
   Qed.
 
   (** note:
-     - the tactic handles arbitrary function symbols like [Zopp] (as
+     - the tactic handles arbitrary function symbols like [Z.opp] (as
        long as they are proper morphisms w.r.t. the considered
        equivalence relation)
-     - here, ring would have done the job
+     - here, the [ring] tactic would have done the job
    *)
 
-  (** several associative/commutative operations can be used at the same time.
-      here, [Zmult] and [Zplus], which are both associative and commutative (AC)
+  (** several associative/commutative operations can be used at the same time,
+      here, [Z.mul] and [Z.add], which are both associative and commutative (AC)
    *)
   Goal (b + c) * (c + b) + a + Z.opp ((c + b) * (b + c)) = a.
     aac_rewrite H.
@@ -113,7 +113,7 @@ Section base.
   End reminder.
  
   (** the tactic can deal with "proper" morphisms of arbitrary arity
-    (here [f] and [g], or [Zopp] earlier): it rewrites under such
+    (here [f] and [g], or [Z.opp] earlier): it rewrites under such
     morphisms ([g]), and, more importantly, it is able to reorder
     terms modulo AC under these morphisms ([f]) *)
   Section morphisms.
@@ -240,32 +240,32 @@ End base.
 Section Peano.
   Import PeanoNat.
 
-  Instance aac_add_Assoc : Associative eq Nat.add := Nat.add_assoc.
-  Instance aac_add_Comm : Commutative eq Nat.add := Nat.add_comm.
+  #[local] Instance aac_Nat_add_Assoc : Associative eq Nat.add := Nat.add_assoc.
+  #[local] Instance aac_Nat_add_Comm : Commutative eq Nat.add := Nat.add_comm.
 
-  Instance aac_mul_Comm : Commutative eq Nat.mul := Nat.mul_comm.
-  Instance aac_mul_Assoc : Associative eq Nat.mul := Nat.mul_assoc.
+  #[local] Instance aac_Nat_mul_Comm : Commutative eq Nat.mul := Nat.mul_comm.
+  #[local] Instance aac_Nat_mul_Assoc : Associative eq Nat.mul := Nat.mul_assoc.
 
-  Instance aac_one : Unit eq Nat.mul 1 :=
+  #[local] Instance aac_Nat_mul_1_Unit : Unit eq Nat.mul 1 :=
     Build_Unit eq Nat.mul 1 Nat.mul_1_l Nat.mul_1_r.
-  Instance aac_zero_add : Unit eq Nat.add O :=
+  #[local] Instance aac_Nat_add_0_Unit : Unit eq Nat.add 0 :=
     Build_Unit eq Nat.add (O) Nat.add_0_l Nat.add_0_r.
 
   (** Two (or more) operations may share the same units: in the
-  following example, [0] is understood as the unit of [max] as well as
-  the unit of [plus]. *)
+  following example, [0] is understood as the unit of [Nat.max] as well as
+  the unit of [Nat.add]. *)
 
-  Instance aac_max_Comm : Commutative eq Nat.max :=  Nat.max_comm.
-  Instance aac_max_Assoc : Associative eq Nat.max := Nat.max_assoc.
+  #[local] Instance aac_Nat_max_Comm : Commutative eq Nat.max := Nat.max_comm.
+  #[local] Instance aac_Nat_max_Assoc : Associative eq Nat.max := Nat.max_assoc.
 
   (** Commutative operations may additionally be declared as idempotent.
     This does not change the behaviour of [aac_rewrite], but this enables
     more simplifications in [aac_normalise] and [aac_reflexivity].
    *)
 
-  Instance aac_max_Idem : Idempotent eq Nat.max := Nat.max_idempotent.
+  #[local] Instance aac_Nat_max_Idem : Idempotent eq Nat.max := Nat.max_idempotent.
 
-  Instance aac_zero_max : Unit eq Nat.max O :=
+  #[local] Instance aac_Nat_max_0_Unit : Unit eq Nat.max 0 :=
     Build_Unit eq Nat.max 0 Nat.max_0_l Nat.max_0_r.
 
   Variable a b c : nat.
@@ -333,7 +333,7 @@ Section Peano.
     aac_reflexivity.
   Qed.
 
-  (** In the last three examples, there were no equivalence relation
+  (** In the last three examples, there were no equivalence relations
      involved in the goal. However, we actually had to guess the
      equivalence relation with respect to which the operators
      ([add,max,0]) were AC.  In this case, it was Leibniz equality
@@ -342,7 +342,7 @@ Section Peano.
      instances of the [AAC_lift] type class: 
    *)
 
-  Instance lift_le_eq : AAC_lift le eq := {}.
+  #[local] Instance aac_le_eq_lift : AAC_lift le eq := {}.
   (** (This instance is automatically inferred because [eq] is always a
      valid candidate, here for [le].) *)
 
@@ -381,26 +381,26 @@ Section Examples.
 
   (** *** Reverse triangle inequality *)
 
-  Lemma Zabs_triangle : forall x y,  Z.abs (x + y) <= Z.abs x + Z.abs y .
+  Lemma Z_abs_triangle : forall x y, Z.abs (x + y) <= Z.abs x + Z.abs y.
   Proof Z.abs_triangle.
 
-  Lemma Zplus_opp_r : forall x, x + -x = 0.
-  Proof Zplus_opp_r.
+  Lemma Z_add_opp_diag_r : forall x, x + -x = 0.
+  Proof Z.add_opp_diag_r.
 
   (** the following morphisms are required to perform the required rewrites: *)
-  Instance Zminus_compat : Proper (Z.ge ==> Z.le) Z.opp.
+  #[local] Instance Z_opp_ge_le_compat : Proper (Z.ge ==> Z.le) Z.opp.
   Proof. intros x y. lia. Qed.
- 
-  Instance Proper_Zplus : Proper (Z.le ==> Z.le ==> Z.le) Zplus.
+
+  #[local] Instance Z_add_le_compat : Proper (Z.le ==> Z.le ==> Z.le) Z.add.
   Proof. intros ? ? ? ? ? ?; lia. Qed.
 
   Goal forall a b, Z.abs a - Z.abs b <= Z.abs (a - b).
-    intros. unfold Zminus.
-    aac_instances <- (Zminus_diag b).
-    aac_rewrite <- (Zminus_diag b) at 3.
-    unfold Zminus.
-    aac_rewrite Z.abs_triangle.
-    aac_rewrite Zplus_opp_r.
+    intros. unfold Z.sub.
+    aac_instances <- (Z.sub_diag b).
+    aac_rewrite <- (Z.sub_diag b) at 3.
+    unfold Z.sub.
+    aac_rewrite Z_abs_triangle.
+    aac_rewrite Z_add_opp_diag_r.
     aac_reflexivity.
   Qed.
 
@@ -411,7 +411,7 @@ Section Examples.
 
   Lemma Hbin1: forall x y, (x+y)^2   = x^2 + y^2 +  2⋅x*y.
   Proof. intros; ring. Qed.
-  Lemma Hbin2: forall x y, x^2 + y^2 = (x+y)^2   + -(2⋅x*y).
+  Lemma Hbin2: forall x y, x^2 + y^2 = (x+y)^2 + -(2⋅x*y).
   Proof. intros; ring. Qed.
   Lemma Hopp : forall x, x + -x = 0.
   Proof. apply Zplus_opp_r. Qed.
