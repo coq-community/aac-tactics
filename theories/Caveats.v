@@ -134,14 +134,14 @@ Section ineq.
 
   Open Scope Z_scope.
 
-  Instance Zplus_incr: Proper (Z.le ==> Z.le ==> Z.le) Zplus.
+  #[local] Instance Z_add_incr: Proper (Z.le ==> Z.le ==> Z.le) Z.add.
   Proof. intros ? ? H ? ? H'. apply Zplus_le_compat; assumption. Qed.
 
   Hypothesis H : forall x, x+x <= x.
 
   Goal forall a b c, c + - (a + a) + b + b <= c.
     intros.
-    (** this fails because the first solution is not valid ([Zopp] is not increasing) *)
+    (** this fails because the first solution is not valid ([Z.opp] is not increasing) *)
     Fail aac_rewrite H.
     aac_instances H.       
     (** on the contrary, the second solution is valid: *) 
@@ -156,9 +156,9 @@ End ineq.
 
 (** *** Special treatment for units
 
-  [S O] is considered as a unit for multiplication whenever a [mul]
+  [S 0] is considered as a unit for multiplication whenever a [Nat.mul]
   appears in the goal. The downside is that [S x] does not match [1],
-  and [1] does not match [S (0 + 0)] whenever [mul] appears in
+  and [1] does not match [S (0 + 0)] whenever [Nat.mul] appears in
   the goal.
 *)
 
@@ -281,7 +281,7 @@ Section V.
     [aac_rewrite] uses the symbols appearing in the goal and the
     hypothesis to infer the AC and A operations. In the following
     example, [dot] appears neither in the left-hand-side of the goal,
-    nor in the right-hand side of the hypothesis. Hence, 1 is not
+    nor in the right-hand side of the hypothesis. Hence, [1] is not
     recognised as a unit. To circumvent this problem, we can force
     [aac_rewrite] to take into account a given operation, by giving
     it an extra argument. This extra argument seems useful only in
