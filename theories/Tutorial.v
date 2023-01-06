@@ -453,3 +453,19 @@ Section Lists.
     aac_reflexivity.
   Qed.
 End Lists.
+
+(** ** Prop examples *)
+
+Section Props.
+  Import Instances.Prop_ops.
+
+  Variables (P Q : Prop).
+
+  Goal (Q /\ P) <-> (P /\ (Q /\ True)).
+    aac_reflexivity.
+  Qed.
+
+  Goal (Q \/ P) <-> (P \/ (Q \/ False)).
+    aac_reflexivity.
+  Qed.
+End Props.
