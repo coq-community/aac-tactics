@@ -92,11 +92,13 @@ Module Lists.
     Build_Unit _ (@app A) (@nil A) (@app_nil_l A) (@app_nil_r A).
   (** Exported [Morphisms] module provides a [Proper] instance *)
 
-  #[export] Instance aac_List_app_Permutation_Assoc {A} : Associative (@Permutation A) (@app A).
+  #[export] Instance aac_List_app_Permutation_Assoc {A} :
+    Associative (@Permutation A) (@app A).
   Proof. repeat intro; rewrite app_assoc; apply Permutation_refl. Qed.
-  #[export] Instance aac_List_app_Permutation_Comm {A} : Commutative (@Permutation A) (@app A) :=
-    @Permutation_app_comm A.
-  #[export] Instance aac_List_app_nil_Permutation_Unit {A} : Unit (@Permutation A) (@app A) (@nil A) :=
+  #[export] Instance aac_List_app_Permutation_Comm {A} :
+    Commutative (@Permutation A) (@app A) := @Permutation_app_comm A.
+  #[export] Instance aac_List_app_nil_Permutation_Unit {A} :
+    Unit (@Permutation A) (@app A) (@nil A) :=
     Build_Unit (@Permutation A) (@app A) (@nil A) (fun x => Permutation_refl x)
      (fun x => eq_ind_r (fun l => Permutation l _) (Permutation_refl x) (app_nil_r x)).
   (** [Permutation_app'] in the Stdlib provides a [Proper] instance *)
@@ -208,8 +210,14 @@ Module Prop_ops.
   Proof. unfold Commutative; tauto. Qed.
   #[export] Instance aac_Prop_or_iff_Idem : Idempotent iff or.
   Proof. unfold Idempotent; tauto. Qed.
+
+  #[export] Instance aac_Prop_and_iff_Assoc : Associative iff and.
+  Proof. unfold Associative; tauto. Qed.
+  #[export] Instance aac_Prop_and_iff_Comm : Commutative iff and.
+  Proof. unfold Commutative; tauto. Qed.
   #[export] Instance aac_Prop_and_iff_Idem : Idempotent iff and.
   Proof. unfold Idempotent; tauto. Qed.
+
   #[export] Instance aac_Prop_or_False_iff_Unit : Unit iff or False.
   Proof. constructor; firstorder. Qed.
   #[export] Instance aac_Prop_and_True_iff_Unit : Unit iff and True.
@@ -233,16 +241,19 @@ Module Bool.
   Proof. unfold Commutative; firstorder with bool. Qed.
   #[export] Instance aac_Bool_orb_Idem : Idempotent eq orb.
   Proof. intro; apply Bool.orb_diag. Qed.
+
   #[export] Instance aac_Bool_andb_Assoc : Associative eq andb.
   Proof. unfold Associative; firstorder with bool. Qed.
   #[export] Instance aac_Bool_andb_Comm : Commutative eq andb.
   Proof. unfold Commutative; firstorder with bool. Qed.
   #[export] Instance aac_Bool_andb_Idem : Idempotent eq andb.
   Proof. intro; apply Bool.andb_diag. Qed.
+
   #[export] Instance aac_Bool_orb_false_Unit : Unit eq orb false.
   Proof. constructor; firstorder with bool. Qed.
   #[export] Instance aac_Bool_andb_true_Unit : Unit eq andb true.
   Proof. constructor; intros [|]; firstorder. Qed.
+
   #[export] Instance negb_compat : Proper (eq ==> eq) negb.
   Proof. intros [|] [|]; auto. Qed.
 End Bool.

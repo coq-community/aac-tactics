@@ -8,8 +8,7 @@
 
 (** * Utility functions and results for AAC Tactics *)
 
-From Coq Require Import Arith NArith List.
-From Coq Require Import FMapPositive FMapFacts RelationClasses Equality.
+From Coq Require Import Arith NArith List RelationClasses.
 
 Set Implicit Arguments.
 Set Asymmetric Patterns.

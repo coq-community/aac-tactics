@@ -28,7 +28,7 @@
 *)
 
 From Coq Require Import Arith NArith List.
-From Coq Require Import FMapPositive FMapFacts RelationClasses Equality.
+From Coq Require Import FMapPositive Relations RelationClasses.
 From Coq Require Export Morphisms.
 From AAC_tactics Require Import Utils Constants.
 
@@ -121,7 +121,7 @@ Section copy.
     unfold copy.
     induction n using Pind; intros m x.
     rewrite Prect_base. rewrite <- Pplus_one_succ_l.
-    rewrite Prect_succ. reflexivity. 
+    rewrite Prect_succ. reflexivity.
     rewrite Pplus_succ_permute_l. rewrite 2Prect_succ.
     rewrite IHn. apply op.
   Qed.
