@@ -1,5 +1,3 @@
-CMTFILES = $(CMXFILES:.cmx=.cmt)
-CMTIFILES = $(MLIFILES:.mli=.cmti)
 OCAMLDOCDIR = docs/ocamldoc
 
 ocamldoc: $(MLIFILES)
@@ -8,7 +6,3 @@ ocamldoc: $(MLIFILES)
 	$(HIDE)$(CAMLDOC) -d $(OCAMLDOCDIR) -html \
          -m A $(CAMLDEBUG) $(CAMLDOCFLAGS) $(MLIFILES) $(FINDLIBPKGS)
 .PHONY: ocamldoc
-
-clean::
-	$(HIDE)rm -f $(CMTFILES)
-	$(HIDE)rm -f $(CMTIFILES)
