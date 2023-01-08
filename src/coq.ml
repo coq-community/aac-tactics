@@ -346,7 +346,7 @@ type hypinfo =
 
 let get_hypinfo env sigma ?check_type c ~l2r : hypinfo =
   let ctype = Retyping.get_type_of env sigma c in
-  let (rel_context, body_type) = decompose_prod_assum sigma ctype in
+  let (rel_context, body_type) = decompose_prod_decls sigma ctype in
   let rec check f e =
     match decomp_term sigma e with
     | Rel i -> f (get_type (Context.Rel.lookup i rel_context))
