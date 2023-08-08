@@ -1,3 +1,5 @@
+# This file was generated from `meta.yml`, please do not edit manually.
+# Follow the instructions on https://github.com/coq-community/templates to regenerate.
 name: Docker CI
 
 on:
@@ -15,7 +17,7 @@ jobs:
     strategy:
       matrix:
         image:
-          - 'coqorg/coq:dev'
+          - 'coqorg/coq:8.18'
       fail-fast: false
     steps:
       - uses: actions/checkout@v3
@@ -23,10 +25,7 @@ jobs:
         with:
           opam_file: 'coq-aac-tactics.opam'
           custom_image: ${{ matrix.image }}
-          before_install: |
-            startGroup "Print opam config and unpin dune"
-              opam config list; opam repo list; opam list; opam pin remove coq-core coq-stdlib coqide-server coq -y
-            endGroup
+
 
 # See also:
 # https://github.com/coq-community/docker-coq-action#readme
