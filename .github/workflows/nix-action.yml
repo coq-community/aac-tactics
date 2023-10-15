@@ -44,4 +44,4 @@ jobs:
         with:
           ref: ${{ env.tested_commit }}
       - run: >
-          nix-build https://coq.inria.fr/nix/toolbox --argstr job aac-tactics --arg override '{ ${{ matrix.overrides }}; aac-tactics = builtins.filterSource (path: _: baseNameOf path != ".git") ./.; }'
+          nix-build https://github.com/coq-community/coq-nix-toolbox/archive/master.tar.gz --argstr job aac-tactics --arg override '{ ${{ matrix.overrides }}; aac-tactics = builtins.filterSource (path: _: baseNameOf path != ".git") ./.; }'
