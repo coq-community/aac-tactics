@@ -15,8 +15,8 @@ Follow the instructions on https://github.com/coq-community/templates to regener
 [docker-action-shield]: https://github.com/coq-community/aac-tactics/actions/workflows/docker-action.yml/badge.svg?branch=v8.19
 [docker-action-link]: https://github.com/coq-community/aac-tactics/actions/workflows/docker-action.yml
 
-[nix-action-shield]: https://github.com/coq-community/aac-tactics/actions/workflows/nix-ci.yml/badge.svg?branch=v8.19
-[nix-action-link]: https://github.com/coq-community/aac-tactics/actions/workflows/nix-ci.yml
+[nix-action-shield]: https://github.com/coq-community/aac-tactics/actions/workflows/nix-action.yml/badge.svg?branch=v8.19
+[nix-action-link]: https://github.com/coq-community/aac-tactics/actions/workflows/nix-action.yml
 
 [contributing-shield]: https://img.shields.io/badge/contributions-welcome-%23f7931e.svg
 [contributing-link]: https://github.com/coq-community/manifesto/blob/master/CONTRIBUTING.md
