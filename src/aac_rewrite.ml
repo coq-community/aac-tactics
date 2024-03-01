@@ -235,10 +235,7 @@ let aac_reflexivity : unit Proofview.tactic =
       Unsafe.tclEVARS sigma
       <*> Coq.tclRETYPE lift_reflexivity
       <*> Tactics.apply lift_reflexivity
-      <*> (tclEVARMAP >>= fun sigma ->
-           let () = pr_constr env sigma "concl "concl in
-           by_aac_reflexivity zero lift.e ir t t')
-    )
+      <*> by_aac_reflexivity zero lift.e ir t t')
 
 
 (** A sub-tactic to lift the rewriting using Lift  *)
