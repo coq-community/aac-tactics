@@ -17,7 +17,6 @@ module Control =   struct
 end
 
 module Debug = Helper.Debug (Control)
-open Debug
 
 let time_tac msg tac =
   if Control.time then  Proofview.tclTIME (Some msg) tac else tac
@@ -25,14 +24,12 @@ let time_tac msg tac =
 let tclTac_or_exn (tac : 'a Proofview.tactic) exn msg : 'a Proofview.tactic =
   Proofview.tclORELSE tac
     (fun e ->
-      let open Proofview.Notations in
       let open Proofview in
-      tclEVARMAP >>= fun sigma ->
       Goal.enter_one (fun gl ->
-          let env = Proofview.Goal.env gl in
-          pr_constr env sigma "last goal" (Goal.concl gl);
-          exn msg e)
-    )
+          let env = Goal.env gl in
+          let sigma = Goal.sigma gl in
+          Debug.pr_constr env sigma "last goal" (Goal.concl gl);
+          exn msg e))
 
 
 open EConstr
@@ -188,7 +185,7 @@ let aac_conclude env sigma (concl:types): ( Evd.evar_map * constr * aac_lift * T
       let eq = Coq.Equivalence.to_relation lift.e in
       let tleft,tright, sigma = Theory.Trans.t_of_constr env sigma eq envs (left,right) in
       let sigma, ir = Theory.Trans.ir_of_envs env sigma eq envs in
-      let _ = pr_constr env sigma "concl" concl in
+      let () = Debug.pr_constr env sigma "concl" concl in
       (sigma,left,lift,ir,tleft,tright)
   with
   | Not_found -> Coq.user_error @@ Pp.strbrk "No lifting from the goal's relation to an equivalence"
@@ -199,12 +196,11 @@ let aac_normalise =
   let mp = MPfile (DirPath.make (List.map Id.of_string ["AAC"; "AAC_tactics"])) in
   let norm_tac = KerName.make mp (Label.make "internal_normalize") in
   let norm_tac = Locus.ArgArg (None, norm_tac) in
-  let open Proofview.Notations in
   let open Proofview in
   Proofview.Goal.enter (fun goal -> 
       let ids = Tacmach.pf_ids_of_hyps goal in
       let env = Proofview.Goal.env goal in
-      tclEVARMAP >>= fun sigma ->
+      let sigma = Proofview.Goal.sigma goal in
       let concl = Proofview.Goal.concl goal in
       let sigma,left,lift,ir,tleft,tright = aac_conclude env sigma concl in
       Tacticals.tclTHENLIST
@@ -218,9 +214,9 @@ let aac_normalise =
 let aac_reflexivity : unit Proofview.tactic =
   let open Proofview.Notations in
   let open Proofview in
-  tclEVARMAP >>= fun sigma ->
   Goal.enter (fun goal ->
       let env = Proofview.Goal.env goal in
+      let sigma = Proofview.Goal.sigma goal in
       let concl = Goal.concl goal in
       let sigma,zero,lift,ir,t,t' = aac_conclude env sigma concl in
       let x,r = Coq.Relation.split (lift.r) in
@@ -235,22 +231,16 @@ let aac_reflexivity : unit Proofview.tactic =
       Unsafe.tclEVARS sigma
       <*> Coq.tclRETYPE lift_reflexivity
       <*> Tactics.apply lift_reflexivity
-      <*> (let concl = Goal.concl goal in
-           tclEVARMAP >>= fun sigma ->
-           let _ = pr_constr env sigma "concl "concl in
-           by_aac_reflexivity zero lift.e ir t t')
-    )
+      <*> by_aac_reflexivity zero lift.e ir t t')
 
 
 (** A sub-tactic to lift the rewriting using Lift  *)
 let lift_transitivity in_left (step:constr) preorder lifting (using_eq : Coq.Equivalence.t): unit Proofview.tactic =
-  let open Proofview.Notations in
-  let open Proofview in
   Proofview.Goal.enter (fun goal ->
       (* catch the equation and the two members*)
       let concl = Proofview.Goal.concl goal in
       let env = Proofview.Goal.env goal in
-      tclEVARMAP >>= fun sigma ->
+      let sigma = Proofview.Goal.sigma goal in
       let (left, right, _ ) = match  Coq.match_as_equation env sigma concl with
         | Some x -> x
         | None -> Coq.user_error @@ Pp.strbrk "The goal is not an equation"
@@ -286,11 +276,10 @@ let core_aac_rewrite ?abort
       subst
       (by_aac_reflexivity : Matcher.Terms.t -> Matcher.Terms.t -> unit Proofview.tactic)
       (tr : constr) t left : unit Proofview.tactic =
-  let open Proofview.Notations in
   Proofview.Goal.enter (fun goal ->
       let env = Proofview.Goal.env goal in
-      Proofview.tclEVARMAP >>= fun sigma ->
-      pr_constr env sigma "transitivity through" tr;
+      let sigma = Proofview.Goal.sigma goal in
+      Debug.pr_constr env sigma "transitivity through" tr;
       let tran_tac =
         lift_transitivity rewinfo.in_left tr rewinfo.rlt rewinfo.lifting.lift rewinfo.eqt
       in
@@ -332,13 +321,11 @@ let choose_subst  subterm sol m=
 (** rewrite the constr modulo AC from left to right in the left member
     of the goal *)
 let aac_rewrite_wrap  ?abort ?(l2r=true) ?(show = false) ?(in_left=true) ?strict ?extra ~occ_subterm ~occ_sol rew : unit Proofview.tactic =
-  let open Proofview.Notations in
-  let open Proofview in
   Proofview.Goal.enter (fun goal ->
       let envs = Theory.Trans.empty_envs () in
       let (concl : types) = Proofview.Goal.concl goal in
       let env = Proofview.Goal.env goal in
-      tclEVARMAP >>= fun sigma ->
+      let sigma = Proofview.Goal.sigma goal in
       let (_,_,rlt) as concl =
         match Coq.match_as_equation env sigma concl with
         | None -> Coq.user_error @@ Pp.strbrk "The goal is not an applied relation"
