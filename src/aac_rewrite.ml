@@ -218,9 +218,9 @@ let aac_normalise =
 let aac_reflexivity : unit Proofview.tactic =
   let open Proofview.Notations in
   let open Proofview in
-  tclEVARMAP >>= fun sigma ->
   Goal.enter (fun goal ->
       let env = Proofview.Goal.env goal in
+      let sigma = Proofview.Goal.sigma goal in
       let concl = Goal.concl goal in
       let sigma,zero,lift,ir,t,t' = aac_conclude env sigma concl in
       let x,r = Coq.Relation.split (lift.r) in
@@ -235,9 +235,8 @@ let aac_reflexivity : unit Proofview.tactic =
       Unsafe.tclEVARS sigma
       <*> Coq.tclRETYPE lift_reflexivity
       <*> Tactics.apply lift_reflexivity
-      <*> (let concl = Goal.concl goal in
-           tclEVARMAP >>= fun sigma ->
-           let _ = pr_constr env sigma "concl "concl in
+      <*> (tclEVARMAP >>= fun sigma ->
+           let () = pr_constr env sigma "concl "concl in
            by_aac_reflexivity zero lift.e ir t t')
     )
 
