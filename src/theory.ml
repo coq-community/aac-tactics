@@ -990,12 +990,11 @@ module Trans = struct
       able to build the sigmas *)
   let build_sigma_maps (rlt : Coq.Relation.t) zero ir : (sigmas * sigma_maps) Proofview.tactic =
     let open Proofview.Notations in
-    let open Proofview in
-    tclEVARMAP >>= fun sigma ->
     Proofview.Goal.enter_one (fun goal ->
         let env = Proofview.Goal.env goal in
+        let sigma = Proofview.Goal.sigma goal in
         let sigma,rp = build_reif_params env sigma rlt zero in
-        Unsafe.tclEVARS sigma
+        Proofview.Unsafe.tclEVARS sigma
         <*> let renumbered_sym, to_local, to_global = renumber ir.sym  in
             let env_sym = Sigma.of_list
                             rp.sym_ty
@@ -1034,7 +1033,7 @@ module Trans = struct
 	        units_to_pos = (let units = f units in fun x ->  (List.assoc  x units));
               }
             in
-            tclUNIT (sigmas, sigma_maps))
+            Proofview.tclUNIT (sigmas, sigma_maps))
 
   (** builders for the reification *)
   type reif_builders =
