@@ -10,9 +10,6 @@ Makefile.coq: _CoqProject
 
 force _CoqProject Makefile: ;
 
-tests:
-	$(MAKE) -C tests
-
 %: Makefile.coq force
 	@+$(MAKE) -f Makefile.coq $@
 
