@@ -47,23 +47,17 @@ let nowhere =
     Locus.concl_occs = Locus.NoOccurrences
   }
 
-let retype c =
-  Proofview.Goal.enter begin fun gl ->
-  let sigma, _ = Typing.type_of (Proofview.Goal.env gl) (Proofview.Goal.sigma gl) c in
-  Proofview.Unsafe.tclEVARS sigma
-  end
-
-(* similar to retype above. No Idea when/why this is needed, I smell some ugly hack.
-  Apparently, it has to do with the need to recompute universe constrains if we just compose terms *)
-let tclRETYPE c=
+(* Typically needed to recompute universe constraints,
+   eg if we do [mkApp (id, [|some_ty; some_v|])]
+   (universe of some_ty must be <= universe of id argument) *)
+let tclRETYPE c =
   let open Proofview in
-  tclEVARMAP >>= fun sigma ->
-  Proofview.Goal.enter (fun goal ->
-      let env = Proofview.Goal.env goal in
+  Goal.enter_one ~__LOC__ (fun goal ->
+      let env = Goal.env goal in
+      let sigma = Goal.sigma goal in
       let sigma,_ = Typing.type_of env sigma c in
-      Unsafe.tclEVARS sigma
-    )
-  
+      Unsafe.tclEVARS sigma)
+
 (** {1 Tacticals}  *)
 
 let tclTIME msg tac =
@@ -103,7 +97,7 @@ let cps_mk_letin
     let name = (Id.of_string name) in
     let name =  Tactics.fresh_id_in_env Id.Set.empty name (Tacmach.pf_env goal) in
     let letin = Tactics.letin_tac None (Name name) c None nowhere in
-    Tacticals.tclTHENLIST [retype c; letin; (k (mkVar name))]
+    Tacticals.tclTHENLIST [tclRETYPE c; letin; (k (mkVar name))]
   end
 
 let mk_letin (name:string) (c: constr) : constr Proofview.tactic =

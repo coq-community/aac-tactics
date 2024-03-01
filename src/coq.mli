@@ -42,7 +42,6 @@ val evar_relation: Environ.env -> Evd.evar_map -> EConstr.constr -> Evd.evar_map
 val cps_mk_letin : string -> EConstr.constr -> ( EConstr.constr -> tactic) -> tactic
 val mk_letin : string -> EConstr.constr -> EConstr.constr Proofview.tactic
 
-val retype : EConstr.constr -> tactic
 val tclRETYPE : EConstr.constr -> unit Proofview.tactic
 
 val decomp_term : Evd.evar_map -> EConstr.constr -> (EConstr.constr , EConstr.types, EConstr.ESorts.t, EConstr.EInstance.t) Constr.kind_of_term
