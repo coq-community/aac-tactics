@@ -40,13 +40,6 @@ let get_fresh r = new_monomorphic_global (Lazy.force r)
 let get_efresh r = EConstr.of_constr (new_monomorphic_global (Lazy.force r))
                         
 
-(* A clause specifying that the [let] should not try to fold anything
-   in the goal *)
-let nowhere =
-  { Locus.onhyps = Some [];
-    Locus.concl_occs = Locus.NoOccurrences
-  }
-
 (* Typically needed to recompute universe constraints,
    eg if we do [mkApp (id, [|some_ty; some_v|])]
    (universe of some_ty must be <= universe of id argument) *)
@@ -87,18 +80,6 @@ let show_proof pstate : unit =
   let () = List.iter (fun c -> Feedback.msg_notice (Printer.pr_econstr_env env sigma c)) p (* list of econstr in sigma *) in
   ()
 
-
-let cps_mk_letin
-    (name:string)
-    (c: constr)
-    (k : constr -> tactic)
-: tactic =
-  Proofview.Goal.enter begin fun goal ->
-    let name = (Id.of_string name) in
-    let name =  Tactics.fresh_id_in_env Id.Set.empty name (Tacmach.pf_env goal) in
-    let letin = Tactics.letin_tac None (Name name) c None nowhere in
-    Tacticals.tclTHENLIST [tclRETYPE c; letin; (k (mkVar name))]
-  end
 
 let mk_letin (name:string) (c: constr) : constr Proofview.tactic =
   let open Proofview in
