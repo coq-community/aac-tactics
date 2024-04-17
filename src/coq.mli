@@ -42,7 +42,7 @@ val mk_letin : string -> EConstr.constr -> EConstr.constr Proofview.tactic
 
 val tclRETYPE : EConstr.constr -> unit Proofview.tactic
 
-val decomp_term : Evd.evar_map -> EConstr.constr -> (EConstr.constr , EConstr.types, EConstr.ESorts.t, EConstr.EInstance.t) Constr.kind_of_term
+val decomp_term : Evd.evar_map -> EConstr.constr -> (EConstr.constr , EConstr.types, EConstr.ESorts.t, EConstr.EInstance.t, EConstr.ERelevance.t) Constr.kind_of_term
 
 (** {2 Bindings with Coq' Standard Library}  *)
 

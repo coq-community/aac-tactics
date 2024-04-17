@@ -17,7 +17,7 @@ open Proofview.Notations
 
 type tactic = unit Proofview.tactic
 
-let mkArrow x y = mkArrow x Sorts.Relevant y
+let mkArrow x y = mkArrow x ERelevance.relevant y
 (* The kernel will fix the relevance if needed. Also as an equality
    tactic we probably are only called on relevant terms. *)
 
