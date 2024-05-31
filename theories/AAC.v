@@ -961,3 +961,8 @@ Section t.
 End t.
        
 Declare ML Module "aac_plugin:coq-aac-tactics.plugin".
+
+Lemma transitivity4 {A R} {H: @Equivalence A R} a b a' b': R a a' -> R b b' -> R a b -> R a' b'.
+Proof. now intros -> ->. Qed.
+Tactic Notation "aac_normalise" "in" hyp(H) :=
+  eapply transitivity4 in H; [| aac_normalise; reflexivity | aac_normalise; reflexivity].
