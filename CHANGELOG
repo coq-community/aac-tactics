@@ -2,6 +2,6 @@
 
 - [aac_normalise in H] tactic
 - make the order of sums produced by [aac_normalise] consistent across calls
-- gcd instances for Nat, N, Z
+- gcd/lcm instances for Nat, N, Z
 
 * were not tracked before
