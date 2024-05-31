@@ -39,8 +39,14 @@ Module Peano.
   #[export] Instance aac_Nat_gcd_Assoc : Associative eq Nat.gcd := Nat.gcd_assoc.
   #[export] Instance aac_Nat_gcd_Idem : Idempotent eq Nat.gcd := Nat.gcd_diag.
 
+  #[export] Instance aac_Nat_lcm_Comm : Commutative eq Nat.lcm := Nat.lcm_comm.
+  #[export] Instance aac_Nat_lcm_Assoc : Associative eq Nat.lcm := Nat.lcm_assoc.
+  #[export] Instance aac_Nat_lcm_Idem : Idempotent eq Nat.lcm := Nat.lcm_diag.
+
   #[export] Instance aac_Nat_mul_1_Unit : Unit eq Nat.mul 1 :=
     Build_Unit eq Nat.mul 1 Nat.mul_1_l Nat.mul_1_r.
+  #[export] Instance aac_Nat_lcm_1_Unit : Unit eq Nat.lcm 1 :=
+    Build_Unit eq Nat.lcm 1 Nat.lcm_1_l Nat.lcm_1_r.
   #[export] Instance aac_Nat_add_0_Unit : Unit eq Nat.add 0 :=
     Build_Unit eq Nat.add (0) Nat.add_0_l Nat.add_0_r.
   #[export] Instance aac_Nat_max_0_Unit : Unit eq Nat.max 0 :=
@@ -77,6 +83,9 @@ Module Z.
 
   #[export] Instance aac_Z_gcd_Comm : Commutative eq Z.gcd := Z.gcd_comm.
   #[export] Instance aac_Z_gcd_Assoc : Associative eq Z.gcd := Z.gcd_assoc.
+
+  #[export] Instance aac_Z_lcm_Comm : Commutative eq Z.lcm := Z.lcm_comm.
+  #[export] Instance aac_Z_lcm_Assoc : Associative eq Z.lcm := Z.lcm_assoc.
   
   #[export] Instance aac_Z_mul_1_Unit : Unit eq Z.mul 1 :=
     Build_Unit eq Z.mul 1 Z.mul_1_l Z.mul_1_r.
@@ -137,10 +146,16 @@ Module N.
   #[export] Instance aac_N_gcd_Assoc : Associative eq N.gcd := N.gcd_assoc.
   #[export] Instance aac_N_gcd_Idem : Idempotent eq N.gcd := N.gcd_diag.
 
+  #[export] Instance aac_N_lcm_Comm : Commutative eq N.lcm := N.lcm_comm.
+  #[export] Instance aac_N_lcm_Assoc : Associative eq N.lcm := N.lcm_assoc.
+  #[export] Instance aac_N_lcm_Idem : Idempotent eq N.lcm := N.lcm_diag.
+
   #[export] Instance aac_N_mul_1_Unit : Unit eq N.mul (1)%N :=
-    Build_Unit eq N.mul (1)%N N.mul_1_l N.mul_1_r.
+    Build_Unit eq N.mul 1 N.mul_1_l N.mul_1_r.
+  #[export] Instance aac_N_lcm_1_Unit : Unit eq N.lcm (1)%N :=
+    Build_Unit eq N.lcm 1 N.lcm_1_l N.lcm_1_r.
   #[export] Instance aac_N_add_0_Unit : Unit eq N.add (0)%N :=
-    Build_Unit eq N.add (0)%N N.add_0_l N.add_0_r.
+    Build_Unit eq N.add 0 N.add_0_l N.add_0_r.
   #[export] Instance aac_N_max_0_Unit : Unit eq N.max 0 :=
     Build_Unit eq N.max 0 N.max_0_l N.max_0_r.
   #[export] Instance aac_N_gcd_0_Unit : Unit eq N.gcd 0 :=
