@@ -1,0 +1,6 @@
+* 31 May 2024: v8.19.1
+
+- [aac_normalise in H] tactic
+- make the order of sums produced by [aac_normalise] consistent across calls
+
+* were not tracked before
