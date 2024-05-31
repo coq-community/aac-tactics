@@ -369,10 +369,15 @@ Section AAC_normalise.
     aac_normalise in H.
     assumption.
   Qed.
+
+  Goal b + 0 + a = c*1+d -> a+b = d*(1+0)+c.
+    intro.
+    aac_normalise in *.
+    assumption.
+  Qed.
   
   Goal Z.max (a+b) (b+a) = a+b.
     aac_reflexivity.
-    Show Proof.
   Abort.
 
 End AAC_normalise.

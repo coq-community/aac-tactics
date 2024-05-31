@@ -966,3 +966,10 @@ Lemma transitivity4 {A R} {H: @Equivalence A R} a b a' b': R a a' -> R b b' -> R
 Proof. now intros -> ->. Qed.
 Tactic Notation "aac_normalise" "in" hyp(H) :=
   eapply transitivity4 in H; [| aac_normalise; reflexivity | aac_normalise; reflexivity].
+
+Ltac aac_normalise_all :=
+    aac_normalise;
+    repeat match goal with
+      | H: _ |- _ => aac_normalise in H
+      end.
+Tactic Notation "aac_normalise" "in" "*" := aac_normalise_all.
