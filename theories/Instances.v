@@ -34,13 +34,19 @@ Module Peano.
   #[export] Instance aac_Nat_max_Comm : Commutative eq Nat.max := Nat.max_comm.
   #[export] Instance aac_Nat_max_Assoc : Associative eq Nat.max := Nat.max_assoc.
   #[export] Instance aac_Nat_max_Idem : Idempotent eq Nat.max := Nat.max_idempotent.
- 
+
+  #[export] Instance aac_Nat_gcd_Comm : Commutative eq Nat.gcd := Nat.gcd_comm.
+  #[export] Instance aac_Nat_gcd_Assoc : Associative eq Nat.gcd := Nat.gcd_assoc.
+  #[export] Instance aac_Nat_gcd_Idem : Idempotent eq Nat.gcd := Nat.gcd_diag.
+
   #[export] Instance aac_Nat_mul_1_Unit : Unit eq Nat.mul 1 :=
     Build_Unit eq Nat.mul 1 Nat.mul_1_l Nat.mul_1_r.
   #[export] Instance aac_Nat_add_0_Unit : Unit eq Nat.add 0 :=
     Build_Unit eq Nat.add (0) Nat.add_0_l Nat.add_0_r.
   #[export] Instance aac_Nat_max_0_Unit : Unit eq Nat.max 0 :=
     Build_Unit eq Nat.max 0 Nat.max_0_l Nat.max_0_r.
+  #[export] Instance aac_Nat_gcd_0_Unit : Unit eq Nat.gcd 0 :=
+    Build_Unit eq Nat.gcd 0 Nat.gcd_0_l Nat.gcd_0_r.
 
   (** We also provide liftings from  [Nat.le] to [eq] *)
   #[export] Instance Nat_le_PreOrder : PreOrder Nat.le :=
@@ -68,7 +74,10 @@ Module Z.
   #[export] Instance aac_Z_max_Comm : Commutative eq Z.max := Z.max_comm.
   #[export] Instance aac_Z_max_Assoc : Associative eq Z.max := Z.max_assoc.
   #[export] Instance aac_Z_max_Idem : Idempotent eq Z.max := Z.max_idempotent.
- 
+
+  #[export] Instance aac_Z_gcd_Comm : Commutative eq Z.gcd := Z.gcd_comm.
+  #[export] Instance aac_Z_gcd_Assoc : Associative eq Z.gcd := Z.gcd_assoc.
+  
   #[export] Instance aac_Z_mul_1_Unit : Unit eq Z.mul 1 :=
     Build_Unit eq Z.mul 1 Z.mul_1_l Z.mul_1_r.
   #[export] Instance aac_Z_add_0_Unit : Unit eq Z.add 0 :=
@@ -123,6 +132,10 @@ Module N.
   #[export] Instance aac_N_max_Comm : Commutative eq N.max := N.max_comm.
   #[export] Instance aac_N_max_Assoc : Associative eq N.max := N.max_assoc.
   #[export] Instance aac_N_max_Idem : Idempotent eq N.max := N.max_idempotent.
+  
+  #[export] Instance aac_N_gcd_Comm : Commutative eq N.gcd := N.gcd_comm.
+  #[export] Instance aac_N_gcd_Assoc : Associative eq N.gcd := N.gcd_assoc.
+  #[export] Instance aac_N_gcd_Idem : Idempotent eq N.gcd := N.gcd_diag.
 
   #[export] Instance aac_N_mul_1_Unit : Unit eq N.mul (1)%N :=
     Build_Unit eq N.mul (1)%N N.mul_1_l N.mul_1_r.
@@ -130,6 +143,8 @@ Module N.
     Build_Unit eq N.add (0)%N N.add_0_l N.add_0_r.
   #[export] Instance aac_N_max_0_Unit : Unit eq N.max 0 :=
     Build_Unit eq N.max 0 N.max_0_l N.max_0_r.
+  #[export] Instance aac_N_gcd_0_Unit : Unit eq N.gcd 0 :=
+    Build_Unit eq N.gcd 0 N.gcd_0_l N.gcd_0_r.
 
   (* We also provide liftings from [N.le] to [eq] *)
   #[export] Instance N_le_PreOrder : PreOrder N.le :=
