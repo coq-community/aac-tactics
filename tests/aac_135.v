@@ -25,6 +25,10 @@ Section introduction.
     (* variable ordering is fixed since v8.19.1, so expressions should be normalised consistently across calss *)
     assumption.
   Qed.
+
+  Goal b+a+d = e+d -> d+a+b = d+e.
+    intro H. now aac_normalise in *. 
+  Qed.
   
   Goal forall c: bool, a + b = b + a.
     intros c.
