@@ -30,19 +30,6 @@ Fixpoint eq_idx_bool i j :=
     | _, _ => false
   end.
 
-Fixpoint idx_compare i j :=
-  match i,j with
-    | xH, xH => Eq
-    | xH, _ => Lt
-    | _, xH => Gt
-    | xO i, xO j => idx_compare i j
-    | xI i, xI j => idx_compare i j
-    | xI _, xO _ => Gt
-    | xO _, xI _ => Lt
-  end.
-
-Notation pos_compare := idx_compare (only parsing).
-
 (** Specification predicate for boolean binary functions *)
 Inductive decide_spec {A} {B} (R : A -> B -> Prop) (x : A) (y : B) : bool -> Prop :=
 | decide_true : R x y -> decide_spec R x y true
@@ -64,16 +51,16 @@ Inductive compare_weak_spec A: A -> A -> comparison -> Prop :=
 | pcws_lt: forall i j, compare_weak_spec i j Lt
 | pcws_gt: forall i j, compare_weak_spec i j Gt.
 
-Lemma pos_compare_weak_spec: forall i j, compare_weak_spec i j (pos_compare i j).
+Lemma pos_compare_weak_spec: forall i j, compare_weak_spec i j (Pos.compare i j).
 Proof.
-  induction i; destruct j; simpl; try constructor;
-    case (IHi j); intros; constructor.
+  intros. case Pos.compare_spec; try constructor.
+  intros <-; constructor.
 Qed.
 
-Lemma idx_compare_reflect_eq: forall i j, idx_compare i j = Eq -> i=j.
+Lemma pos_compare_reflect_eq: forall i j, Pos.compare i j = Eq -> i=j.
 Proof.
-  intros i j.
-  case (pos_compare_weak_spec i j); intros; congruence.
+  intros ??.
+  case pos_compare_weak_spec; intros; congruence.
 Qed.
 
 (** ** Dependent types utilities *)
@@ -161,7 +148,7 @@ Section lists.
     list_compare (fun un vm =>
       let '(u,n) := un in
       let '(v,m) := vm in
-      lex (compare u v) (pos_compare n m)).
+      lex (compare u v) (Pos.compare n m)).
 
   Section list_compare_weak_spec.
     Variable A: Type.
