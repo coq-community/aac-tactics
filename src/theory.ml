@@ -724,6 +724,24 @@ module Trans = struct
     let sigma = Gather.gather env sigma rlt envs (EConstr.of_constr (Constr.mkApp (l, [| Constr.mkRel 0;Constr.mkRel 0|]))) in
     sigma
 
+  (* reorder the environment to make it (more) canonical *)
+  let reorder envs =
+    let rec insert k v = function
+      | [] -> [k,v]
+      | ((h,_)::_) as l when Constr.compare k h = -1 -> (k,v)::l
+      | y::q -> y::insert k v q
+    in
+    let insert k v l =
+      match v with Some v -> insert k v l | None -> l
+    in
+    let l = HMap.fold insert envs.discr [] in
+    let old = Hashtbl.copy envs.bloom_back in
+    PackTable.clear envs.bloom;
+    Hashtbl.clear envs.bloom_back;
+    envs.bloom_next := 1;
+    List.iter (fun (c,pack) -> add_bloom envs pack) l;
+    (fun s -> PackTable.find envs.bloom (Hashtbl.find old s))
+  
   (* [t_of_constr] buils a the abstract syntax tree of a constr,
      updating in place the environment. Doing so, we infer all the
      morphisms and the AC/A operators. It is mandatory to do so both
@@ -734,7 +752,8 @@ module Trans = struct
     let sigma = Gather.gather env sigma rlt envs r in
     let l,sigma = Parse.t_of_constr env sigma rlt envs l in
     let r, sigma = Parse.t_of_constr env sigma rlt envs r in
-    l, r, sigma
+    let p = reorder envs in
+    Matcher.Terms.map_syms p l, Matcher.Terms.map_syms p r, sigma
 
   (* An intermediate representation of the environment, with association lists for AC/A operators, and also the raw [packer] information *)
 
@@ -967,25 +986,6 @@ module Trans = struct
     in
       sigma,record
 
-  (* We want to lift down the indexes of symbols. *)
-  let renumber (l: (int * 'a) list ) =
-    let _, l = List.fold_left (fun (next,acc) (glob,x) ->
-				 (next+1, (next,glob,x)::acc)
-			      ) (1,[]) l
-    in
-    let rec to_global loc = function
-      | [] -> assert false
-      | (local, global,x)::q when  local = loc -> global
-      | _::q -> to_global loc q
-    in
-    let rec to_local glob = function
-      | [] -> assert false
-      | (local, global,x)::q when  global = glob -> local
-      | _::q -> to_local glob q
-    in
-    let locals = List.map (fun (local,global,x) -> local,x) l in
-      locals, (fun x -> to_local x l) , (fun x -> to_global x l)
-
   (** [build_sigma_maps] given a envs and some reif_params, we are
       able to build the sigmas *)
   let build_sigma_maps (rlt : Coq.Relation.t) zero ir : (sigmas * sigma_maps) Proofview.tactic =
@@ -995,11 +995,10 @@ module Trans = struct
         let sigma = Proofview.Goal.sigma goal in
         let sigma,rp = build_reif_params env sigma rlt zero in
         Proofview.Unsafe.tclEVARS sigma
-        <*> let renumbered_sym, to_local, to_global = renumber ir.sym  in
-            let env_sym = Sigma.of_list
+        <*> let env_sym = Sigma.of_list
                             rp.sym_ty
                             (rp.sym_null)
-                            renumbered_sym
+                            ir.sym
             in 
             Coq.mk_letin "env_sym" env_sym >>= fun env_sym ->
             let bin = (List.map ( fun (n,s) -> n, Bin.mk_pack rlt s) ir.bin) in
@@ -1028,8 +1027,8 @@ module Trans = struct
             let f = List.map (fun (x,_) -> (x,Coq.Pos.of_int x)) in
             let sigma_maps =
               {
-	        sym_to_pos = (let sym = f renumbered_sym in fun x ->  (List.assoc (to_local x) sym));
-	        bin_to_pos = (let bin = f bin in fun x ->  (List.assoc  x bin));
+	        sym_to_pos = (let sym = f ir.sym in fun x ->  (List.assoc x sym));
+	        bin_to_pos = (let bin = f bin in fun x ->  (List.assoc x bin));
 	        units_to_pos = (let units = f units in fun x ->  (List.assoc  x units));
               }
             in

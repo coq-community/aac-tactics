@@ -356,7 +356,7 @@ End Peano.
 
 Section AAC_normalise.
   Import Instances.Z.
-  Import ZArith.
+  Import ZArith Lia.
   Open Scope Z_scope.
  
   Variable a b c d : Z.
@@ -364,11 +364,31 @@ Section AAC_normalise.
     aac_normalise.
   Abort.
 
+  Goal b + 0 + a = c*1 -> a+b = c.
+    intro H.
+    aac_normalise in H.
+    assumption.
+  Qed.
+
+  Goal b + 0 + a = c*1+d -> a+b = d*(1+0)+c.
+    intro.
+    aac_normalise in *.
+    assumption.
+  Qed.
+  
   Goal Z.max (a+b) (b+a) = a+b.
     aac_reflexivity.
-    Show Proof.
   Abort.
 
+  (** Example by Abhishek Anand extracted from verification of a C++ gcd function *)
+  Goal forall a b a' b' : Z,
+    0 < b' -> Z.gcd a' b' = Z.gcd a b -> Z.gcd b' (a' mod b') = Z.gcd a b.
+  Proof.
+    intros.
+    aac_rewrite Z.gcd_mod; try lia.
+    aac_normalise_all.
+    lia.
+  Qed.
 End AAC_normalise.
 
 (** ** Examples from previous website *)
