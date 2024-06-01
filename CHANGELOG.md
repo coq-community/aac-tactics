@@ -16,5 +16,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Make the order of sums produced by `aac_normalise` tactic consistent across calls.
 
-[Unreleased]: https://github.com/coq-community/chapar/compare/v8.19.1...master
-[8.19.1]: https://github.com/coq-community/chapar/releases/tag/v8.19.1
+[Unreleased]: https://github.com/coq-community/aac-tactics/compare/v8.19.1...master
+[8.19.1]: https://github.com/coq-community/aac-tactics/releases/tag/v8.19.1
