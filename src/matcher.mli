@@ -118,6 +118,8 @@ sig
       units of a same operator are not considered equal.  *)
   val equal_aac : units ->  t -> t -> bool
 
+  (* permute symbols according to p *)
+  val map_syms: (symbol -> symbol) -> t -> t
 
   (** {2 Normalised terms (canonical representation) }
      

@@ -281,14 +281,14 @@ Section s.
   (** Lexicographic rpo over the normalised syntax *)
   Fixpoint compare (u v: T) :=
     match u,v with
-      | sum i l, sum j vs => lex (idx_compare i j) (mset_compare compare l vs)
-      | prd i l, prd j vs => lex (idx_compare i j) (list_compare compare l vs)
-      | sym i l, sym j vs => lex (idx_compare i j) (vcompare l vs)
-      | unit i , unit j => idx_compare i j
+      | sum i l, sum j vs => lex (Pos.compare i j) (mset_compare compare l vs)
+      | prd i l, prd j vs => lex (Pos.compare i j) (list_compare compare l vs)
+      | sym i l, sym j vs => lex (Pos.compare i j) (vcompare l vs)
+      | unit i , unit j => Pos.compare i j
       | unit _ , _        => Lt
-      | _      , unit _  => Gt
-      | sum _ _, _        => Lt
-      | _      , sum _ _  => Gt
+      | _      , unit _   => Gt
+      | sym _ _,  _       => Lt
+      | _      , sym _ _  => Gt
       | prd _ _, _        => Lt
       | _      , prd _ _  => Gt
 
@@ -335,14 +335,14 @@ Section s.
       case (pos_compare_weak_spec p p0); intros; try constructor.
       case (list_compare_weak_spec compare tcompare_weak_spec n n0); intros; try constructor.
     - destruct v0; simpl; try constructor.
-      case_eq (idx_compare i i0); intro Hi; try constructor.
+      case_eq (Pos.compare i i0); intro Hi; try constructor.
       (* the [symmetry] is required *)
-      apply idx_compare_reflect_eq in Hi. symmetry in Hi. subst.       
+      apply pos_compare_reflect_eq in Hi. symmetry in Hi. subst.
       case_eq (vcompare v v0); intro Hv; try constructor.
       rewrite <- (vcompare_reflect_eqdep _ _ _ _ eq_refl Hv). constructor.
     - destruct v; simpl; try constructor.
-      case_eq (idx_compare p p0); intro Hi; try constructor.
-      apply idx_compare_reflect_eq in Hi. symmetry in Hi. subst.  constructor.
+      case_eq (Pos.compare p p0); intro Hi; try constructor.
+      apply pos_compare_reflect_eq in Hi. symmetry in Hi. subst.  constructor.
     - induction us; destruct vs; simpl; intros H Huv; try discriminate.
       apply cast_eq, eq_nat_dec.
       injection H; intro Hn.
@@ -961,3 +961,15 @@ Section t.
 End t.
        
 Declare ML Module "aac_plugin:coq-aac-tactics.plugin".
+
+Lemma transitivity4 {A R} {H: @Equivalence A R} a b a' b': R a a' -> R b b' -> R a b -> R a' b'.
+Proof. now intros -> ->. Qed.
+Tactic Notation "aac_normalise" "in" hyp(H) :=
+  eapply transitivity4 in H; [| aac_normalise; reflexivity | aac_normalise; reflexivity].
+
+Ltac aac_normalise_all :=
+    aac_normalise;
+    repeat match goal with
+      | H: _ |- _ => aac_normalise in H
+      end.
+Tactic Notation "aac_normalise" "in" "*" := aac_normalise_all.

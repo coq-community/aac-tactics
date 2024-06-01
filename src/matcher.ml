@@ -108,6 +108,9 @@ module Terms : sig
   val equal_aac : units -> t -> t -> bool
   val size: t -> int
 
+  (* permute symbols according to p *)
+  val map_syms: (symbol -> symbol) -> t -> t
+
   (** {1 Terms in normal form}
      
       A term in normal form is the canonical representative of the
@@ -162,6 +165,13 @@ end
       | Sym (_,v)-> Array.fold_left (fun acc x -> size x + acc) 1 v
       | _ -> 1
 
+    (* permute symbols according to p *)
+    let rec map_syms p = function
+      | Dot(s,u,v) -> Dot(p s, map_syms p u, map_syms p v)
+      | Plus(s,u,v) -> Plus(p s, map_syms p u, map_syms p v)
+      | Sym(s,u) -> Sym(p s, Array.map (map_syms p) u)
+      | Unit s -> Unit(p s)
+      | u -> u
 
     type nf_term =
       | TAC of  symbol * nf_term mset
