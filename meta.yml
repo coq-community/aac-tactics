@@ -4,7 +4,6 @@ shortname: aac-tactics
 organization: coq-community
 community: true
 action: true
-nix: true
 plugin: true
 doi: 10.1007/978-3-642-25379-9_14
 branch: 'v8.20'
