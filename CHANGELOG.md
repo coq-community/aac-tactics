@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Tests for `try aac_rewrite` and `try aac_normalise` that failed on 8.19
+
 ## [8.19.1] - 2024-06-01
 
 ### Added
