@@ -35,22 +35,22 @@ Section introduction.
     reflexivity.
   Qed.
 
-  (** note:
+  (** Note:
      - the tactic handles arbitrary function symbols like [Z.opp] (as
        long as they are proper morphisms w.r.t. the considered
        equivalence relation)
      - here, the [ring] tactic would have done the job
-   *)
+  *)
 
-  (** several associative/commutative operations can be used at the same time,
+  (** Several associative/commutative operations can be used at the same time,
       here, [Z.mul] and [Z.add], which are both associative and commutative (AC)
-   *)
+  *)
   Goal (b + c) * (c + b) + a + Z.opp ((c + b) * (b + c)) = a.
     aac_rewrite H.
     aac_reflexivity.
   Qed.
 
-  (** some commutative operations can be declared as idempotent, here [Z.max]
+  (** Some commutative operations can be declared as idempotent, here [Z.max]
       which is taken into account by the [aac_normalise] and [aac_reflexivity] tactics;
       however, [aac_rewrite] does not match modulo idempotency
    *)
@@ -92,7 +92,7 @@ Section base.
   Notation "x + y"   := (plus x y) (at level 50, left associativity).
   Notation "0"       := (zero).
 
-  (** in the very first example, [ring] would have solved the
+  (** In the very first example, [ring] would have solved the
     goal; here, since [dot] does not necessarily distribute over [plus],
     it is not possible to rely on it *)
   Section reminder.
@@ -104,7 +104,7 @@ Section base.
       aac_reflexivity.
     Qed.
 
-    (** the tactic starts by normalising terms, so that trailing units
+    (** The tactic starts by normalising terms, so that trailing units
     are always eliminated *)
     Goal ((a+b)+0+c)*((c+a)+b*1) == a+b+c.
       aac_rewrite H.
@@ -112,7 +112,7 @@ Section base.
     Qed.
   End reminder.
  
-  (** the tactic can deal with "proper" morphisms of arbitrary arity
+  (** The tactic can deal with "proper" morphisms of arbitrary arity
     (here [f] and [g], or [Z.opp] earlier): it rewrites under such
     morphisms ([g]), and, more importantly, it is able to reorder
     terms modulo AC under these morphisms ([f]) *)
@@ -134,7 +134,7 @@ Section base.
 
      There are sometimes several solutions to the matching problem. We
      now show how to interact with the tactic to select the desired one.
-   *)
+  *)
 
   Section occurrence.
     Variable f : X -> X.
@@ -172,12 +172,13 @@ Section base.
     Qed.
   End subst.
  
-  (** As expected, one can use both keywords together to select the
-     occurrence and the substitution. We also provide a keyword to
-     specify that the rewrite should be done in the right-hand side of
-     the equation. 
-   *)
-
+  (** As expected, one can use both the keywords [at] and [subst]
+      together to select the occurrence and the substitution.
+      Note that by default, the rewrite is done in the left-hand side
+      of the equation. We provide the keyword [in_right] to specify
+      that the rewrite should instead be done in the right-hand side.
+      The keyword [in_right] can then be combined with [at] and [subst].
+  *)
   Section both.
     Variables a b c d : X.
     Hypothesis H: forall x y, a*x*y*b == a*(x+y)*b.
@@ -195,12 +196,12 @@ Section base.
      
   End both.
 
-  (** *** Distinction between [aac_rewrite] and [aacu_rewrite]:
+  (** *** Distinction between [aac_rewrite] and [aacu_rewrite]
 
     [aac_rewrite] rejects solutions in which variables are instantiated
     by units, while the companion tactic, [aacu_rewrite] allows such
-    solutions.  
-   *)
+    solutions.
+  *)
 
   Section dealing_with_units.
     Variables a b c: X.
@@ -216,7 +217,7 @@ Section base.
       reflexivity.
     Qed.
      
-    (** we introduced this distinction because it allows us to rule
+    (** We introduced this distinction because it allows us to rule
       out dummy cases in common situations: *)
     Hypothesis H': forall x y z,  x*y + x*z == x*(y+z).
     Goal a*b*c + a*c + a*b == a*(c+b*(1+c)).
@@ -235,7 +236,7 @@ End base.
    To use one's own operations: it suffices to declare them as
    instances of our classes. (Note that the following instances are
    already declared in the Instances module.) 
- *)
+*)
 
 Section Peano.
   Import PeanoNat.
@@ -274,12 +275,12 @@ Section Peano.
     aac_reflexivity.
   Qed.
 
-  (** here, we use idempotency: *)
+  (** Here, we use idempotency: *)
   Goal Nat.max (a + 0) a = a.
     aac_reflexivity.
   Qed.
    
-  (** furthermore, several operators can be mixed: *)
+  (** Furthermore, several operators can be mixed: *)
   Hypothesis H : forall x y z, Nat.max (x + y) (x + z) = x + Nat.max y z.
  
   Goal Nat.max (a + b) (c + (a * 1)) = Nat.max c b + a.
@@ -298,30 +299,30 @@ Section Peano.
      not necessarily equivalences, but they should be related
      according to the occurrence where the rewrite takes place; we
      leave this check to the underlying call to [setoid_rewrite].
-   *)
+  *)
 
-  (** one can rewrite equations in the left member of inequations: *)
+  (** One can rewrite equations in the left member of inequations: *)
   Goal (forall x, x + x = x) -> a + b + b + a <= a + b.
     intro Hx.
     aac_rewrite Hx.
     reflexivity.
   Qed.
 
-  (** or in the right member of inequations, using the [in_right] keyword: *)
+  (** Or in the right member of inequations, using the [in_right] keyword: *)
   Goal (forall x, x + x = x) -> a + b  <= a + b + b + a.
     intro Hx.
     aac_rewrite Hx in_right.
     reflexivity.
   Qed.
  
-  (** similarly, one can rewrite inequations in inequations: *)
+  (** Similarly, one can rewrite inequations in inequations: *)
   Goal (forall x, x + x <= x) -> a + b + b + a <= a + b.
     intro Hx.
     aac_rewrite Hx.
     reflexivity.
   Qed. 
 
-  (** possibly in the right-hand side: *)
+  (** Possibly in the right-hand side: *)
   Goal (forall x, x <= x + x) -> a + b <= a + b + b + a.
     intro Hx.
     aac_rewrite <- Hx in_right.
@@ -340,8 +341,7 @@ Section Peano.
      [eq] so that it was automatically inferred; more generally, one
      can specify which equivalence relation to use by declaring
      instances of the [AAC_lift] type class: 
-   *)
-
+  *)
   #[local] Instance aac_le_eq_lift : AAC_lift le eq := {}.
   (** (This instance is automatically inferred because [eq] is always a
      valid candidate, here for [le].) *)
@@ -350,9 +350,10 @@ End Peano.
 
 (** *** Normalising goals
 
-   We also provide a tactic to normalise terms modulo AC. This
-   normalisation is the one we use internally.
- *)
+   We also provide the tactics [aac_normalise] and [aac_normalise_all]
+   to normalise terms modulo AC. This normalisation is the one we
+   use internally.
+*)
 
 Section AAC_normalise.
   Import Instances.Z.
@@ -407,7 +408,7 @@ Section Examples.
   Lemma Z_add_opp_diag_r : forall x, x + -x = 0.
   Proof Z.add_opp_diag_r.
 
-  (** the following morphisms are required to perform the required rewrites: *)
+  (** The following morphisms are required to perform the required rewrites: *)
   #[local] Instance Z_opp_ge_le_compat : Proper (Z.ge ==> Z.le) Z.opp.
   Proof. intros x y. lia. Qed.
 
@@ -446,7 +447,7 @@ Section Examples.
     aac_rewrite Hopp.
     aac_reflexivity.
   Qed.
-  (** note: after the [aac_rewrite <- H], one could use [ring] to close the proof *)
+  (** Note: after the [aac_rewrite <- H], one could use [ring] to close the proof *)
 
 End Examples.
 
