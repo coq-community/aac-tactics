@@ -1,0 +1,139 @@
+<html><head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Coq" rel="Chapter" href="Coq.html">
+<link title="Helper" rel="Chapter" href="Helper.html">
+<link title="Search_monad" rel="Chapter" href="Search_monad.html">
+<link title="Matcher" rel="Chapter" href="Matcher.html">
+<link title="Theory" rel="Chapter" href="Theory.html">
+<link title="Print" rel="Chapter" href="Print.html">
+<link title="Aac_rewrite" rel="Chapter" href="Aac_rewrite.html"><title>Coq</title>
+</head>
+<body>
+<code class="code"><span class="keyword">sig</span><br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;tactic&nbsp;=&nbsp;unit&nbsp;<span class="constructor">Proofview</span>.tactic<br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;lazy_ref&nbsp;=&nbsp;<span class="constructor">Names</span>.<span class="constructor">GlobRef</span>.t&nbsp;<span class="constructor">Stdlib</span>.<span class="constructor">Lazy</span>.t<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;get_fresh&nbsp;:&nbsp;<span class="constructor">Coq</span>.lazy_ref&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Constr</span>.constr<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;get_efresh&nbsp;:&nbsp;<span class="constructor">Coq</span>.lazy_ref&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;find_global&nbsp;:&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Coq</span>.lazy_ref<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;cps_resolve_one_typeclass&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;?error:<span class="constructor">Pp</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">EConstr</span>.types&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;(<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Coq</span>.tactic)&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Coq</span>.tactic<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;evar_binary&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Environ</span>.env&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Evd</span>.evar_map&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Evd</span>.evar_map&nbsp;*&nbsp;<span class="constructor">EConstr</span>.constr<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;evar_relation&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Environ</span>.env&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Evd</span>.evar_map&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Evd</span>.evar_map&nbsp;*&nbsp;<span class="constructor">EConstr</span>.constr<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;mk_letin&nbsp;:&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="constructor">Proofview</span>.tactic<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;tclRETYPE&nbsp;:&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit&nbsp;<span class="constructor">Proofview</span>.tactic<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;decomp_term&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Evd</span>.evar_map&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="constructor">EConstr</span>.constr,&nbsp;<span class="constructor">EConstr</span>.types,&nbsp;<span class="constructor">EConstr</span>.<span class="constructor">ESorts</span>.t,&nbsp;<span class="constructor">EConstr</span>.<span class="constructor">EInstance</span>.t,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">EConstr</span>.<span class="constructor">ERelevance</span>.t)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Constr</span>.kind_of_term<br>
+&nbsp;&nbsp;<span class="keyword">module</span>&nbsp;<span class="constructor">List</span>&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">sig</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;of_list&nbsp;:&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;list&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;type_of_list&nbsp;:&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">end</span><br>
+&nbsp;&nbsp;<span class="keyword">module</span>&nbsp;<span class="constructor">Pair</span>&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">sig</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;typ&nbsp;:&nbsp;<span class="constructor">Coq</span>.lazy_ref<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;pair&nbsp;:&nbsp;<span class="constructor">Coq</span>.lazy_ref<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;of_pair&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;*&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">end</span><br>
+&nbsp;&nbsp;<span class="keyword">module</span>&nbsp;<span class="constructor">Option</span>&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">sig</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;typ&nbsp;:&nbsp;<span class="constructor">Coq</span>.lazy_ref<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;some&nbsp;:&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;none&nbsp;:&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;of_option&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;option&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">end</span><br>
+&nbsp;&nbsp;<span class="keyword">module</span>&nbsp;<span class="constructor">Pos</span>&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">sig</span>&nbsp;<span class="keyword">val</span>&nbsp;typ&nbsp;:&nbsp;<span class="constructor">Coq</span>.lazy_ref&nbsp;<span class="keyword">val</span>&nbsp;of_int&nbsp;:&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keyword">end</span><br>
+&nbsp;&nbsp;<span class="keyword">module</span>&nbsp;<span class="constructor">Nat</span>&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">sig</span>&nbsp;<span class="keyword">val</span>&nbsp;typ&nbsp;:&nbsp;<span class="constructor">Coq</span>.lazy_ref&nbsp;<span class="keyword">val</span>&nbsp;of_int&nbsp;:&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Constr</span>.constr&nbsp;<span class="keyword">end</span><br>
+&nbsp;&nbsp;<span class="keyword">module</span>&nbsp;<span class="constructor">Classes</span>&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">sig</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;mk_morphism&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;mk_equivalence&nbsp;:&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;mk_reflexive&nbsp;:&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;mk_transitive&nbsp;:&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">end</span><br>
+&nbsp;&nbsp;<span class="keyword">module</span>&nbsp;<span class="constructor">Relation</span>&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">sig</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;t&nbsp;=&nbsp;{&nbsp;carrier&nbsp;:&nbsp;<span class="constructor">EConstr</span>.constr;&nbsp;r&nbsp;:&nbsp;<span class="constructor">EConstr</span>.constr;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;make&nbsp;:&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Coq</span>.<span class="constructor">Relation</span>.t<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;split&nbsp;:&nbsp;<span class="constructor">Coq</span>.<span class="constructor">Relation</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;*&nbsp;<span class="constructor">EConstr</span>.constr<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">end</span><br>
+&nbsp;&nbsp;<span class="keyword">module</span>&nbsp;<span class="constructor">Equivalence</span>&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">sig</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;t&nbsp;=&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;carrier&nbsp;:&nbsp;<span class="constructor">EConstr</span>.constr;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;eq&nbsp;:&nbsp;<span class="constructor">EConstr</span>.constr;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;equivalence&nbsp;:&nbsp;<span class="constructor">EConstr</span>.constr;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;make&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Coq</span>.<span class="constructor">Equivalence</span>.t<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;infer&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Environ</span>.env&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Evd</span>.evar_map&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Coq</span>.<span class="constructor">Equivalence</span>.t&nbsp;*&nbsp;<span class="constructor">Evd</span>.evar_map<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;from_relation&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Environ</span>.env&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Evd</span>.evar_map&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Coq</span>.<span class="constructor">Relation</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Coq</span>.<span class="constructor">Equivalence</span>.t&nbsp;*&nbsp;<span class="constructor">Evd</span>.evar_map<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;to_relation&nbsp;:&nbsp;<span class="constructor">Coq</span>.<span class="constructor">Equivalence</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Coq</span>.<span class="constructor">Relation</span>.t<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;split&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Coq</span>.<span class="constructor">Equivalence</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;*&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;*&nbsp;<span class="constructor">EConstr</span>.constr<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">end</span><br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;match_as_equation&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;?context:<span class="constructor">EConstr</span>.rel_context&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Environ</span>.env&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Evd</span>.evar_map&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="constructor">EConstr</span>.constr&nbsp;*&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;*&nbsp;<span class="constructor">Coq</span>.<span class="constructor">Relation</span>.t)&nbsp;option<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;tclTIME&nbsp;:&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Coq</span>.tactic&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Coq</span>.tactic<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;tclDEBUG&nbsp;:&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit&nbsp;<span class="constructor">Proofview</span>.tactic<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;tclPRINT&nbsp;:&nbsp;unit&nbsp;<span class="constructor">Proofview</span>.tactic<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;anomaly&nbsp;:&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;user_error&nbsp;:&nbsp;<span class="constructor">Pp</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;warning&nbsp;:&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;show_proof&nbsp;:&nbsp;<span class="constructor">Declare</span>.<span class="constructor">Proof</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">module</span>&nbsp;<span class="constructor">Rewrite</span>&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">sig</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;hypinfo&nbsp;=&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hyp&nbsp;:&nbsp;<span class="constructor">EConstr</span>.constr;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hyptype&nbsp;:&nbsp;<span class="constructor">EConstr</span>.constr;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;context&nbsp;:&nbsp;<span class="constructor">EConstr</span>.rel_context;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;body&nbsp;:&nbsp;<span class="constructor">EConstr</span>.constr;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rel&nbsp;:&nbsp;<span class="constructor">Coq</span>.<span class="constructor">Relation</span>.t;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;left&nbsp;:&nbsp;<span class="constructor">EConstr</span>.constr;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;right&nbsp;:&nbsp;<span class="constructor">EConstr</span>.constr;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l2r&nbsp;:&nbsp;bool;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;get_hypinfo&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Environ</span>.env&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Evd</span>.evar_map&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;?check_type:(<span class="constructor">EConstr</span>.types&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool)&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;l2r:bool&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Coq</span>.<span class="constructor">Rewrite</span>.hypinfo<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;build&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Coq</span>.<span class="constructor">Rewrite</span>.hypinfo&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;(int&nbsp;*&nbsp;<span class="constructor">EConstr</span>.constr)&nbsp;list&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;rewrite&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;?abort:bool&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Coq</span>.<span class="constructor">Rewrite</span>.hypinfo&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(int&nbsp;*&nbsp;<span class="constructor">EConstr</span>.constr)&nbsp;list&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit&nbsp;<span class="constructor">Proofview</span>.tactic<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">end</span><br>
+<span class="keyword">end</span></code></body></html>

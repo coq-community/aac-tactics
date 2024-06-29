@@ -1,0 +1,68 @@
+<html><head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Coq" rel="Chapter" href="Coq.html">
+<link title="Helper" rel="Chapter" href="Helper.html">
+<link title="Search_monad" rel="Chapter" href="Search_monad.html">
+<link title="Matcher" rel="Chapter" href="Matcher.html">
+<link title="Theory" rel="Chapter" href="Theory.html">
+<link title="Print" rel="Chapter" href="Print.html">
+<link title="Aac_rewrite" rel="Chapter" href="Aac_rewrite.html"><title>Matcher</title>
+</head>
+<body>
+<code class="code"><span class="keyword">sig</span><br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;symbol&nbsp;=&nbsp;int<br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;var&nbsp;=&nbsp;int<br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;units&nbsp;=&nbsp;(<span class="constructor">Matcher</span>.symbol&nbsp;*&nbsp;<span class="constructor">Matcher</span>.symbol)&nbsp;list<br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;ext_units&nbsp;=&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;unit_for&nbsp;:&nbsp;<span class="constructor">Matcher</span>.units;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;is_ac&nbsp;:&nbsp;(<span class="constructor">Matcher</span>.symbol&nbsp;*&nbsp;bool)&nbsp;list;<br>
+&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;mset&nbsp;=&nbsp;(<span class="keywordsign">'</span>a&nbsp;*&nbsp;int)&nbsp;list<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;linear&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Matcher</span>.mset&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;list<br>
+&nbsp;&nbsp;<span class="keyword">module</span>&nbsp;<span class="constructor">Terms</span>&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">sig</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;t&nbsp;=<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Dot</span>&nbsp;<span class="keyword">of</span>&nbsp;(<span class="constructor">Matcher</span>.symbol&nbsp;*&nbsp;<span class="constructor">Matcher</span>.<span class="constructor">Terms</span>.t&nbsp;*&nbsp;<span class="constructor">Matcher</span>.<span class="constructor">Terms</span>.t)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Plus</span>&nbsp;<span class="keyword">of</span>&nbsp;(<span class="constructor">Matcher</span>.symbol&nbsp;*&nbsp;<span class="constructor">Matcher</span>.<span class="constructor">Terms</span>.t&nbsp;*&nbsp;<span class="constructor">Matcher</span>.<span class="constructor">Terms</span>.t)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Sym</span>&nbsp;<span class="keyword">of</span>&nbsp;(<span class="constructor">Matcher</span>.symbol&nbsp;*&nbsp;<span class="constructor">Matcher</span>.<span class="constructor">Terms</span>.t&nbsp;array)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Var</span>&nbsp;<span class="keyword">of</span>&nbsp;<span class="constructor">Matcher</span>.var<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="constructor">Unit</span>&nbsp;<span class="keyword">of</span>&nbsp;<span class="constructor">Matcher</span>.symbol<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;equal_aac&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Matcher</span>.units&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Matcher</span>.<span class="constructor">Terms</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Matcher</span>.<span class="constructor">Terms</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;map_syms&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="constructor">Matcher</span>.symbol&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Matcher</span>.symbol)&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Matcher</span>.<span class="constructor">Terms</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Matcher</span>.<span class="constructor">Terms</span>.t<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;nf_term<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;nf_term_compare&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Matcher</span>.<span class="constructor">Terms</span>.nf_term&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Matcher</span>.<span class="constructor">Terms</span>.nf_term&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;nf_equal&nbsp;:&nbsp;<span class="constructor">Matcher</span>.<span class="constructor">Terms</span>.nf_term&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Matcher</span>.<span class="constructor">Terms</span>.nf_term&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;sprint_nf_term&nbsp;:&nbsp;<span class="constructor">Matcher</span>.<span class="constructor">Terms</span>.nf_term&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;term_of_t&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Matcher</span>.units&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Matcher</span>.<span class="constructor">Terms</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Matcher</span>.<span class="constructor">Terms</span>.nf_term<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;t_of_term&nbsp;:&nbsp;<span class="constructor">Matcher</span>.<span class="constructor">Terms</span>.nf_term&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Matcher</span>.<span class="constructor">Terms</span>.t<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">end</span><br>
+&nbsp;&nbsp;<span class="keyword">module</span>&nbsp;<span class="constructor">Subst</span>&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">sig</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;t<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;sprint&nbsp;:&nbsp;<span class="constructor">Matcher</span>.<span class="constructor">Subst</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;instantiate&nbsp;:&nbsp;<span class="constructor">Matcher</span>.<span class="constructor">Subst</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Matcher</span>.<span class="constructor">Terms</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Matcher</span>.<span class="constructor">Terms</span>.t<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;to_list&nbsp;:&nbsp;<span class="constructor">Matcher</span>.<span class="constructor">Subst</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;(<span class="constructor">Matcher</span>.var&nbsp;*&nbsp;<span class="constructor">Matcher</span>.<span class="constructor">Terms</span>.t)&nbsp;list<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">end</span><br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;matcher&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;?strict:bool&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Matcher</span>.ext_units&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Matcher</span>.<span class="constructor">Terms</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Matcher</span>.<span class="constructor">Terms</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Matcher</span>.<span class="constructor">Subst</span>.t&nbsp;<span class="constructor">Search_monad</span>.m<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;subterm&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;?strict:bool&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Matcher</span>.ext_units&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Matcher</span>.<span class="constructor">Terms</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Matcher</span>.<span class="constructor">Terms</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;(int&nbsp;*&nbsp;<span class="constructor">Matcher</span>.<span class="constructor">Terms</span>.t&nbsp;*&nbsp;<span class="constructor">Matcher</span>.<span class="constructor">Subst</span>.t&nbsp;<span class="constructor">Search_monad</span>.m)&nbsp;<span class="constructor">Search_monad</span>.m<br>
+<span class="keyword">end</span></code></body></html>
