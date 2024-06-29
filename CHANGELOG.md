@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- Clarify tactics and their options in the tutorial, in particular `in_right` for `aac_rewrite`
+
+## [8.20.0] - 2024-06-27
+
 ### Added
 
 - Tests for `try aac_rewrite` and `try aac_normalise` that failed on 8.19
@@ -20,5 +26,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Make the order of sums produced by `aac_normalise` tactic consistent across calls.
 
-[Unreleased]: https://github.com/coq-community/aac-tactics/compare/v8.19.1...master
+[Unreleased]: https://github.com/coq-community/aac-tactics/compare/v8.20.0...master
+[8.20.0]: https://github.com/coq-community/aac-tactics/compare/v8.20.0
 [8.19.1]: https://github.com/coq-community/aac-tactics/releases/tag/v8.19.1
