@@ -4,6 +4,7 @@ shortname: aac-tactics
 organization: coq-community
 community: true
 action: true
+nix: true
 plugin: true
 doi: 10.1007/978-3-642-25379-9_14
 branch: 'v8.20'
@@ -56,7 +57,7 @@ supported_ocaml_versions:
     opam: '{>= "4.09.0"}'
 
 tested_coq_nix_versions:
-- coq_version: 'v8.20'
+- coq_version: '8.20'
 
 tested_coq_opam_versions:
 - version: '8.20'
