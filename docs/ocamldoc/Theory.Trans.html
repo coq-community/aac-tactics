@@ -1,0 +1,157 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Theory.Stubs.html">
+<link rel="Up" href="Theory.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Coq" rel="Chapter" href="Coq.html">
+<link title="Helper" rel="Chapter" href="Helper.html">
+<link title="Search_monad" rel="Chapter" href="Search_monad.html">
+<link title="Matcher" rel="Chapter" href="Matcher.html">
+<link title="Theory" rel="Chapter" href="Theory.html">
+<link title="Print" rel="Chapter" href="Print.html">
+<link title="Aac_rewrite" rel="Chapter" href="Aac_rewrite.html"><link title="Reification: from Coq terms to AST Matcher.Terms.t  " rel="Section" href="#2_ReificationfromCoqtermstoASTMatcherTermst">
+<link title="Reconstruction: from AST back to Coq terms  " rel="Section" href="#2_ReconstructionfromASTbacktoCoqterms">
+<link title="Building raw, natural, terms" rel="Section" href="#2_Buildingrawnaturalterms">
+<link title="Building reified terms" rel="Section" href="#2_Buildingreifiedterms">
+<title>Theory.Trans</title>
+</head>
+<body>
+<div class="navbar"><a class="pre" href="Theory.Stubs.html" title="Theory.Stubs">Previous</a>
+&nbsp;<a class="up" href="Theory.html" title="Theory">Up</a>
+&nbsp;</div>
+<h1>Module <a href="type_Theory.Trans.html">Theory.Trans</a></h1>
+
+<pre><span id="MODULETrans"><span class="keyword">module</span> Trans</span>: <code class="code">sig</code> <a href="Theory.Trans.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<div class="info-desc">
+<p>Tranlations between Coq and OCaml</p>
+</div>
+</div>
+<hr width="100%">
+<p>This module provides facilities to interpret a term with
+      arbitrary operators as an instance of an abstract syntax tree
+      <a href="Matcher.Terms.html#TYPEt"><code class="code">Matcher.Terms.t</code></a>.</p>
+
+<p>For each Coq application <code class="code">f x_1 ... x_n</code>, this amounts to
+      deciding whether one of the partial applications <code class="code">f x_1
+      ... x_i</code>, <code class="code">i&lt;=n</code> is a proper morphism, whether the partial
+      application with <code class="code">i=n-2</code> yields an A or AC binary operator, and
+      whether the whole term is the unit for some A or AC operator. We
+      use typeclass resolution to test each of these possibilities.</p>
+
+<p>Note that there are ambiguous terms:</p>
+<ul>
+<li>a term like <code class="code">f x y</code> might yield a unary morphism (<code class="code">f x</code>) and a
+      binary one (<code class="code">f</code>); we select the latter one (unless <code class="code">f</code> is A or
+      AC, in which case we declare it accordingly);</li>
+<li>a term like <code class="code">S O</code> can be considered as a morphism (<code class="code">S</code>)
+      applied to a unit for <code class="code">(+)</code>, or as a unit for <code class="code">( * )</code>; we
+      chose to give priority to units, so that the latter
+      interpretation is selected in this case; </li>
+<li>an element might be the unit for several operations</li>
+</ul>
+<p>To achieve this reification, one need to record informations
+      about the collected operators (symbols, binary operators,
+      units). We use the following imperative internal data-structure to
+      this end.</p>
+
+<pre><span id="TYPEenvs"><span class="keyword">type</span> <code class="type"></code>envs</span> </pre>
+
+
+<pre><span id="VALempty_envs"><span class="keyword">val</span> empty_envs</span> : <code class="type">unit -&gt; <a href="Theory.Trans.html#TYPEenvs">envs</a></code></pre><h3 id="2_ReificationfromCoqtermstoASTMatcherTermst">Reification: from Coq terms to AST <a href="Matcher.Terms.html#TYPEt"><code class="code">Matcher.Terms.t</code></a>  </h3><p><code class="code">t_of_constr goal rlt envs (left,right)</code> builds the abstract
+      syntax tree of the terms <code class="code">left</code> and <code class="code">right</code>. We rely on the <code class="code">goal</code>
+      to perform typeclasses resolutions to find morphisms compatible
+      with the relation <code class="code">rlt</code>. Doing so, it modifies the reification
+      environment <code class="code">envs</code>. Moreover, we need to create fresh
+      evars; this is why we give back the <code class="code">goal</code>, accordingly
+      updated.</p>
+
+<pre><span id="VALt_of_constr"><span class="keyword">val</span> t_of_constr</span> : <code class="type">Environ.env -&gt;<br>       Evd.evar_map -&gt;<br>       <a href="Coq.Relation.html#TYPEt">Coq.Relation.t</a> -&gt;<br>       <a href="Theory.Trans.html#TYPEenvs">envs</a> -&gt;<br>       EConstr.constr * EConstr.constr -&gt;<br>       <a href="Matcher.Terms.html#TYPEt">Matcher.Terms.t</a> * <a href="Matcher.Terms.html#TYPEt">Matcher.Terms.t</a> * Evd.evar_map</code></pre>
+<pre><span id="VALadd_symbol"><span class="keyword">val</span> add_symbol</span> : <code class="type">Environ.env -&gt;<br>       Evd.evar_map -&gt;<br>       <a href="Coq.Relation.html#TYPEt">Coq.Relation.t</a> -&gt; <a href="Theory.Trans.html#TYPEenvs">envs</a> -&gt; Constr.t -&gt; Evd.evar_map</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">add_symbol</code> adds a given binary symbol to the environment of
+      known stuff.</p>
+</div>
+</div>
+<h3 id="2_ReconstructionfromASTbacktoCoqterms">Reconstruction: from AST back to Coq terms  </h3>
+<p>The next functions allow one to map OCaml abstract syntax trees
+      to Coq terms. We need two functions to rebuild different kind of
+      terms: first, raw terms, like the one encountered by
+      <a href="Theory.Trans.html#VALt_of_constr"><code class="code">Theory.Trans.t_of_constr</code></a>; second, reified Coq terms, that are required for
+      the reflexive decision procedure.</p>
+
+<pre><span id="TYPEir"><span class="keyword">type</span> <code class="type"></code>ir</span> </pre>
+
+
+<pre><span id="VALir_of_envs"><span class="keyword">val</span> ir_of_envs</span> : <code class="type">Environ.env -&gt;<br>       Evd.evar_map -&gt;<br>       <a href="Coq.Relation.html#TYPEt">Coq.Relation.t</a> -&gt; <a href="Theory.Trans.html#TYPEenvs">envs</a> -&gt; Evd.evar_map * <a href="Theory.Trans.html#TYPEir">ir</a></code></pre>
+<pre><span id="VALir_to_units"><span class="keyword">val</span> ir_to_units</span> : <code class="type"><a href="Theory.Trans.html#TYPEir">ir</a> -&gt; <a href="Matcher.html#TYPEext_units">Matcher.ext_units</a></code></pre><h3 id="2_Buildingrawnaturalterms">Building raw, natural, terms</h3>
+<pre><span id="VALraw_constr_of_t"><span class="keyword">val</span> raw_constr_of_t</span> : <code class="type"><a href="Theory.Trans.html#TYPEir">ir</a> -&gt;<br>       <a href="Coq.Relation.html#TYPEt">Coq.Relation.t</a> -&gt; EConstr.rel_context -&gt; <a href="Matcher.Terms.html#TYPEt">Matcher.Terms.t</a> -&gt; EConstr.constr</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">raw_constr_of_t</code> rebuilds a term in the raw representation, and
+      reconstruct the named products on top of it. In particular, this
+      allow us to print the context put around the left (or right)
+      hand side of a pattern.</p>
+</div>
+</div>
+<h3 id="2_Buildingreifiedterms">Building reified terms</h3><p>The reification environments, as Coq constrs</p>
+
+<pre><code><span id="TYPEsigmas"><span class="keyword">type</span> <code class="type"></code>sigmas</span> = {</code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTsigmas.env_sym">env_sym</span>&nbsp;: <code class="type">EConstr.constr</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTsigmas.env_bin">env_bin</span>&nbsp;: <code class="type">EConstr.constr</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTsigmas.env_units">env_units</span>&nbsp;: <code class="type">EConstr.constr</code>;</code></td>
+
+</tr></table>
+<code>}</code>
+
+
+
+<pre><span id="TYPEreifier"><span class="keyword">type</span> <code class="type"></code>reifier</span> </pre>
+<div class="info ">
+<div class="info-desc">
+<p>We need to reify two terms (left and right members of a goal)
+      that share the same reification envirnoment. Therefore, we need
+      to add letins to the proof context in order to ensure some
+      sharing in the proof terms we produce.</p>
+
+<p>Moreover, in order to have as much sharing as possible, we also
+      add letins for various partial applications that are used
+      throughout the terms.</p>
+
+<p>To achieve this, we decompose the reconstruction function into
+      two steps: first, we build the reification environment and then
+      reify each term successively.</p>
+</div>
+</div>
+
+
+<pre><span id="VALmk_reifier"><span class="keyword">val</span> mk_reifier</span> : <code class="type"><a href="Coq.Relation.html#TYPEt">Coq.Relation.t</a> -&gt;<br>       EConstr.constr -&gt;<br>       <a href="Theory.Trans.html#TYPEir">ir</a> -&gt;<br>       (<a href="Theory.Trans.html#TYPEsigmas">sigmas</a> * <a href="Theory.Trans.html#TYPEreifier">reifier</a>) Proofview.tactic</code></pre>
+<pre><span id="VALreif_constr_of_t"><span class="keyword">val</span> reif_constr_of_t</span> : <code class="type"><a href="Theory.Trans.html#TYPEreifier">reifier</a> -&gt; <a href="Matcher.Terms.html#TYPEt">Matcher.Terms.t</a> -&gt; EConstr.constr</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">reif_constr_of_t  reifier t</code> rebuilds the term <code class="code">t</code> in the
+      reified form.</p>
+</div>
+</div>
+</body></html>
