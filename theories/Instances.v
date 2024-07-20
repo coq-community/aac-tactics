@@ -289,7 +289,7 @@ Module Bool.
 End Bool.
 
 Module Relations.
-  Import Relations.Relations.
+  Import Relations.
 
   (** ** Relation instances *)
 
