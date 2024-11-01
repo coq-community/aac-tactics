@@ -19,10 +19,16 @@ The tactics can be applied for custom operators by registering the operators and
 their properties as type class instances. Instances for many commonly used operators,
 such as for binary integer arithmetic and booleans, are provided with the plugin."""
 
-build: ["dune" "build" "-p" name "-j" jobs]
+build: [
+  [make "-j%{jobs}%"]
+  [make "html"] {with-doc}
+]
+install: [
+  [make "install"]
+  [make "install-doc"] {with-doc}
+]
 depends: [
   "ocaml" {>= "4.09.0"}
-  "dune" {>= "3.5"}
   "coq" {>= "8.20" & < "8.21"}
 ]
 
