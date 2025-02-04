@@ -27,9 +27,9 @@
    operates on [positive].
 *)
 
-From Coq Require Import Arith NArith List.
-From Coq Require Import FMapPositive Relations RelationClasses.
-From Coq Require Export Morphisms.
+From Stdlib Require Import Arith NArith List.
+From Stdlib Require Import FMapPositive Relations RelationClasses.
+From Stdlib Require Export Morphisms.
 From AAC_tactics Require Import Utils Constants.
 
 Set Implicit Arguments.
