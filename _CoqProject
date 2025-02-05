@@ -4,7 +4,7 @@
 -I src
 
 -arg -w -arg +default
--arg -w -arg -deprecated-from-Coq
+# -arg -w -arg -deprecated-from-Coq
 
 src/coq.mli
 src/helper.mli
