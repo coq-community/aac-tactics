@@ -5,7 +5,7 @@ name: Nix CI
 on:
   push:
     branches:
-      - v8.20
+      - master
   pull_request:
     paths:
     - .github/workflows/**
@@ -17,7 +17,7 @@ jobs:
     strategy:
       matrix:
         overrides:
-          - 'coq = "8.20"'
+          - 'coq = "master"'
       fail-fast: false
     steps:
       - name: Determine which commit to test

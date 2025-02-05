@@ -5,7 +5,7 @@ name: Docker CI
 on:
   push:
     branches:
-      - v8.20
+      - master
   pull_request:
     branches:
       - '**'
@@ -17,15 +17,14 @@ jobs:
     strategy:
       matrix:
         image:
-          - 'coqorg/coq:8.20'
+          - 'coqorg/coq:dev'
       fail-fast: false
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v2
       - uses: coq-community/docker-coq-action@v1
         with:
           opam_file: 'coq-aac-tactics.opam'
           custom_image: ${{ matrix.image }}
-
 
 # See also:
 # https://github.com/coq-community/docker-coq-action#readme

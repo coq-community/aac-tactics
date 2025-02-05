@@ -3,7 +3,7 @@
 
 opam-version: "2.0"
 maintainer: "palmskog@gmail.com"
-version: "9.0.dev"
+version: "dev"
 
 homepage: "https://github.com/coq-community/aac-tactics"
 dev-repo: "git+https://github.com/coq-community/aac-tactics.git"
@@ -19,17 +19,11 @@ The tactics can be applied for custom operators by registering the operators and
 their properties as type class instances. Instances for many commonly used operators,
 such as for binary integer arithmetic and booleans, are provided with the plugin."""
 
-build: [
-  [make "-j%{jobs}%"]
-  [make "html"] {with-doc}
-]
-install: [
-  [make "install"]
-  [make "install-doc"] {with-doc}
-]
+build: ["dune" "build" "-p" name "-j" jobs]
 depends: [
   "ocaml" {>= "4.09.0"}
-  "rocq-prover" {>= "9.0" & < "9.1"}
+  "dune" {>= "3.5"}
+  "coq" {= "dev"}
 ]
 
 tags: [
