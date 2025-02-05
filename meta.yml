@@ -82,7 +82,7 @@ documentation: |
   ```coq
   From AAC_tactics Require Import AAC.
   From AAC_tactics Require Instances.
-  From Coq Require Import ZArith.
+  From Stdlib Require Import ZArith.
 
   Section ZOpp.
     Import Instances.Z.
