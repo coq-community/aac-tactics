@@ -3,7 +3,7 @@
 
 opam-version: "2.0"
 maintainer: "palmskog@gmail.com"
-version: "8.20.dev"
+version: "9.0.dev"
 
 homepage: "https://github.com/coq-community/aac-tactics"
 dev-repo: "git+https://github.com/coq-community/aac-tactics.git"
@@ -29,7 +29,7 @@ install: [
 ]
 depends: [
   "ocaml" {>= "4.09.0"}
-  "coq" {>= "8.20" & < "8.21"}
+  "rocq-prover" {>= "9.0" & < "9.1"}
 ]
 
 tags: [
