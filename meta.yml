@@ -4,10 +4,9 @@ shortname: aac-tactics
 organization: coq-community
 community: true
 action: true
-nix: true
 plugin: true
 doi: 10.1007/978-3-642-25379-9_14
-branch: master
+branch: 'v9.0'
 coqdoc: true
 coqdoc_index: docs/coqdoc/toc.html
 
@@ -42,25 +41,22 @@ maintainers:
 
 opam-file-maintainer: palmskog@gmail.com
 
-opam-file-version: dev
+opam-file-version: 9.0.dev
 
 license:
   fullname: GNU Lesser General Public License v3.0 or later
   identifier: LGPL-3.0-or-later
 
 supported_coq_versions:
-  text: master (use the corresponding branch or release for other Coq versions)
-  opam: '{= "dev"}'
+  text: 9.0 (use the corresponding branch or release for other Coq versions)
+  opam: '{>= "9.0" & < "9.1"}'
 
 supported_ocaml_versions:
     text: 4.09.0 or later
     opam: '{>= "4.09.0"}'
 
-tested_coq_nix_versions:
-- coq_version: 'master'
-
 tested_coq_opam_versions:
-- version: dev
+- version: '9.0'
 
 namespace: AAC_tactics
 
