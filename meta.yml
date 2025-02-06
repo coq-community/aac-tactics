@@ -56,7 +56,8 @@ supported_ocaml_versions:
     opam: '{>= "4.09.0"}'
 
 tested_coq_opam_versions:
-- version: '9.0'
+- version: '9.0-rc1'
+  repo: 'rocq/rocq-prover'
 
 namespace: AAC_tactics
 
