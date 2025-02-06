@@ -5,18 +5,14 @@ Follow the instructions on https://github.com/coq-community/templates to regener
 # AAC Tactics
 
 [![Docker CI][docker-action-shield]][docker-action-link]
-[![Nix CI][nix-action-shield]][nix-action-link]
 [![Contributing][contributing-shield]][contributing-link]
 [![Code of Conduct][conduct-shield]][conduct-link]
 [![Zulip][zulip-shield]][zulip-link]
 [![coqdoc][coqdoc-shield]][coqdoc-link]
 [![DOI][doi-shield]][doi-link]
 
-[docker-action-shield]: https://github.com/coq-community/aac-tactics/actions/workflows/docker-action.yml/badge.svg?branch=master
+[docker-action-shield]: https://github.com/coq-community/aac-tactics/actions/workflows/docker-action.yml/badge.svg?branch=v9.0
 [docker-action-link]: https://github.com/coq-community/aac-tactics/actions/workflows/docker-action.yml
-
-[nix-action-shield]: https://github.com/coq-community/aac-tactics/actions/workflows/nix-action.yml/badge.svg?branch=master
-[nix-action-link]: https://github.com/coq-community/aac-tactics/actions/workflows/nix-action.yml
 
 [contributing-shield]: https://img.shields.io/badge/contributions-welcome-%23f7931e.svg
 [contributing-link]: https://github.com/coq-community/manifesto/blob/master/CONTRIBUTING.md
@@ -49,7 +45,7 @@ such as for binary integer arithmetic and booleans, are provided with the plugin
 - Coq-community maintainer(s):
   - Karl Palmskog ([**@palmskog**](https://github.com/palmskog))
 - License: [GNU Lesser General Public License v3.0 or later](LICENSE)
-- Compatible Coq versions: master (use the corresponding branch or release for other Coq versions)
+- Compatible Coq versions: 9.0 (use the corresponding branch or release for other Coq versions)
 - Compatible OCaml versions: 4.09.0 or later
 - Additional dependencies: none
 - Coq namespace: `AAC_tactics`
@@ -82,7 +78,7 @@ The following example shows an application of the tactics for reasoning over Z b
 ```coq
 From AAC_tactics Require Import AAC.
 From AAC_tactics Require Instances.
-From Coq Require Import ZArith.
+From Stdlib Require Import ZArith.
 
 Section ZOpp.
   Import Instances.Z.

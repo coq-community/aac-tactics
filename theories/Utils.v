@@ -8,7 +8,7 @@
 
 (** * Utility functions and results for AAC Tactics *)
 
-From Coq Require Import Arith NArith List RelationClasses.
+From Stdlib Require Import Arith NArith List RelationClasses.
 
 Set Implicit Arguments.
 Set Asymmetric Patterns.

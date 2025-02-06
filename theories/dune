@@ -2,5 +2,5 @@
  (name AAC_tactics)
  (package coq-aac-tactics)
  (synopsis "Coq plugin providing tactics for rewriting universally quantified equations, modulo associative (and possibly commutative) operators")
- (libraries coq-aac-tactics.plugin)
+ (plugins coq-aac-tactics.plugin)
  (flags :standard -w +default))
