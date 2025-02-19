@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Theory.html">
+<link rel="next" href="Aac_rewrite.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Coq" rel="Chapter" href="Coq.html">
+<link title="Helper" rel="Chapter" href="Helper.html">
+<link title="Search_monad" rel="Chapter" href="Search_monad.html">
+<link title="Matcher" rel="Chapter" href="Matcher.html">
+<link title="Theory" rel="Chapter" href="Theory.html">
+<link title="Print" rel="Chapter" href="Print.html">
+<link title="Aac_rewrite" rel="Chapter" href="Aac_rewrite.html"><title>Print</title>
+</head>
+<body>
+<div class="navbar"><a class="pre" href="Theory.html" title="Theory">Previous</a>
+&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="Aac_rewrite.html" title="Aac_rewrite">Next</a>
+</div>
+<h1>Module <a href="type_Print.html">Print</a></h1>
+
+<pre><span id="MODULEPrint"><span class="keyword">module</span> Print</span>: <code class="code">sig</code> <a href="Print.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<div class="info-desc">
+<p>Pretty printing functions we use for the aac_instances
+    tactic.</p>
+</div>
+</div>
+<hr width="100%">
+
+<pre><span id="VALprint"><span class="keyword">val</span> print</span> : <code class="type"><a href="Coq.Relation.html#TYPEt">Coq.Relation.t</a> -&gt;<br>       <a href="Theory.Trans.html#TYPEir">Theory.Trans.ir</a> -&gt;<br>       (int * <a href="Matcher.Terms.html#TYPEt">Matcher.Terms.t</a> * <a href="Matcher.Subst.html#TYPEt">Matcher.Subst.t</a> <a href="Search_monad.html#TYPEm">Search_monad.m</a>) <a href="Search_monad.html#TYPEm">Search_monad.m</a> -&gt;<br>       EConstr.rel_context -&gt; unit Proofview.tactic</code></pre><div class="info ">
+<div class="info-desc">
+<p>The main printing function. <a href="Print.html#VALprint"><code class="code">Print.print</code></a> uses the rel-context
+    to rename the variables, and rebuilds raw Coq terms (for the given
+    context, and the terms in the environment). In order to do so, it
+    requires the information gathered by the <a href="Theory.Trans.html"><code class="code">Theory.Trans</code></a> module.</p>
+</div>
+</div>
+</body></html>

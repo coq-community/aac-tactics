@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Matcher.html">
+<link rel="next" href="Print.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Coq" rel="Chapter" href="Coq.html">
+<link title="Helper" rel="Chapter" href="Helper.html">
+<link title="Search_monad" rel="Chapter" href="Search_monad.html">
+<link title="Matcher" rel="Chapter" href="Matcher.html">
+<link title="Theory" rel="Chapter" href="Theory.html">
+<link title="Print" rel="Chapter" href="Print.html">
+<link title="Aac_rewrite" rel="Chapter" href="Aac_rewrite.html"><link title="Packaging modules" rel="Section" href="#2_Packagingmodules">
+<link title="Building reified terms" rel="Section" href="#2_Buildingreifiedterms">
+<title>Theory</title>
+</head>
+<body>
+<div class="navbar"><a class="pre" href="Matcher.html" title="Matcher">Previous</a>
+&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="Print.html" title="Print">Next</a>
+</div>
+<h1>Module <a href="type_Theory.html">Theory</a></h1>
+
+<pre><span id="MODULETheory"><span class="keyword">module</span> Theory</span>: <code class="code">sig</code> <a href="Theory.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<div class="info-desc">
+<p>Bindings for Coq constants that are specific to the plugin;
+    reification and translation functions.</p>
+
+<p>Note: this module is highly correlated with the definitions of <i>    AAC_rewrite.v</i>.</p>
+
+<p>This module interfaces with the above Coq module; it provides
+    facilities to interpret a term with arbitrary operators as an
+    abstract syntax tree, and to convert an AST into a Coq term
+    (either using the Coq "raw" terms, as written in the starting
+    goal, or using the reified Coq datatypes we define in <i>    AAC_rewrite.v</i>).</p>
+</div>
+</div>
+<hr width="100%">
+<p>Both in OCaml and Coq, we represent finite multisets using
+    weighted lists (<code class="code">('a*int) list</code>), see <a href="Matcher.html#TYPEmset"><code class="code">Matcher.mset</code></a>.</p>
+
+<p><code class="code">mk_mset ty l</code> constructs a Coq multiset from an OCaml multiset
+    <code class="code">l</code> of Coq terms of type <code class="code">ty</code></p>
+
+<pre><span id="VALmk_mset"><span class="keyword">val</span> mk_mset</span> : <code class="type">EConstr.constr -&gt; (EConstr.constr * int) list -&gt; EConstr.constr</code></pre><h3 id="2_Packagingmodules">Packaging modules</h3>
+<pre><span id="MODULESigma"><span class="keyword">module</span> <a href="Theory.Sigma.html">Sigma</a></span>: <code class="code">sig</code> <a href="Theory.Sigma.html">..</a> <code class="code">end</code></pre><div class="info">
+<p>Environments</p>
+
+</div>
+
+<pre><span id="MODULESym"><span class="keyword">module</span> <a href="Theory.Sym.html">Sym</a></span>: <code class="code">sig</code> <a href="Theory.Sym.html">..</a> <code class="code">end</code></pre><div class="info">
+<p>Dynamically typed morphisms</p>
+
+</div>
+
+<pre><span id="MODULEStubs"><span class="keyword">module</span> <a href="Theory.Stubs.html">Stubs</a></span>: <code class="code">sig</code> <a href="Theory.Stubs.html">..</a> <code class="code">end</code></pre><div class="info">
+<p>We need to export some Coq stubs out of this module.</p>
+
+</div>
+<h3 id="2_Buildingreifiedterms">Building reified terms</h3>
+<p>We define a bundle of functions to build reified versions of the
+    terms (those that will be given to the reflexive decision
+    procedure). In particular, each field takes as first argument the
+    index of the symbol rather than the symbol itself.</p>
+
+<pre><span id="MODULETrans"><span class="keyword">module</span> <a href="Theory.Trans.html">Trans</a></span>: <code class="code">sig</code> <a href="Theory.Trans.html">..</a> <code class="code">end</code></pre><div class="info">
+<p>Tranlations between Coq and OCaml</p>
+
+</div>
+</body></html>

@@ -1,0 +1,760 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<link href="coqdocjs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="config.js"></script>
+<script type="text/javascript" src="coqdocjs.js"></script>
+</head>
+
+<body onload="document.getElementById('content').focus()">
+  <div id="header">
+    <span class="left">
+      <span class="modulename"> <script> document.write(document.title) </script> </span>
+    </span>
+
+    <span class="button" id="toggle-proofs"></span>
+
+    <span class="right">
+      <a href="./../..">Project Website</a>
+      <a href="./indexpage.html">Index</a>
+      <a href="./toc.html">Table of Contents</a>
+    </span>
+</div>
+    <div id="content" tabindex="-1" onblur="document.getElementById('content').focus()">
+    <div id="main">
+<div class="code">
+<span class="comment">(*&nbsp;***********************************************************************&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;&nbsp;This&nbsp;is&nbsp;part&nbsp;of&nbsp;aac_tactics,&nbsp;it&nbsp;is&nbsp;distributed&nbsp;under&nbsp;the&nbsp;terms&nbsp;of&nbsp;the&nbsp;&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GNU&nbsp;Lesser&nbsp;General&nbsp;Public&nbsp;License&nbsp;version&nbsp;3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(see&nbsp;file&nbsp;LICENSE&nbsp;for&nbsp;more&nbsp;details)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Copyright&nbsp;2009-2010:&nbsp;Thomas&nbsp;Braibant,&nbsp;Damien&nbsp;Pous.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;***********************************************************************&nbsp;*)</span><br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab41"></a><h1 class="section">Currently known limitations and caveats of AAC Tactics</h1>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">Stdlib</span> <span class="id" title="keyword">Require</span> <span class="id" title="library">NArith</span> <span class="id" title="library">PeanoNat</span>.<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">AAC_tactics</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="AAC_tactics.AAC.html#"><span class="id" title="library">AAC</span></a>.<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">AAC_tactics</span> <span class="id" title="keyword">Require</span> <a class="idref" href="AAC_tactics.Instances.html#"><span class="id" title="library">Instances</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab42"></a><h2 class="section">Limitations</h2>
+
+<div class="paragraph"> </div>
+
+<a id="lab43"></a><h3 class="section">Dependent parameters</h3>
+
+
+<div class="paragraph"> </div>
+
+   The type of the rewriting hypothesis must be of the form
+
+<div class="paragraph"> </div>
+
+   <span class="inlinecode"><span class="id" title="keyword">forall</span></span> <span class="inlinecode">(<span class="id" title="var">x_1</span>:</span> <span class="inlinecode"><span class="id" title="var">T_1</span>)</span> <span class="inlinecode">...</span> <span class="inlinecode">(<span class="id" title="var">x_n</span>:</span> <span class="inlinecode"><span class="id" title="var">T_n</span>),</span> <span class="inlinecode"><a class="idref" href="AAC_tactics.Caveats.html#V.R"><span class="id" title="variable">R</span></a></span> <span class="inlinecode"><span class="id" title="var">l</span></span> <span class="inlinecode"><span class="id" title="var">r</span></span>
+
+<div class="paragraph"> </div>
+
+   where <code>R</code> is a relation over some type <code>T</code> and such that for all
+   variable <code>x_i</code> appearing in the left-hand side (<code>l</code>), we actually
+   have <code>T_i = T</code>. The goal should be of the form <code>S g d</code>, where
+   <code>S</code> is a relation on <code>T</code>.
+
+<div class="paragraph"> </div>
+
+   In other words, we cannot instantiate arguments of an exogeneous type.
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <a id="parameters" class="idref" href="#parameters"><span class="id" title="section">parameters</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<a id="parameters.X" class="idref" href="#parameters.X"><span class="id" title="variable">X</span></a>} {<a id="parameters.R" class="idref" href="#parameters.R"><span class="id" title="variable">R</span></a>} {<a id="parameters.E" class="idref" href="#parameters.E"><span class="id" title="variable">E</span></a>: @<a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Classes.RelationClasses.html#Equivalence"><span class="id" title="class">Equivalence</span></a> <a class="idref" href="AAC_tactics.Caveats.html#X:1"><span class="id" title="variable">X</span></a> <a class="idref" href="AAC_tactics.Caveats.html#R:2"><span class="id" title="variable">R</span></a>} {<a id="parameters.plus" class="idref" href="#parameters.plus"><span class="id" title="variable">plus</span></a>}<br/>
+&nbsp;&nbsp;&nbsp;{<a id="parameters.plus_A" class="idref" href="#parameters.plus_A"><span class="id" title="variable">plus_A</span></a>: <a class="idref" href="AAC_tactics.AAC.html#Associative"><span class="id" title="class">Associative</span></a> <a class="idref" href="AAC_tactics.Caveats.html#R:2"><span class="id" title="variable">R</span></a> <a class="idref" href="AAC_tactics.Caveats.html#plus:4"><span class="id" title="variable">plus</span></a>} {<a id="parameters.plus_C" class="idref" href="#parameters.plus_C"><span class="id" title="variable">plus_C</span></a>: <a class="idref" href="AAC_tactics.AAC.html#Commutative"><span class="id" title="class">Commutative</span></a> <a class="idref" href="AAC_tactics.Caveats.html#R:2"><span class="id" title="variable">R</span></a> <a class="idref" href="AAC_tactics.Caveats.html#plus:4"><span class="id" title="variable">plus</span></a>}<br/>
+&nbsp;&nbsp;&nbsp;{<a id="parameters.plus_Proper" class="idref" href="#parameters.plus_Proper"><span class="id" title="variable">plus_Proper</span></a>: <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Classes.Morphisms.html#Proper"><span class="id" title="class">Proper</span></a> (<a class="idref" href="AAC_tactics.Caveats.html#R:2"><span class="id" title="variable">R</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <a class="idref" href="AAC_tactics.Caveats.html#R:2"><span class="id" title="variable">R</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <a class="idref" href="AAC_tactics.Caveats.html#R:2"><span class="id" title="variable">R</span></a>) <a class="idref" href="AAC_tactics.Caveats.html#plus:4"><span class="id" title="variable">plus</span></a>}<br/>
+&nbsp;&nbsp;&nbsp;{<a id="parameters.zero" class="idref" href="#parameters.zero"><span class="id" title="variable">zero</span></a>} {<a id="parameters.Zero" class="idref" href="#parameters.Zero"><span class="id" title="variable">Zero</span></a>: <a class="idref" href="AAC_tactics.AAC.html#Unit"><span class="id" title="class">Unit</span></a> <a class="idref" href="AAC_tactics.Caveats.html#R:2"><span class="id" title="variable">R</span></a> <a class="idref" href="AAC_tactics.Caveats.html#plus:4"><span class="id" title="variable">plus</span></a> <a class="idref" href="AAC_tactics.Caveats.html#zero:8"><span class="id" title="variable">zero</span></a>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <a id="5ab114bb7d18eeb8456e6d0dcfb8dbec" class="idref" href="#5ab114bb7d18eeb8456e6d0dcfb8dbec"><span class="id" title="notation">&quot;</span></a>x == y"  := (<a class="idref" href="AAC_tactics.Caveats.html#parameters.R"><span class="id" title="variable">R</span></a> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 70).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <a id="7f248bb50f4dfcdc7151e60f2c686bf2" class="idref" href="#7f248bb50f4dfcdc7151e60f2c686bf2"><span class="id" title="notation">&quot;</span></a>x + y"   := (<a class="idref" href="AAC_tactics.Caveats.html#parameters.plus"><span class="id" title="variable">plus</span></a> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 50, <span class="id" title="tactic">left</span> <span class="id" title="keyword">associativity</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <a id="parameters.:::'0'" class="idref" href="#parameters.:::'0'"><span class="id" title="notation">&quot;</span></a>0"       := (<a class="idref" href="AAC_tactics.Caveats.html#parameters.zero"><span class="id" title="variable">zero</span></a>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <a id="parameters.f" class="idref" href="#parameters.f"><span class="id" title="variable">f</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="AAC_tactics.Caveats.html#parameters.X"><span class="id" title="variable">X</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="AAC_tactics.Caveats.html#parameters.X"><span class="id" title="variable">X</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+    In <span class="inlinecode"><a class="idref" href="AAC_tactics.Caveats.html#U.Hf"><span class="id" title="variable">Hf</span></a></span>, since the parameter <span class="inlinecode"><span class="id" title="var">n</span></span> has type <span class="inlinecode"><a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a></span>,
+    it cannot be instantiated automatically
+  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Hypothesis</span> <a id="parameters.Hf" class="idref" href="#parameters.Hf"><span class="id" title="variable">Hf</span></a>: <span class="id" title="keyword">forall</span> <a id="n:12" class="idref" href="#n:12"><span class="id" title="binder">n</span></a> <a id="x:13" class="idref" href="#x:13"><span class="id" title="binder">x</span></a>, <a class="idref" href="AAC_tactics.Caveats.html#parameters.f"><span class="id" title="variable">f</span></a> <a class="idref" href="AAC_tactics.Caveats.html#n:12"><span class="id" title="variable">n</span></a> <a class="idref" href="AAC_tactics.Caveats.html#x:13"><span class="id" title="variable">x</span></a> <a class="idref" href="AAC_tactics.Caveats.html#7f248bb50f4dfcdc7151e60f2c686bf2"><span class="id" title="notation">+</span></a> <a class="idref" href="AAC_tactics.Caveats.html#x:13"><span class="id" title="variable">x</span></a> <a class="idref" href="AAC_tactics.Caveats.html#5ab114bb7d18eeb8456e6d0dcfb8dbec"><span class="id" title="notation">==</span></a> <a class="idref" href="AAC_tactics.Caveats.html#x:13"><span class="id" title="variable">x</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Hypothesis</span> <a id="parameters.Hf'" class="idref" href="#parameters.Hf'"><span class="id" title="variable">Hf'</span></a>: <span class="id" title="keyword">forall</span> <a id="n:16" class="idref" href="#n:16"><span class="id" title="binder">n</span></a>, <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Classes.Morphisms.html#Proper"><span class="id" title="class">Proper</span></a> (<a class="idref" href="AAC_tactics.Caveats.html#parameters.R"><span class="id" title="variable">R</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <a class="idref" href="AAC_tactics.Caveats.html#parameters.R"><span class="id" title="variable">R</span></a>) (<a class="idref" href="AAC_tactics.Caveats.html#parameters.f"><span class="id" title="variable">f</span></a> <a class="idref" href="AAC_tactics.Caveats.html#n:16"><span class="id" title="variable">n</span></a>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Goal</span> <a id="Unnamed_thm" class="idref" href="#Unnamed_thm"><span class="id" title="definition">forall</span></a> <a id="Unnamed_thm" class="idref" href="#Unnamed_thm"><span class="id" title="binder, definition"><span id="a:19" class="id">a</span></span></a> <a id="Unnamed_thm" class="idref" href="#Unnamed_thm"><span class="id" title="binder, definition"><span id="b:20" class="id">b</span></span></a> <a id="Unnamed_thm" class="idref" href="#Unnamed_thm"><span class="id" title="binder, definition"><span id="k:21" class="id">k</span></span></a><a id="Unnamed_thm" class="idref" href="#Unnamed_thm"><span class="id" title="definition">,</span></a> <a id="Unnamed_thm" class="idref" href="#Unnamed_thm"><span class="id" title="definition">a</span></a> <a id="Unnamed_thm" class="idref" href="#Unnamed_thm"><span class="id" title="definition">+</span></a> <a id="Unnamed_thm" class="idref" href="#Unnamed_thm"><span class="id" title="definition">f</span></a> <a id="Unnamed_thm" class="idref" href="#Unnamed_thm"><span class="id" title="definition">k</span></a> <a id="Unnamed_thm" class="idref" href="#Unnamed_thm"><span class="id" title="definition">(</span></a><a id="Unnamed_thm" class="idref" href="#Unnamed_thm"><span class="id" title="definition">b</span></a><a id="Unnamed_thm" class="idref" href="#Unnamed_thm"><span class="id" title="definition">+</span></a><a id="Unnamed_thm" class="idref" href="#Unnamed_thm"><span class="id" title="definition">a</span></a><a id="Unnamed_thm" class="idref" href="#Unnamed_thm"><span class="id" title="definition">)</span></a> <a id="Unnamed_thm" class="idref" href="#Unnamed_thm"><span class="id" title="definition">+</span></a> <a id="Unnamed_thm" class="idref" href="#Unnamed_thm"><span class="id" title="definition">b</span></a> <a id="Unnamed_thm" class="idref" href="#Unnamed_thm"><span class="id" title="definition">==</span></a> <a id="Unnamed_thm" class="idref" href="#Unnamed_thm"><span class="id" title="definition">a</span></a><a id="Unnamed_thm" class="idref" href="#Unnamed_thm"><span class="id" title="definition">+</span></a><a id="Unnamed_thm" class="idref" href="#Unnamed_thm"><span class="id" title="definition">b</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span>.<br/>
+</div>
+
+<div class="doc">
+<span class="inlinecode"><span class="id" title="var">aac_rewrite</span></span> does not instantiate <span class="inlinecode"><span class="id" title="var">n</span></span> automatically 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Fail</span> <span class="id" title="var">aac_rewrite</span> <a class="idref" href="AAC_tactics.Caveats.html#parameters.Hf"><span class="id" title="variable">Hf</span></a>.<br/>
+</div>
+
+<div class="doc">
+of course, this argument can be given explicitly 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">aac_rewrite</span> (<a class="idref" href="AAC_tactics.Caveats.html#parameters.Hf"><span class="id" title="variable">Hf</span></a> <span class="id" title="var">k</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">aac_reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+For the same reason, we cannot handle higher-order parameters (here, <span class="inlinecode"><a class="idref" href="AAC_tactics.Caveats.html#parameters.g"><span class="id" title="variable">g</span></a></span>) 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Hypothesis</span> <a id="parameters.H" class="idref" href="#parameters.H"><span class="id" title="variable">H</span></a> : <span class="id" title="keyword">forall</span> <a id="g:22" class="idref" href="#g:22"><span class="id" title="binder">g</span></a> <a id="x:23" class="idref" href="#x:23"><span class="id" title="binder">x</span></a> <a id="y:24" class="idref" href="#y:24"><span class="id" title="binder">y</span></a>, <a class="idref" href="AAC_tactics.Caveats.html#g:22"><span class="id" title="variable">g</span></a> <a class="idref" href="AAC_tactics.Caveats.html#x:23"><span class="id" title="variable">x</span></a> <a class="idref" href="AAC_tactics.Caveats.html#7f248bb50f4dfcdc7151e60f2c686bf2"><span class="id" title="notation">+</span></a> <a class="idref" href="AAC_tactics.Caveats.html#g:22"><span class="id" title="variable">g</span></a> <a class="idref" href="AAC_tactics.Caveats.html#y:24"><span class="id" title="variable">y</span></a> <a class="idref" href="AAC_tactics.Caveats.html#5ab114bb7d18eeb8456e6d0dcfb8dbec"><span class="id" title="notation">==</span></a> <a class="idref" href="AAC_tactics.Caveats.html#g:22"><span class="id" title="variable">g</span></a> (<a class="idref" href="AAC_tactics.Caveats.html#x:23"><span class="id" title="variable">x</span></a> <a class="idref" href="AAC_tactics.Caveats.html#7f248bb50f4dfcdc7151e60f2c686bf2"><span class="id" title="notation">+</span></a> <a class="idref" href="AAC_tactics.Caveats.html#y:24"><span class="id" title="variable">y</span></a>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <a id="parameters.g" class="idref" href="#parameters.g"><span class="id" title="variable">g</span></a> : <a class="idref" href="AAC_tactics.Caveats.html#parameters.X"><span class="id" title="variable">X</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="AAC_tactics.Caveats.html#parameters.X"><span class="id" title="variable">X</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Hypothesis</span> <a id="parameters.Hg" class="idref" href="#parameters.Hg"><span class="id" title="variable">Hg</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Classes.Morphisms.html#Proper"><span class="id" title="class">Proper</span></a> (<a class="idref" href="AAC_tactics.Caveats.html#parameters.R"><span class="id" title="variable">R</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <a class="idref" href="AAC_tactics.Caveats.html#parameters.R"><span class="id" title="variable">R</span></a>) <a class="idref" href="AAC_tactics.Caveats.html#parameters.g"><span class="id" title="variable">g</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Goal</span> <a id="Unnamed_thm0" class="idref" href="#Unnamed_thm0"><span class="id" title="definition">forall</span></a> <a id="Unnamed_thm0" class="idref" href="#Unnamed_thm0"><span class="id" title="binder, definition"><span id="a:31" class="id">a</span></span></a> <a id="Unnamed_thm0" class="idref" href="#Unnamed_thm0"><span class="id" title="binder, definition"><span id="b:32" class="id">b</span></span></a> <a id="Unnamed_thm0" class="idref" href="#Unnamed_thm0"><span class="id" title="binder, definition"><span id="c:33" class="id">c</span></span></a><a id="Unnamed_thm0" class="idref" href="#Unnamed_thm0"><span class="id" title="definition">,</span></a> <a id="Unnamed_thm0" class="idref" href="#Unnamed_thm0"><span class="id" title="definition">g</span></a> <a id="Unnamed_thm0" class="idref" href="#Unnamed_thm0"><span class="id" title="definition">a</span></a> <a id="Unnamed_thm0" class="idref" href="#Unnamed_thm0"><span class="id" title="definition">+</span></a> <a id="Unnamed_thm0" class="idref" href="#Unnamed_thm0"><span class="id" title="definition">g</span></a> <a id="Unnamed_thm0" class="idref" href="#Unnamed_thm0"><span class="id" title="definition">b</span></a> <a id="Unnamed_thm0" class="idref" href="#Unnamed_thm0"><span class="id" title="definition">+</span></a> <a id="Unnamed_thm0" class="idref" href="#Unnamed_thm0"><span class="id" title="definition">g</span></a> <a id="Unnamed_thm0" class="idref" href="#Unnamed_thm0"><span class="id" title="definition">c</span></a> <a id="Unnamed_thm0" class="idref" href="#Unnamed_thm0"><span class="id" title="definition">==</span></a> <a id="Unnamed_thm0" class="idref" href="#Unnamed_thm0"><span class="id" title="definition">g</span></a> <a id="Unnamed_thm0" class="idref" href="#Unnamed_thm0"><span class="id" title="definition">(</span></a><a id="Unnamed_thm0" class="idref" href="#Unnamed_thm0"><span class="id" title="definition">a</span></a> <a id="Unnamed_thm0" class="idref" href="#Unnamed_thm0"><span class="id" title="definition">+</span></a> <a id="Unnamed_thm0" class="idref" href="#Unnamed_thm0"><span class="id" title="definition">b</span></a> <a id="Unnamed_thm0" class="idref" href="#Unnamed_thm0"><span class="id" title="definition">+</span></a> <a id="Unnamed_thm0" class="idref" href="#Unnamed_thm0"><span class="id" title="definition">c</span></a><a id="Unnamed_thm0" class="idref" href="#Unnamed_thm0"><span class="id" title="definition">)</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Fail</span> <span class="id" title="var">aac_rewrite</span> <a class="idref" href="AAC_tactics.Caveats.html#parameters.H"><span class="id" title="variable">H</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">do</span> 2 <span class="id" title="var">aac_rewrite</span> (<a class="idref" href="AAC_tactics.Caveats.html#parameters.H"><span class="id" title="variable">H</span></a> <a class="idref" href="AAC_tactics.Caveats.html#parameters.g"><span class="id" title="variable">g</span></a>). <span class="id" title="var">aac_reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="AAC_tactics.Caveats.html#parameters"><span class="id" title="section">parameters</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab44"></a><h3 class="section">Exogeneous morphisms</h3>
+
+
+<div class="paragraph"> </div>
+
+   We do not handle "exogeneous" morphisms: morphisms that move from
+   type <code>T</code> to some other type <code>T'</code>.
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <a id="morphism" class="idref" href="#morphism"><span class="id" title="section">morphism</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Import</span> <span class="id" title="module">NArith</span> <span class="id" title="module">PeanoNat</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Import</span> <a class="idref" href="AAC_tactics.Instances.html#N"><span class="id" title="module">Instances.N</span></a> <a class="idref" href="AAC_tactics.Instances.html#Peano"><span class="id" title="module">Instances.Peano</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">nat_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+   Typically, although <span class="inlinecode"><span class="id" title="abbreviation">N_of_nat</span></span> is a proper morphism from
+   <span class="inlinecode">@<a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Logic.html#eq"><span class="id" title="inductive">eq</span></a></span> <span class="inlinecode"><a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a></span> to <span class="inlinecode">@<a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Logic.html#eq"><span class="id" title="inductive">eq</span></a></span> <span class="inlinecode"><a class="idref" href="AAC_tactics.Instances.html#N"><span class="id" title="module">N</span></a></span>, we cannot rewrite under <span class="inlinecode"><span class="id" title="abbreviation">N_of_nat</span></span>
+  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Goal</span> <a id="Unnamed_thm1" class="idref" href="#Unnamed_thm1"><span class="id" title="definition">forall</span></a> <a id="Unnamed_thm1" class="idref" href="#Unnamed_thm1"><span class="id" title="binder, definition"><span id="a:34" class="id">a</span></span></a> <a id="Unnamed_thm1" class="idref" href="#Unnamed_thm1"><span class="id" title="binder, definition"><span id="b:35" class="id">b</span></span></a><a id="Unnamed_thm1" class="idref" href="#Unnamed_thm1"><span class="id" title="definition">:</span></a> <a id="Unnamed_thm1" class="idref" href="#Unnamed_thm1"><span class="id" title="definition">nat</span></a><a id="Unnamed_thm1" class="idref" href="#Unnamed_thm1"><span class="id" title="definition">,</span></a> <a id="Unnamed_thm1" class="idref" href="#Unnamed_thm1"><span class="id" title="definition">N_of_nat</span></a> <a id="Unnamed_thm1" class="idref" href="#Unnamed_thm1"><span class="id" title="definition">(</span></a><a id="Unnamed_thm1" class="idref" href="#Unnamed_thm1"><span class="id" title="definition">a</span></a><a id="Unnamed_thm1" class="idref" href="#Unnamed_thm1"><span class="id" title="definition">+</span></a><a id="Unnamed_thm1" class="idref" href="#Unnamed_thm1"><span class="id" title="definition">b</span></a><a id="Unnamed_thm1" class="idref" href="#Unnamed_thm1"><span class="id" title="definition">-(</span></a><a id="Unnamed_thm1" class="idref" href="#Unnamed_thm1"><span class="id" title="definition">b</span></a><a id="Unnamed_thm1" class="idref" href="#Unnamed_thm1"><span class="id" title="definition">+</span></a><a id="Unnamed_thm1" class="idref" href="#Unnamed_thm1"><span class="id" title="definition">a</span></a><a id="Unnamed_thm1" class="idref" href="#Unnamed_thm1"><span class="id" title="definition">))</span></a> <a id="Unnamed_thm1" class="idref" href="#Unnamed_thm1"><span class="id" title="definition">=</span></a> <a id="Unnamed_thm1" class="idref" href="#Unnamed_thm1"><span class="id" title="definition">0%</span></a><a id="Unnamed_thm1" class="idref" href="#Unnamed_thm1"><span class="id" title="definition">N</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Fail</span> <span class="id" title="var">aac_rewrite</span> <span class="id" title="lemma">Nat.sub_diag</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Abort</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+    More generally, this prevents us from rewriting under
+    propositional contexts
+  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<a id="morphism.P" class="idref" href="#morphism.P"><span class="id" title="variable">P</span></a>} {<a id="morphism.HP" class="idref" href="#morphism.HP"><span class="id" title="variable">HP</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Classes.Morphisms.html#Proper"><span class="id" title="class">Proper</span></a> (@<a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Logic.html#eq"><span class="id" title="inductive">eq</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Logic.html#iff"><span class="id" title="definition">iff</span></a>) <a class="idref" href="AAC_tactics.Caveats.html#P:36"><span class="id" title="variable">P</span></a>}.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Hypothesis</span> <a id="morphism.H" class="idref" href="#morphism.H"><span class="id" title="variable">H</span></a> : <a class="idref" href="AAC_tactics.Caveats.html#morphism.P"><span class="id" title="variable">P</span></a> 0.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Goal</span> <a id="Unnamed_thm1" class="idref" href="#Unnamed_thm1"><span class="id" title="definition">forall</span></a> <a id="Unnamed_thm1" class="idref" href="#Unnamed_thm1"><span class="id" title="binder, definition"><span id="a:40" class="id">a</span></span></a> <a id="Unnamed_thm1" class="idref" href="#Unnamed_thm1"><span class="id" title="binder, definition"><span id="b:41" class="id">b</span></span></a><a id="Unnamed_thm1" class="idref" href="#Unnamed_thm1"><span class="id" title="definition">,</span></a> <a id="Unnamed_thm1" class="idref" href="#Unnamed_thm1"><span class="id" title="definition">P</span></a> <a id="Unnamed_thm1" class="idref" href="#Unnamed_thm1"><span class="id" title="definition">(</span></a><a id="Unnamed_thm1" class="idref" href="#Unnamed_thm1"><span class="id" title="definition">a</span></a> <a id="Unnamed_thm1" class="idref" href="#Unnamed_thm1"><span class="id" title="definition">+</span></a> <a id="Unnamed_thm1" class="idref" href="#Unnamed_thm1"><span class="id" title="definition">b</span></a> <a id="Unnamed_thm1" class="idref" href="#Unnamed_thm1"><span class="id" title="definition">-</span></a> <a id="Unnamed_thm1" class="idref" href="#Unnamed_thm1"><span class="id" title="definition">(</span></a><a id="Unnamed_thm1" class="idref" href="#Unnamed_thm1"><span class="id" title="definition">b</span></a> <a id="Unnamed_thm1" class="idref" href="#Unnamed_thm1"><span class="id" title="definition">+</span></a> <a id="Unnamed_thm1" class="idref" href="#Unnamed_thm1"><span class="id" title="definition">a</span></a><a id="Unnamed_thm1" class="idref" href="#Unnamed_thm1"><span class="id" title="definition">))</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Fail</span> <span class="id" title="var">aac_rewrite</span> <span class="id" title="lemma">Nat.sub_diag</span>.<br/>
+</div>
+
+<div class="doc">
+a solution is to introduce an evar to replace the part to be
+      rewritten - this tiresome process should be improved in the
+      future; here, it can be done using eapply and the morphism 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <a class="idref" href="AAC_tactics.Caveats.html#morphism.HP"><span class="id" title="variable">HP</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">aac_rewrite</span> <span class="id" title="lemma">Nat.sub_diag</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <a class="idref" href="AAC_tactics.Caveats.html#morphism.H"><span class="id" title="variable">H</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Goal</span> <a id="Unnamed_thm2" class="idref" href="#Unnamed_thm2"><span class="id" title="definition">forall</span></a> <a id="Unnamed_thm2" class="idref" href="#Unnamed_thm2"><span class="id" title="binder, definition"><span id="a:42" class="id">a</span></span></a> <a id="Unnamed_thm2" class="idref" href="#Unnamed_thm2"><span class="id" title="binder, definition"><span id="b:43" class="id">b</span></span></a><a id="Unnamed_thm2" class="idref" href="#Unnamed_thm2"><span class="id" title="definition">,</span></a> <a id="Unnamed_thm2" class="idref" href="#Unnamed_thm2"><span class="id" title="definition">a</span></a><a id="Unnamed_thm2" class="idref" href="#Unnamed_thm2"><span class="id" title="definition">+</span></a><a id="Unnamed_thm2" class="idref" href="#Unnamed_thm2"><span class="id" title="definition">b</span></a><a id="Unnamed_thm2" class="idref" href="#Unnamed_thm2"><span class="id" title="definition">-(</span></a><a id="Unnamed_thm2" class="idref" href="#Unnamed_thm2"><span class="id" title="definition">b</span></a><a id="Unnamed_thm2" class="idref" href="#Unnamed_thm2"><span class="id" title="definition">+</span></a><a id="Unnamed_thm2" class="idref" href="#Unnamed_thm2"><span class="id" title="definition">a</span></a><a id="Unnamed_thm2" class="idref" href="#Unnamed_thm2"><span class="id" title="definition">)</span></a> <a id="Unnamed_thm2" class="idref" href="#Unnamed_thm2"><span class="id" title="definition">=</span></a> <a id="Unnamed_thm2" class="idref" href="#Unnamed_thm2"><span class="id" title="definition">0</span></a> <a id="Unnamed_thm2" class="idref" href="#Unnamed_thm2"><span class="id" title="definition">/\</span></a> <a id="Unnamed_thm2" class="idref" href="#Unnamed_thm2"><span class="id" title="definition">b</span></a><a id="Unnamed_thm2" class="idref" href="#Unnamed_thm2"><span class="id" title="definition">-</span></a><a id="Unnamed_thm2" class="idref" href="#Unnamed_thm2"><span class="id" title="definition">b</span></a> <a id="Unnamed_thm2" class="idref" href="#Unnamed_thm2"><span class="id" title="definition">=</span></a> <a id="Unnamed_thm2" class="idref" href="#Unnamed_thm2"><span class="id" title="definition">0</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span>.<br/>
+</div>
+
+<div class="doc">
+similarly, we need to bring equations to the toplevel before
+      being able to rewrite 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Fail</span> <span class="id" title="var">aac_rewrite</span> <span class="id" title="lemma">Nat.sub_diag</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>; <span class="id" title="var">aac_rewrite</span> <span class="id" title="lemma">Nat.sub_diag</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="AAC_tactics.Caveats.html#morphism"><span class="id" title="section">morphism</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab45"></a><h3 class="section">Treatment of variance with inequations</h3>
+
+
+<div class="paragraph"> </div>
+
+  We do not take variance into account when we compute the set of
+  solutions to a matching problem modulo AC. As a consequence,
+  <span class="inlinecode"><span class="id" title="var">aac_instances</span></span> may propose solutions for which <span class="inlinecode"><span class="id" title="var">aac_rewrite</span></span> will
+  fail, due to the lack of adequate morphisms.
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <a id="ineq" class="idref" href="#ineq"><span class="id" title="section">ineq</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Import</span> <span class="id" title="module">ZArith</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Import</span> <a class="idref" href="AAC_tactics.Instances.html#Z"><span class="id" title="module">Instances.Z</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">Z_scope</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">local</span>] <span class="id" title="keyword">Instance</span> <a id="Z_add_incr" class="idref" href="#Z_add_incr"><span class="id" title="instance">Z_add_incr</span></a>: <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Classes.Morphisms.html#Proper"><span class="id" title="class">Proper</span></a> (<span class="id" title="definition">Z.le</span> <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <span class="id" title="definition">Z.le</span> <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <span class="id" title="definition">Z.le</span>) <span class="id" title="definition">Z.add</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">intros</span> ? ? <span class="id" title="var">H</span> ? ? <span class="id" title="var">H'</span>. <span class="id" title="tactic">apply</span> <span class="id" title="abbreviation">Zplus_le_compat</span>; <span class="id" title="tactic">assumption</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Hypothesis</span> <a id="ineq.H" class="idref" href="#ineq.H"><span class="id" title="variable">H</span></a> : <span class="id" title="keyword">forall</span> <a id="x:44" class="idref" href="#x:44"><span class="id" title="binder">x</span></a>, <a class="idref" href="AAC_tactics.Caveats.html#x:44"><span class="id" title="variable">x</span></a><span class="id" title="notation">+</span><a class="idref" href="AAC_tactics.Caveats.html#x:44"><span class="id" title="variable">x</span></a> <span class="id" title="notation">&lt;=</span> <a class="idref" href="AAC_tactics.Caveats.html#x:44"><span class="id" title="variable">x</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Goal</span> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">forall</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="binder, definition"><span id="a:47" class="id">a</span></span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="binder, definition"><span id="b:48" class="id">b</span></span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="binder, definition"><span id="c:49" class="id">c</span></span></a><a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">,</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">c</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">+</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">-</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">(</span></a><a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">a</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">+</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">a</span></a><a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">)</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">+</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">b</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">+</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">b</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">&lt;=</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">c</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span>.<br/>
+</div>
+
+<div class="doc">
+this fails because the first solution is not valid (<span class="inlinecode"><span class="id" title="var">Z.opp</span></span> is not increasing) 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Fail</span> <span class="id" title="var">aac_rewrite</span> <a class="idref" href="AAC_tactics.Caveats.html#ineq.H"><span class="id" title="variable">H</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">aac_instances</span> <a class="idref" href="AAC_tactics.Caveats.html#ineq.H"><span class="id" title="variable">H</span></a>.<br/>
+</div>
+
+<div class="doc">
+on the contrary, the second solution is valid: 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">aac_rewrite</span> <a class="idref" href="AAC_tactics.Caveats.html#ineq.H"><span class="id" title="variable">H</span></a> <span class="id" title="tactic">at</span> 1.<br/>
+</div>
+
+<div class="doc">
+currently, we cannot filter out such invalid solutions in an easy way;
+      this should be fixed in the future 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Abort</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="AAC_tactics.Caveats.html#ineq"><span class="id" title="section">ineq</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab46"></a><h2 class="section">Caveats</h2>
+
+<div class="paragraph"> </div>
+
+<a id="lab47"></a><h3 class="section">Special treatment for units</h3>
+
+
+<div class="paragraph"> </div>
+
+  <span class="inlinecode"><a class="idref" href="AAC_tactics.Instances.html#Relations.defs.S"><span class="id" title="variable">S</span></a></span> <span class="inlinecode">0</span> is considered as a unit for multiplication whenever a <span class="inlinecode"><span class="id" title="var">Nat.mul</span></span>
+  appears in the goal. The downside is that <span class="inlinecode"><a class="idref" href="AAC_tactics.Instances.html#Relations.defs.S"><span class="id" title="variable">S</span></a></span> <span class="inlinecode"><span class="id" title="var">x</span></span> does not match <span class="inlinecode">1</span>,
+  and <span class="inlinecode">1</span> does not match <span class="inlinecode"><a class="idref" href="AAC_tactics.Instances.html#Relations.defs.S"><span class="id" title="variable">S</span></a></span> <span class="inlinecode">(0</span> <span class="inlinecode">+</span> <span class="inlinecode">0)</span> whenever <span class="inlinecode"><span class="id" title="var">Nat.mul</span></span> appears in
+  the goal.
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <a id="Peano" class="idref" href="#Peano"><span class="id" title="section">Peano</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Import</span> <a class="idref" href="AAC_tactics.Instances.html#Peano"><span class="id" title="module">Instances.Peano</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Hypothesis</span> <a id="Peano.H" class="idref" href="#Peano.H"><span class="id" title="variable">H</span></a> : <span class="id" title="keyword">forall</span> <a id="x:50" class="idref" href="#x:50"><span class="id" title="binder">x</span></a>, <a class="idref" href="AAC_tactics.Caveats.html#x:50"><span class="id" title="variable">x</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Peano.html#0dacc1786c5ba797d47dd85006231633"><span class="id" title="notation">+</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Datatypes.html#S"><span class="id" title="constructor">S</span></a> <a class="idref" href="AAC_tactics.Caveats.html#x:50"><span class="id" title="variable">x</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Datatypes.html#S"><span class="id" title="constructor">S</span></a> (<a class="idref" href="AAC_tactics.Caveats.html#x:50"><span class="id" title="variable">x</span></a><a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Peano.html#0dacc1786c5ba797d47dd85006231633"><span class="id" title="notation">+</span></a><a class="idref" href="AAC_tactics.Caveats.html#x:50"><span class="id" title="variable">x</span></a>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Goal</span> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">1</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">=</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">1</span></a>.<br/>
+</div>
+
+<div class="doc">
+OK (no multiplication around), <span class="inlinecode"><span class="id" title="var">x</span></span> is instantiated with <span class="inlinecode"><a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Datatypes.html#O"><span class="id" title="constructor">O</span></a></span> 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">aacu_rewrite</span> <a class="idref" href="AAC_tactics.Caveats.html#Peano.H"><span class="id" title="variable">H</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Abort</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Goal</span> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">1</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">*</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">1</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">=</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">1</span></a>.<br/>
+</div>
+
+<div class="doc">
+fails since 1 is seen as a unit, not the application of the
+    morphism <span class="inlinecode"><a class="idref" href="AAC_tactics.Instances.html#Relations.defs.S"><span class="id" title="variable">S</span></a></span> to the constant <span class="inlinecode"><a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Datatypes.html#O"><span class="id" title="constructor">O</span></a></span> 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Fail</span> <span class="id" title="var">aacu_rewrite</span> <a class="idref" href="AAC_tactics.Caveats.html#Peano.H"><span class="id" title="variable">H</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Abort</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Hypothesis</span> <a id="Peano.H'" class="idref" href="#Peano.H'"><span class="id" title="variable">H'</span></a>: <span class="id" title="keyword">forall</span> <a id="x:53" class="idref" href="#x:53"><span class="id" title="binder">x</span></a>, <a class="idref" href="AAC_tactics.Caveats.html#x:53"><span class="id" title="variable">x</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Peano.html#0dacc1786c5ba797d47dd85006231633"><span class="id" title="notation">+</span></a> 1 <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> 1 <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Peano.html#0dacc1786c5ba797d47dd85006231633"><span class="id" title="notation">+</span></a> <a class="idref" href="AAC_tactics.Caveats.html#x:53"><span class="id" title="variable">x</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Goal</span> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">forall</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="binder, definition"><span id="a:56" class="id">a</span></span></a><a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">,</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">a</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">+</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">S</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">(0+0)</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">=</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">1</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">+</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">a</span></a>.<br/>
+</div>
+
+<div class="doc">
+OK (no multiplication around), <span class="inlinecode"><span class="id" title="var">x</span></span> is instantiated with <span class="inlinecode"><a class="idref" href="AAC_tactics.Caveats.html#Z.a"><span class="id" title="variable">a</span></a></span> 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span>. <span class="id" title="var">aac_rewrite</span> <a class="idref" href="AAC_tactics.Caveats.html#Peano.H'"><span class="id" title="variable">H'</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Abort</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Goal</span> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">forall</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="binder, definition"><span id="a:57" class="id">a</span></span></a><a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">,</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">a</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">*</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">a</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">+</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">S</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">(0+0)</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">=</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">1</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">+</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">a</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">*</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">a</span></a>.<br/>
+</div>
+
+<div class="doc">
+fails: although <span class="inlinecode"><a class="idref" href="AAC_tactics.Instances.html#Relations.defs.S"><span class="id" title="variable">S</span></a></span> <span class="inlinecode">(0+0)</span> is understood as the application of
+    the morphism <span class="inlinecode"><a class="idref" href="AAC_tactics.Instances.html#Relations.defs.S"><span class="id" title="variable">S</span></a></span> to the constant <span class="inlinecode"><a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Datatypes.html#O"><span class="id" title="constructor">O</span></a></span>, it is not recognised
+    as the unit <span class="inlinecode"><a class="idref" href="AAC_tactics.Instances.html#Relations.defs.S"><span class="id" title="variable">S</span></a></span> <span class="inlinecode"><a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Datatypes.html#O"><span class="id" title="constructor">O</span></a></span> of multiplication 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span>. <span class="id" title="var">Fail</span> <span class="id" title="var">aac_rewrite</span> <a class="idref" href="AAC_tactics.Caveats.html#Peano.H'"><span class="id" title="variable">H'</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Abort</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+    More generally, similar counter-intuitive behaviours can appear
+    when declaring an applied morphism as a unit
+  
+</div>
+<div class="code">
+<span class="id" title="keyword">End</span> <a class="idref" href="AAC_tactics.Caveats.html#Peano"><span class="id" title="section">Peano</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab48"></a><h3 class="section">Existential variables</h3>
+
+
+<div class="paragraph"> </div>
+
+  We implemented an algorithm for <i>matching</i> modulo AC, not for
+  <i>unifying</i> modulo AC. As a consequence, existential variables
+  appearing in a goal are considered as constants and will not be
+  instantiated. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <a id="evars" class="idref" href="#evars"><span class="id" title="section">evars</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Import</span> <span class="id" title="module">ZArith</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Import</span> <a class="idref" href="AAC_tactics.Instances.html#Z"><span class="id" title="module">Instances.Z</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <a id="evars.P" class="idref" href="#evars.P"><span class="id" title="variable">P</span></a>: <span class="id" title="keyword">Prop</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Hypothesis</span> <a id="evars.H" class="idref" href="#evars.H"><span class="id" title="variable">H</span></a>: <span class="id" title="keyword">forall</span> <a id="x:60" class="idref" href="#x:60"><span class="id" title="binder">x</span></a> <a id="y:61" class="idref" href="#y:61"><span class="id" title="binder">y</span></a>, <a class="idref" href="AAC_tactics.Caveats.html#x:60"><span class="id" title="variable">x</span></a> <span class="id" title="notation">+</span> <a class="idref" href="AAC_tactics.Caveats.html#y:61"><span class="id" title="variable">y</span></a> <span class="id" title="notation">+</span> <a class="idref" href="AAC_tactics.Caveats.html#x:60"><span class="id" title="variable">x</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="AAC_tactics.Caveats.html#x:60"><span class="id" title="variable">x</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="AAC_tactics.Caveats.html#evars.P"><span class="id" title="variable">P</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Hypothesis</span> <a id="evars.idem" class="idref" href="#evars.idem"><span class="id" title="variable">idem</span></a>: <span class="id" title="keyword">forall</span> <a id="x:64" class="idref" href="#x:64"><span class="id" title="binder">x</span></a>, <a class="idref" href="AAC_tactics.Caveats.html#x:64"><span class="id" title="variable">x</span></a> <span class="id" title="notation">+</span> <a class="idref" href="AAC_tactics.Caveats.html#x:64"><span class="id" title="variable">x</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="AAC_tactics.Caveats.html#x:64"><span class="id" title="variable">x</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Goal</span> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">P</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <a class="idref" href="AAC_tactics.Caveats.html#evars.H"><span class="id" title="variable">H</span></a>.<br/>
+</div>
+
+<div class="doc">
+this works: <span class="inlinecode"><span class="id" title="var">x</span></span> is instantiated with an evar 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">aac_rewrite</span> <a class="idref" href="AAC_tactics.Caveats.html#evars.idem"><span class="id" title="variable">idem</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">instantiate</span> (2 := 0).<br/>
+</div>
+
+<div class="doc">
+this does work but there are remaining evars in the end 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>. <span class="id" title="var">aac_reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Abort</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Hypothesis</span> <a id="evars.H'" class="idref" href="#evars.H'"><span class="id" title="variable">H'</span></a>: <span class="id" title="keyword">forall</span> <a id="x:67" class="idref" href="#x:67"><span class="id" title="binder">x</span></a>, 3<span class="id" title="notation">+</span><a class="idref" href="AAC_tactics.Caveats.html#x:67"><span class="id" title="variable">x</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="AAC_tactics.Caveats.html#x:67"><span class="id" title="variable">x</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="AAC_tactics.Caveats.html#evars.P"><span class="id" title="variable">P</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Goal</span> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">P</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <a class="idref" href="AAC_tactics.Caveats.html#evars.H'"><span class="id" title="variable">H'</span></a>.<br/>
+</div>
+
+<div class="doc">
+this fails since we do not instantiate evars 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Fail</span> <span class="id" title="var">aac_rewrite</span> <a class="idref" href="AAC_tactics.Caveats.html#evars.idem"><span class="id" title="variable">idem</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Abort</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="AAC_tactics.Caveats.html#evars"><span class="id" title="section">evars</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab49"></a><h3 class="section">Distinction between <span class="inlinecode"><span class="id" title="var">aac_rewrite</span></span> and <span class="inlinecode"><span class="id" title="var">aacu_rewrite</span></span></h3>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <a id="U" class="idref" href="#U"><span class="id" title="section">U</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<a id="U.X" class="idref" href="#U.X"><span class="id" title="variable">X</span></a>} {<a id="U.R" class="idref" href="#U.R"><span class="id" title="variable">R</span></a>} {<a id="U.E" class="idref" href="#U.E"><span class="id" title="variable">E</span></a>: @<a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Classes.RelationClasses.html#Equivalence"><span class="id" title="class">Equivalence</span></a> <a class="idref" href="AAC_tactics.Caveats.html#X:70"><span class="id" title="variable">X</span></a> <a class="idref" href="AAC_tactics.Caveats.html#R:71"><span class="id" title="variable">R</span></a>}<br/>
+&nbsp;&nbsp;&nbsp;{<a id="U.dot" class="idref" href="#U.dot"><span class="id" title="variable">dot</span></a>}  {<a id="U.dot_A" class="idref" href="#U.dot_A"><span class="id" title="variable">dot_A</span></a>: <a class="idref" href="AAC_tactics.AAC.html#Associative"><span class="id" title="class">Associative</span></a> <a class="idref" href="AAC_tactics.Caveats.html#R:71"><span class="id" title="variable">R</span></a> <a class="idref" href="AAC_tactics.Caveats.html#dot:73"><span class="id" title="variable">dot</span></a>} {<a id="U.dot_Proper" class="idref" href="#U.dot_Proper"><span class="id" title="variable">dot_Proper</span></a>: <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Classes.Morphisms.html#Proper"><span class="id" title="class">Proper</span></a> (<a class="idref" href="AAC_tactics.Caveats.html#R:71"><span class="id" title="variable">R</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <a class="idref" href="AAC_tactics.Caveats.html#R:71"><span class="id" title="variable">R</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <a class="idref" href="AAC_tactics.Caveats.html#R:71"><span class="id" title="variable">R</span></a>) <a class="idref" href="AAC_tactics.Caveats.html#dot:73"><span class="id" title="variable">dot</span></a>}<br/>
+&nbsp;&nbsp;&nbsp;{<a id="U.one" class="idref" href="#U.one"><span class="id" title="variable">one</span></a>}  {<a id="U.One" class="idref" href="#U.One"><span class="id" title="variable">One</span></a>: <a class="idref" href="AAC_tactics.AAC.html#Unit"><span class="id" title="class">Unit</span></a> <a class="idref" href="AAC_tactics.Caveats.html#R:71"><span class="id" title="variable">R</span></a> <a class="idref" href="AAC_tactics.Caveats.html#dot:73"><span class="id" title="variable">dot</span></a> <a class="idref" href="AAC_tactics.Caveats.html#one:76"><span class="id" title="variable">one</span></a>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Infix</span> <a id="4a09eaff9b0b7bb618814dc2fdc7e641" class="idref" href="#4a09eaff9b0b7bb618814dc2fdc7e641"><span class="id" title="notation">&quot;</span></a>=="   := <a class="idref" href="AAC_tactics.Caveats.html#U.R"><span class="id" title="variable">R</span></a> (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 70).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Infix</span> <a id="c06c0cdd8db0a8bb0b246279104dd245" class="idref" href="#c06c0cdd8db0a8bb0b246279104dd245"><span class="id" title="notation">&quot;</span></a>*"    := <a class="idref" href="AAC_tactics.Caveats.html#U.dot"><span class="id" title="variable">dot</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <a id="U.:::'1'" class="idref" href="#U.:::'1'"><span class="id" title="notation">&quot;</span></a>1" := <a class="idref" href="AAC_tactics.Caveats.html#U.one"><span class="id" title="variable">one</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+in some situations, the <span class="inlinecode"><span class="id" title="var">aac_rewrite</span></span> tactic allows
+  instantiations of a variable with a unit, when the variable occurs
+  directly under a function symbol: 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <a id="U.f" class="idref" href="#U.f"><span class="id" title="variable">f</span></a> : <a class="idref" href="AAC_tactics.Caveats.html#U.X"><span class="id" title="variable">X</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="AAC_tactics.Caveats.html#U.X"><span class="id" title="variable">X</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Hypothesis</span> <a id="U.Hf" class="idref" href="#U.Hf"><span class="id" title="variable">Hf</span></a> : <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Classes.Morphisms.html#Proper"><span class="id" title="class">Proper</span></a> (<a class="idref" href="AAC_tactics.Caveats.html#U.R"><span class="id" title="variable">R</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <a class="idref" href="AAC_tactics.Caveats.html#U.R"><span class="id" title="variable">R</span></a>) <a class="idref" href="AAC_tactics.Caveats.html#U.f"><span class="id" title="variable">f</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Hypothesis</span> <a id="U.dot_inv_left" class="idref" href="#U.dot_inv_left"><span class="id" title="variable">dot_inv_left</span></a> : <span class="id" title="keyword">forall</span> <a id="x:82" class="idref" href="#x:82"><span class="id" title="binder">x</span></a>, <a class="idref" href="AAC_tactics.Caveats.html#U.f"><span class="id" title="variable">f</span></a> <a class="idref" href="AAC_tactics.Caveats.html#x:82"><span class="id" title="variable">x</span></a><a class="idref" href="AAC_tactics.Caveats.html#c06c0cdd8db0a8bb0b246279104dd245"><span class="id" title="notation">*</span></a><a class="idref" href="AAC_tactics.Caveats.html#x:82"><span class="id" title="variable">x</span></a>  <a class="idref" href="AAC_tactics.Caveats.html#4a09eaff9b0b7bb618814dc2fdc7e641"><span class="id" title="notation">==</span></a> <a class="idref" href="AAC_tactics.Caveats.html#x:82"><span class="id" title="variable">x</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Goal</span> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">f</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">1</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">==</span></a> <a id="Unnamed_thm3" class="idref" href="#Unnamed_thm3"><span class="id" title="definition">1</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">aac_rewrite</span> <a class="idref" href="AAC_tactics.Caveats.html#U.dot_inv_left"><span class="id" title="variable">dot_inv_left</span></a>. <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+this behaviour seems desirable in most situations: these
+  solutions with units are less peculiar than the other ones, since
+  the unit comes from the goal; however, this policy is not properly
+  enforced for now (hard to do with the current algorithm): 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Hypothesis</span> <a id="U.dot_inv_right" class="idref" href="#U.dot_inv_right"><span class="id" title="variable">dot_inv_right</span></a> : <span class="id" title="keyword">forall</span> <a id="x:85" class="idref" href="#x:85"><span class="id" title="binder">x</span></a>, <a class="idref" href="AAC_tactics.Caveats.html#x:85"><span class="id" title="variable">x</span></a><a class="idref" href="AAC_tactics.Caveats.html#c06c0cdd8db0a8bb0b246279104dd245"><span class="id" title="notation">*</span></a><a class="idref" href="AAC_tactics.Caveats.html#U.f"><span class="id" title="variable">f</span></a> <a class="idref" href="AAC_tactics.Caveats.html#x:85"><span class="id" title="variable">x</span></a>  <a class="idref" href="AAC_tactics.Caveats.html#4a09eaff9b0b7bb618814dc2fdc7e641"><span class="id" title="notation">==</span></a> <a class="idref" href="AAC_tactics.Caveats.html#x:85"><span class="id" title="variable">x</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Goal</span> <a id="Unnamed_thm4" class="idref" href="#Unnamed_thm4"><span class="id" title="definition">f</span></a> <a id="Unnamed_thm4" class="idref" href="#Unnamed_thm4"><span class="id" title="definition">1</span></a> <a id="Unnamed_thm4" class="idref" href="#Unnamed_thm4"><span class="id" title="definition">==</span></a> <a id="Unnamed_thm4" class="idref" href="#Unnamed_thm4"><span class="id" title="definition">1</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Fail</span> <span class="id" title="var">aac_rewrite</span> <a class="idref" href="AAC_tactics.Caveats.html#U.dot_inv_right"><span class="id" title="variable">dot_inv_right</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">aacu_rewrite</span> <a class="idref" href="AAC_tactics.Caveats.html#U.dot_inv_right"><span class="id" title="variable">dot_inv_right</span></a>. <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="AAC_tactics.Caveats.html#U"><span class="id" title="section">U</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab50"></a><h3 class="section">Rewriting units</h3>
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Section</span> <a id="V" class="idref" href="#V"><span class="id" title="section">V</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<a id="V.X" class="idref" href="#V.X"><span class="id" title="variable">X</span></a>} {<a id="V.R" class="idref" href="#V.R"><span class="id" title="variable">R</span></a>} {<a id="V.E" class="idref" href="#V.E"><span class="id" title="variable">E</span></a>: @<a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Classes.RelationClasses.html#Equivalence"><span class="id" title="class">Equivalence</span></a> <a class="idref" href="AAC_tactics.Caveats.html#X:88"><span class="id" title="variable">X</span></a> <a class="idref" href="AAC_tactics.Caveats.html#R:89"><span class="id" title="variable">R</span></a>}<br/>
+&nbsp;&nbsp;{<a id="V.dot" class="idref" href="#V.dot"><span class="id" title="variable">dot</span></a>}  {<a id="V.dot_A" class="idref" href="#V.dot_A"><span class="id" title="variable">dot_A</span></a>: <a class="idref" href="AAC_tactics.AAC.html#Associative"><span class="id" title="class">Associative</span></a> <a class="idref" href="AAC_tactics.Caveats.html#R:89"><span class="id" title="variable">R</span></a> <a class="idref" href="AAC_tactics.Caveats.html#dot:91"><span class="id" title="variable">dot</span></a>} {<a id="V.dot_Proper" class="idref" href="#V.dot_Proper"><span class="id" title="variable">dot_Proper</span></a>: <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Classes.Morphisms.html#Proper"><span class="id" title="class">Proper</span></a> (<a class="idref" href="AAC_tactics.Caveats.html#R:89"><span class="id" title="variable">R</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <a class="idref" href="AAC_tactics.Caveats.html#R:89"><span class="id" title="variable">R</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Classes.Morphisms.html#8dc5652698a6e16f72dd37bd17d3b973"><span class="id" title="notation">==&gt;</span></a> <a class="idref" href="AAC_tactics.Caveats.html#R:89"><span class="id" title="variable">R</span></a>) <a class="idref" href="AAC_tactics.Caveats.html#dot:91"><span class="id" title="variable">dot</span></a>}<br/>
+&nbsp;&nbsp;{<a id="V.one" class="idref" href="#V.one"><span class="id" title="variable">one</span></a>}  {<a id="V.One" class="idref" href="#V.One"><span class="id" title="variable">One</span></a>: <a class="idref" href="AAC_tactics.AAC.html#Unit"><span class="id" title="class">Unit</span></a> <a class="idref" href="AAC_tactics.Caveats.html#R:89"><span class="id" title="variable">R</span></a> <a class="idref" href="AAC_tactics.Caveats.html#dot:91"><span class="id" title="variable">dot</span></a> <a class="idref" href="AAC_tactics.Caveats.html#one:94"><span class="id" title="variable">one</span></a>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Infix</span> <a id="0a1be779f40e92817f6c125391bb1c59" class="idref" href="#0a1be779f40e92817f6c125391bb1c59"><span class="id" title="notation">&quot;</span></a>=="   := <a class="idref" href="AAC_tactics.Caveats.html#V.R"><span class="id" title="variable">R</span></a> (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 70).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Infix</span> <a id="3c5f1b4cc71967b9956d25d657491d5d" class="idref" href="#3c5f1b4cc71967b9956d25d657491d5d"><span class="id" title="notation">&quot;</span></a>*"    := <a class="idref" href="AAC_tactics.Caveats.html#V.dot"><span class="id" title="variable">dot</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <a id="V.:::'1'" class="idref" href="#V.:::'1'"><span class="id" title="notation">&quot;</span></a>1" := <a class="idref" href="AAC_tactics.Caveats.html#V.one"><span class="id" title="variable">one</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+    <span class="inlinecode"><span class="id" title="var">aac_rewrite</span></span> uses the symbols appearing in the goal and the
+    hypothesis to infer the AC and A operations. In the following
+    example, <span class="inlinecode"><a class="idref" href="AAC_tactics.Caveats.html#V.dot"><span class="id" title="variable">dot</span></a></span> appears neither in the left-hand-side of the goal,
+    nor in the right-hand side of the hypothesis. Hence, <span class="inlinecode">1</span> is not
+    recognised as a unit. To circumvent this problem, we can force
+    <span class="inlinecode"><span class="id" title="var">aac_rewrite</span></span> to take into account a given operation, by giving
+    it an extra argument. This extra argument seems useful only in
+    this peculiar case.
+  
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <a id="inv_unique" class="idref" href="#inv_unique"><span class="id" title="lemma">inv_unique</span></a>: <span class="id" title="keyword">forall</span> <a id="x:96" class="idref" href="#x:96"><span class="id" title="binder">x</span></a> <a id="y:97" class="idref" href="#y:97"><span class="id" title="binder">y</span></a> <a id="y':98" class="idref" href="#y':98"><span class="id" title="binder">y'</span></a>, <a class="idref" href="AAC_tactics.Caveats.html#x:96"><span class="id" title="variable">x</span></a><a class="idref" href="AAC_tactics.Caveats.html#3c5f1b4cc71967b9956d25d657491d5d"><span class="id" title="notation">*</span></a><a class="idref" href="AAC_tactics.Caveats.html#y:97"><span class="id" title="variable">y</span></a> <a class="idref" href="AAC_tactics.Caveats.html#0a1be779f40e92817f6c125391bb1c59"><span class="id" title="notation">==</span></a> 1 <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="AAC_tactics.Caveats.html#y':98"><span class="id" title="variable">y'</span></a><a class="idref" href="AAC_tactics.Caveats.html#3c5f1b4cc71967b9956d25d657491d5d"><span class="id" title="notation">*</span></a><a class="idref" href="AAC_tactics.Caveats.html#x:96"><span class="id" title="variable">x</span></a> <a class="idref" href="AAC_tactics.Caveats.html#0a1be779f40e92817f6c125391bb1c59"><span class="id" title="notation">==</span></a> 1 <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="AAC_tactics.Caveats.html#y:97"><span class="id" title="variable">y</span></a><a class="idref" href="AAC_tactics.Caveats.html#0a1be779f40e92817f6c125391bb1c59"><span class="id" title="notation">==</span></a><a class="idref" href="AAC_tactics.Caveats.html#y':98"><span class="id" title="variable">y'</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">y'</span> <span class="id" title="var">Hxy</span> <span class="id" title="var">Hy'x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">aac_instances</span> &lt;- <span class="id" title="var">Hy'x</span> [<a class="idref" href="AAC_tactics.Caveats.html#V.dot"><span class="id" title="variable">dot</span></a>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">aac_rewrite</span> &lt;- <span class="id" title="var">Hy'x</span> <span class="id" title="tactic">at</span> 1 [<a class="idref" href="AAC_tactics.Caveats.html#V.dot"><span class="id" title="variable">dot</span></a>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">aac_rewrite</span> <span class="id" title="var">Hxy</span>. <span class="id" title="var">aac_reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="AAC_tactics.Caveats.html#V"><span class="id" title="section">V</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab51"></a><h3 class="section">Rewriting too many things</h3>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <a id="W" class="idref" href="#W"><span class="id" title="section">W</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Import</span> <a class="idref" href="AAC_tactics.Instances.html#Peano"><span class="id" title="module">Instances.Peano</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Variables</span> <a id="W.a" class="idref" href="#W.a"><span class="id" title="variable">a</span></a> <a id="W.b" class="idref" href="#W.b"><span class="id" title="variable">b</span></a> <a id="W.c" class="idref" href="#W.c"><span class="id" title="variable">c</span></a>: <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Hypothesis</span> <a id="W.H" class="idref" href="#W.H"><span class="id" title="variable">H</span></a>: 0 <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="AAC_tactics.Caveats.html#W.c"><span class="id" title="variable">c</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Goal</span>  <a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">b</span></a><a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">*(</span></a><a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">a</span></a><a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">+</span></a><a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">a</span></a><a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">)</span></a> <a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">&lt;=</span></a> <a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">b</span></a><a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">*(</span></a><a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">c</span></a><a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">+</span></a><a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">a</span></a><a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">+</span></a><a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">a</span></a><a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">+1)</span></a>.<br/>
+</div>
+
+<div class="doc">
+<span class="inlinecode"><span class="id" title="var">aac_rewrite</span></span> finds a pattern modulo AC that matches a given
+     hypothesis, and then makes a call to <span class="inlinecode"><span class="id" title="tactic">setoid_rewrite</span></span>. This
+     <span class="inlinecode"><span class="id" title="tactic">setoid_rewrite</span></span> can unfortunately make several rewrites (in a
+     non-intuitive way: below, the <span class="inlinecode">1</span> in the right-hand side is
+     rewritten into <span class="inlinecode"><a class="idref" href="AAC_tactics.Instances.html#Relations.defs.S"><span class="id" title="variable">S</span></a></span> <span class="inlinecode"><a class="idref" href="AAC_tactics.Caveats.html#Z.c"><span class="id" title="variable">c</span></a></span>) 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">aac_rewrite</span> <a class="idref" href="AAC_tactics.Caveats.html#W.H"><span class="id" title="variable">H</span></a>.<br/>
+</div>
+
+<div class="doc">
+to this end, we provide a companion tactic to <span class="inlinecode"><span class="id" title="var">aac_rewrite</span></span>
+     and <span class="inlinecode"><span class="id" title="var">aacu_rewrite</span></span>, that makes the transitivity step, but not the
+     setoid_rewrite; this allows the user to select the relevant
+     occurrences in which to rewrite: 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">aac_pattern</span> <a class="idref" href="AAC_tactics.Caveats.html#W.H"><span class="id" title="variable">H</span></a> <span class="id" title="tactic">at</span> 2. <span class="id" title="tactic">setoid_rewrite</span> <a class="idref" href="AAC_tactics.Caveats.html#W.H"><span class="id" title="variable">H</span></a> <span class="id" title="tactic">at</span> 1.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Abort</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <a class="idref" href="AAC_tactics.Caveats.html#W"><span class="id" title="section">W</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab52"></a><h3 class="section">Rewriting nullifiable patterns</h3>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <a id="Z" class="idref" href="#Z"><span class="id" title="section">Z</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Import</span> <a class="idref" href="AAC_tactics.Instances.html#Peano"><span class="id" title="module">Instances.Peano</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+    If the pattern of the rewritten hypothesis does not contain "hard"
+    symbols (like constants, function symbols, AC or A symbols without
+    units), there can be infinitely many subterms such that the pattern
+    matches: it is possible to build "subterms" modulo ACU that make the
+    size of the term increase (by making neutral elements appear in a
+    layered fashion). Hence, we settled with heuristics to propose only
+    "some" of these solutions. In such cases, the tactic displays a
+    (conservative) warning.
+  
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Variables</span> <a id="Z.a" class="idref" href="#Z.a"><span class="id" title="variable">a</span></a> <a id="Z.b" class="idref" href="#Z.b"><span class="id" title="variable">b</span></a> <a id="Z.c" class="idref" href="#Z.c"><span class="id" title="variable">c</span></a>: <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <a id="Z.f" class="idref" href="#Z.f"><span class="id" title="variable">f</span></a>: <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">-&gt;</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Datatypes.html#nat"><span class="id" title="inductive">nat</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Hypothesis</span> <a id="Z.H0" class="idref" href="#Z.H0"><span class="id" title="variable">H0</span></a>: <span class="id" title="keyword">forall</span> <a id="x:115" class="idref" href="#x:115"><span class="id" title="binder">x</span></a>, 0 <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="AAC_tactics.Caveats.html#x:115"><span class="id" title="variable">x</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Peano.html#::nat_scope:x_'-'_x"><span class="id" title="notation">-</span></a> <a class="idref" href="AAC_tactics.Caveats.html#x:115"><span class="id" title="variable">x</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Hypothesis</span> <a id="Z.H1" class="idref" href="#Z.H1"><span class="id" title="variable">H1</span></a>: <span class="id" title="keyword">forall</span> <a id="x:118" class="idref" href="#x:118"><span class="id" title="binder">x</span></a>, 1 <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="AAC_tactics.Caveats.html#x:118"><span class="id" title="variable">x</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Peano.html#ea2ff3d561159081cea6fb2e8113cc54"><span class="id" title="notation">*</span></a> <a class="idref" href="AAC_tactics.Caveats.html#x:118"><span class="id" title="variable">x</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Goal</span> <a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">a</span></a> <a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">+</span></a> <a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">b</span></a> <a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">*</span></a> <a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">c</span></a> <a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">=</span></a> <a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">c</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">aac_instances</span> <a class="idref" href="AAC_tactics.Caveats.html#Z.H0"><span class="id" title="variable">H0</span></a>.<br/>
+</div>
+
+<div class="doc">
+in this case, only three solutions are proposed, while there are
+      infinitely many solutions, for example:
+<ul class="doclist">
+<li> a+b*c*(1+<font size=-2>&#9744;</font>)
+
+</li>
+<li> a+b*c*(1+0*(1+ <font size=-2>&#9744;</font>))
+
+</li>
+<li> ... 
+
+</li>
+</ul>
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Abort</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab53"></a><h3 class="section">If the pattern is a unit or can be instantiated to be equal to a unit</h3>
+
+
+<div class="paragraph"> </div>
+
+    The heuristic is to make the unit appear at each possible position
+    in the term, e.g. transforming <span class="inlinecode"><a class="idref" href="AAC_tactics.Caveats.html#Z.a"><span class="id" title="variable">a</span></a></span> into <span class="inlinecode">1*<a class="idref" href="AAC_tactics.Caveats.html#Z.a"><span class="id" title="variable">a</span></a></span> and <span class="inlinecode"><a class="idref" href="AAC_tactics.Caveats.html#Z.a"><span class="id" title="variable">a</span></a>*1</span>, but this
+    process is not recursive (we will not transform <span class="inlinecode">1*<a class="idref" href="AAC_tactics.Caveats.html#Z.a"><span class="id" title="variable">a</span></a></span>) into
+    <span class="inlinecode">(1+0*1)*<a class="idref" href="AAC_tactics.Caveats.html#Z.a"><span class="id" title="variable">a</span></a></span>.
+  
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Goal</span> <a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">a</span></a><a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">+</span></a><a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">b</span></a><a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">+</span></a><a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">c</span></a> <a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">=</span></a> <a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">c</span></a>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">aac_instances</span> <a class="idref" href="AAC_tactics.Caveats.html#Z.H0"><span class="id" title="variable">H0</span></a> [<a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Peano.html#mult"><span class="id" title="abbreviation">mult</span></a>].<br/>
+</div>
+
+<div class="doc">
+1 solution, we miss solutions like <span class="inlinecode">(<a class="idref" href="AAC_tactics.Caveats.html#Z.a"><span class="id" title="variable">a</span></a>+<a class="idref" href="AAC_tactics.Caveats.html#Z.b"><span class="id" title="variable">b</span></a>+<a class="idref" href="AAC_tactics.Caveats.html#Z.c"><span class="id" title="variable">c</span></a>*(1+0*(1+[])))</span> and so on  
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">aac_instances</span> <a class="idref" href="AAC_tactics.Caveats.html#Z.H1"><span class="id" title="variable">H1</span></a> [<a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Peano.html#mult"><span class="id" title="abbreviation">mult</span></a>].<br/>
+</div>
+
+<div class="doc">
+7 solutions, we miss solutions like <span class="inlinecode">(<a class="idref" href="AAC_tactics.Caveats.html#Z.a"><span class="id" title="variable">a</span></a>+<a class="idref" href="AAC_tactics.Caveats.html#Z.b"><span class="id" title="variable">b</span></a>+<a class="idref" href="AAC_tactics.Caveats.html#Z.c"><span class="id" title="variable">c</span></a>+0*(1+0*[]))</span>
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Abort</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab54"></a><h3 class="section">Another example of the former case</h3>
+
+
+<div class="paragraph"> </div>
+
+    In the following, the hypothesis can be instantiated
+    to be equal to <span class="inlinecode">1</span>. 
+  
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Hypothesis</span> <a id="Z.H" class="idref" href="#Z.H"><span class="id" title="variable">H</span></a> : <span class="id" title="keyword">forall</span> <a id="x:121" class="idref" href="#x:121"><span class="id" title="binder">x</span></a> <a id="y:122" class="idref" href="#y:122"><span class="id" title="binder">y</span></a>, <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Peano.html#ea2ff3d561159081cea6fb2e8113cc54"><span class="id" title="notation">(</span></a><a class="idref" href="AAC_tactics.Caveats.html#x:121"><span class="id" title="variable">x</span></a><a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Peano.html#0dacc1786c5ba797d47dd85006231633"><span class="id" title="notation">+</span></a><a class="idref" href="AAC_tactics.Caveats.html#y:122"><span class="id" title="variable">y</span></a><a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Peano.html#ea2ff3d561159081cea6fb2e8113cc54"><span class="id" title="notation">)*</span></a><a class="idref" href="AAC_tactics.Caveats.html#x:121"><span class="id" title="variable">x</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Logic.html#6cd0f7b28b6092304087c7049437bb1a"><span class="id" title="notation">=</span></a> <a class="idref" href="AAC_tactics.Caveats.html#x:121"><span class="id" title="variable">x</span></a><a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Peano.html#ea2ff3d561159081cea6fb2e8113cc54"><span class="id" title="notation">*</span></a><a class="idref" href="AAC_tactics.Caveats.html#x:121"><span class="id" title="variable">x</span></a> <a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Peano.html#0dacc1786c5ba797d47dd85006231633"><span class="id" title="notation">+</span></a> <a class="idref" href="AAC_tactics.Caveats.html#y:122"><span class="id" title="variable">y</span></a><a class="idref" href="http://coq.inria.fr/doc/V9.1+alpha/stdlib//Corelib.Init.Peano.html#ea2ff3d561159081cea6fb2e8113cc54"><span class="id" title="notation">*</span></a><a class="idref" href="AAC_tactics.Caveats.html#x:121"><span class="id" title="variable">x</span></a>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Goal</span> <a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">a</span></a><a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">*</span></a><a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">a</span></a><a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">+</span></a><a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">b</span></a><a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">*</span></a><a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">a</span></a> <a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">+</span></a> <a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">c</span></a> <a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">=</span></a> <a id="Unnamed_thm5" class="idref" href="#Unnamed_thm5"><span class="id" title="definition">c</span></a>.<br/>
+</div>
+
+<div class="doc">
+here, only one solution if we use the aac_instance tactic 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">aac_instances</span> &lt;- <a class="idref" href="AAC_tactics.Caveats.html#Z.H"><span class="id" title="variable">H</span></a>.<br/>
+</div>
+
+<div class="doc">
+there are 8 solutions using <span class="inlinecode"><span class="id" title="var">aacu_instances</span></span> (but, here,
+      there are infinitely many different solutions); we miss, e.g., <span class="inlinecode"><a class="idref" href="AAC_tactics.Caveats.html#Z.a"><span class="id" title="variable">a</span></a>*<a class="idref" href="AAC_tactics.Caveats.html#Z.a"><span class="id" title="variable">a</span></a></span> <span class="inlinecode">+<a class="idref" href="AAC_tactics.Caveats.html#Z.b"><span class="id" title="variable">b</span></a>*<a class="idref" href="AAC_tactics.Caveats.html#Z.a"><span class="id" title="variable">a</span></a></span>
+      <span class="inlinecode">+</span> <span class="inlinecode">(<span class="id" title="var">x</span>*<span class="id" title="var">x</span></span> <span class="inlinecode">+</span> <span class="inlinecode"><span class="id" title="var">y</span>*<span class="id" title="var">x</span>)*<a class="idref" href="AAC_tactics.Caveats.html#Z.c"><span class="id" title="variable">c</span></a></span>, which seems to be more peculiar 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">aacu_instances</span> &lt;- <a class="idref" href="AAC_tactics.Caveats.html#Z.H"><span class="id" title="variable">H</span></a>.<br/>
+</div>
+
+<div class="doc">
+the 7 last solutions are the same as if we were matching <span class="inlinecode">1</span> 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">aacu_instances</span> <a class="idref" href="AAC_tactics.Caveats.html#Z.H1"><span class="id" title="variable">H1</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Abort</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+    The behavior of the tactic is not satisfying in this case. It is
+    still unclear how to handle properly this kind of situation; we plan
+    to investigate this in the future.
+  
+</div>
+<div class="code">
+<span class="id" title="keyword">End</span> <a class="idref" href="AAC_tactics.Caveats.html#Z"><span class="id" title="section">Z</span></a>.<br/>
+</div>
+</div>
+<div id="footer">
+  Generated by <a href="http://coq.inria.fr">coqdoc</a> and improved with <a href="https://github.com/palmskog/coqdocjs">CoqdocJS</a> as adapted for <a href="https://github.com/coq-community">coq-community</a>
+</div>
+</div>
+</body>
+
+</html>
