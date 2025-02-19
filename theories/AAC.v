@@ -936,7 +936,9 @@ End Internal.
 
 Local Ltac internal_normalize :=
   let x := fresh in let y := fresh in
-  intro x; intro y; vm_compute in x; vm_compute in y; unfold x; unfold y;
+  intro x; intro y;
+  let vx := eval vm_compute in x in change x with vx;
+  let vy := eval vm_compute in y in change y with vy;
   compute [Internal.eval Utils.fold_map Internal.copy Prect]; simpl.
 
 (** ** Lemmas for performing transitivity steps given an AAC_lift instance *)
