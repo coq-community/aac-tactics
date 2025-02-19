@@ -61,6 +61,7 @@ tested_coq_nix_versions:
 
 tested_coq_opam_versions:
 - version: dev
+  repo: 'rocq/rocq-prover'
 
 namespace: AAC_tactics
 

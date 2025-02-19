@@ -17,14 +17,15 @@ jobs:
     strategy:
       matrix:
         image:
-          - 'coqorg/coq:dev'
+          - 'rocq/rocq-prover:dev'
       fail-fast: false
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: coq-community/docker-coq-action@v1
         with:
           opam_file: 'coq-aac-tactics.opam'
           custom_image: ${{ matrix.image }}
+
 
 # See also:
 # https://github.com/coq-community/docker-coq-action#readme
