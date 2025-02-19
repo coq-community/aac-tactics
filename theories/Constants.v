@@ -21,15 +21,15 @@ Register Init.Datatypes.list as aac_tactics.list.typ.
 Register Init.Datatypes.nil as aac_tactics.list.nil.
 Register Init.Datatypes.cons as aac_tactics.list.cons.
 
-From Coq Require BinNums.
+From Stdlib Require BinNums.
 Register BinNums.positive as aac_tactics.pos.typ.
 Register BinNums.xI as aac_tactics.pos.xI.
 Register BinNums.xO as aac_tactics.pos.xO.
 Register BinNums.xH as aac_tactics.pos.xH.
 
-From Coq Require Classes.Morphisms.
+From Stdlib Require Classes.Morphisms.
 Register Morphisms.Proper as aac_tactics.coq.classes.morphisms.Proper.
-From Coq Require Classes.RelationClasses.
+From Stdlib Require Classes.RelationClasses.
 
 Register RelationClasses.Equivalence as aac_tactics.coq.RelationClasses.Equivalence.
 Register RelationClasses.Reflexive as aac_tactics.coq.RelationClasses.Reflexive.

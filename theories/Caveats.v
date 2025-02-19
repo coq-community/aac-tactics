@@ -8,7 +8,7 @@
 
 (** * Currently known limitations and caveats of AAC Tactics *)
 
-From Coq Require NArith PeanoNat.
+From Stdlib Require NArith PeanoNat.
 From AAC_tactics Require Import AAC.
 From AAC_tactics Require Instances.
 
