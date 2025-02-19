@@ -27,7 +27,7 @@ jobs:
               opam install -y -j "$(nproc)" coq-aac-tactics --deps-only
             endGroup
             startGroup "Add permissions"
-              sudo chown -R coq:coq .
+              sudo chown -R rocq:rocq .
             endGroup
             startGroup "Build aac-tactics"
               make -j "$(nproc)"
