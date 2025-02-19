@@ -8,8 +8,8 @@
 
 (** * Instances for AAC Tactics *)
 
-From Coq Require PeanoNat ZArith Zminmax NArith List Permutation.
-From Coq Require QArith Qminmax Relations.
+From Stdlib Require PeanoNat ZArith Zminmax NArith List Permutation.
+From Stdlib Require QArith Qminmax Relations.
 From AAC_tactics Require Export AAC.
 
 (** This one is not declared as an instance; this would interfere badly with setoid_rewrite *)
