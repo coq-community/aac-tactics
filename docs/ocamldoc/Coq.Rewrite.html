@@ -1,0 +1,181 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Coq.Equivalence.html">
+<link rel="Up" href="Coq.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Coq" rel="Chapter" href="Coq.html">
+<link title="Helper" rel="Chapter" href="Helper.html">
+<link title="Search_monad" rel="Chapter" href="Search_monad.html">
+<link title="Matcher" rel="Chapter" href="Matcher.html">
+<link title="Theory" rel="Chapter" href="Theory.html">
+<link title="Print" rel="Chapter" href="Print.html">
+<link title="Aac_rewrite" rel="Chapter" href="Aac_rewrite.html"><link title="Datatypes" rel="Section" href="#2_Datatypes">
+<link title="Rewriting with bindings" rel="Section" href="#2_Rewritingwithbindings">
+<title>Coq.Rewrite</title>
+</head>
+<body>
+<div class="navbar"><a class="pre" href="Coq.Equivalence.html" title="Coq.Equivalence">Previous</a>
+&nbsp;<a class="up" href="Coq.html" title="Coq">Up</a>
+&nbsp;</div>
+<h1>Module <a href="type_Coq.Rewrite.html">Coq.Rewrite</a></h1>
+
+<pre><span id="MODULERewrite"><span class="keyword">module</span> Rewrite</span>: <code class="code">sig</code> <a href="Coq.Rewrite.html">..</a> <code class="code">end</code></pre><hr width="100%">
+<p>The rewriting tactics used in aac_rewrite, build as handlers of the usual <code class="code">setoid_rewrite</code></p>
+<h3 id="2_Datatypes">Datatypes</h3>
+<pre><code><span id="TYPEhypinfo"><span class="keyword">type</span> <code class="type"></code>hypinfo</span> = {</code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELThypinfo.hyp">hyp</span>&nbsp;: <code class="type">EConstr.constr</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+<div class="info-desc">
+<p>the actual constr corresponding to the hypothese</p>
+</div>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELThypinfo.hyptype">hyptype</span>&nbsp;: <code class="type">EConstr.constr</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+<div class="info-desc">
+<p>the type of the hypothesis</p>
+</div>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELThypinfo.context">context</span>&nbsp;: <code class="type">EConstr.rel_context</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+<div class="info-desc">
+<p>the quantifications of the hypothese</p>
+</div>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELThypinfo.body">body</span>&nbsp;: <code class="type">EConstr.constr</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+<div class="info-desc">
+<p>the body of the hypothese</p>
+</div>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELThypinfo.rel">rel</span>&nbsp;: <code class="type"><a href="Coq.Relation.html#TYPEt">Coq.Relation.t</a></code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+<div class="info-desc">
+<p>the relation</p>
+</div>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELThypinfo.left">left</span>&nbsp;: <code class="type">EConstr.constr</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+<div class="info-desc">
+<p>left hand side</p>
+</div>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELThypinfo.right">right</span>&nbsp;: <code class="type">EConstr.constr</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+<div class="info-desc">
+<p>right hand side</p>
+</div>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELThypinfo.l2r">l2r</span>&nbsp;: <code class="type">bool</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+<div class="info-desc">
+<p>rewriting from left to right</p>
+</div>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr></table>
+<code>}</code>
+
+<div class="info ">
+<div class="info-desc">
+<p>We keep some informations about the hypothesis, with an (informal)
+    invariant:</p>
+<ul>
+<li><code class="code">typeof hyp = typ</code></li>
+<li><code class="code">typ = forall context, body</code></li>
+<li><code class="code">body = rel left right</code></li>
+</ul>
+</div>
+</div>
+
+
+<pre><span id="VALget_hypinfo"><span class="keyword">val</span> get_hypinfo</span> : <code class="type">Environ.env -&gt;<br>       Evd.evar_map -&gt;<br>       ?check_type:(EConstr.types -&gt; bool) -&gt;<br>       EConstr.constr -&gt; l2r:bool -&gt; <a href="Coq.Rewrite.html#TYPEhypinfo">hypinfo</a></code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">get_hypinfo ?check_type H l2r</code> analyse the hypothesis H, and
+    build the related hypinfo. Moreover, an optionnal
+    function can be provided to check the type of every free
+    variable of the body of the hypothesis.</p>
+</div>
+</div>
+<h3 id="2_Rewritingwithbindings">Rewriting with bindings</h3>
+<p>The problem : Given a term to rewrite of type <code class="code">H :forall xn ... x1,
+    t</code>, we have to instanciate the subset of <code class="code">xi</code> of type
+    <code class="code">carrier</code>. <code class="code">subst : (int * constr)</code> is the mapping the De Bruijn
+    indices in <code class="code">t</code> to the <code class="code">constrs</code>. We need to handle the rest of the
+    indexes. Two ways :</p>
+
+<ul>
+<li>either using fresh evars and rewriting <code class="code">H tn ?1 tn-2 ?2 </code></li>
+<li>either building a term like <code class="code">fun 1 2 =&gt; H tn 1 tn-2 2</code></li>
+</ul>
+<p>Both these terms have the same type.</p>
+
+<pre><span id="VALbuild"><span class="keyword">val</span> build</span> : <code class="type"><a href="Coq.Rewrite.html#TYPEhypinfo">hypinfo</a> -&gt; (int * EConstr.constr) list -&gt; EConstr.constr</code></pre><div class="info ">
+<div class="info-desc">
+<p>build the constr to rewrite, with lambda abstractions</p>
+</div>
+</div>
+<p>build the constr to rewrite, in CPS style, with evars</p>
+
+<pre><span id="VALrewrite"><span class="keyword">val</span> rewrite</span> : <code class="type">?abort:bool -&gt;<br>       <a href="Coq.Rewrite.html#TYPEhypinfo">hypinfo</a> -&gt; (int * EConstr.constr) list -&gt; unit Proofview.tactic</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">rewrite ?abort hypinfo subst</code> builds the rewriting tactic
+    associated with the given <code class="code">subst</code> and <code class="code">hypinfo</code>. 
+If <code class="code">abort</code> is set to <code class="code">true</code>, we build
+    <code class="code">tclIDTAC</code> instead.</p>
+</div>
+</div>
+</body></html>

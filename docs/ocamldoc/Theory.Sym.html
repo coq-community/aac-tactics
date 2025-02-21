@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Theory.Sigma.html">
+<link rel="next" href="Theory.Stubs.html">
+<link rel="Up" href="Theory.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Coq" rel="Chapter" href="Coq.html">
+<link title="Helper" rel="Chapter" href="Helper.html">
+<link title="Search_monad" rel="Chapter" href="Search_monad.html">
+<link title="Matcher" rel="Chapter" href="Matcher.html">
+<link title="Theory" rel="Chapter" href="Theory.html">
+<link title="Print" rel="Chapter" href="Print.html">
+<link title="Aac_rewrite" rel="Chapter" href="Aac_rewrite.html"><title>Theory.Sym</title>
+</head>
+<body>
+<div class="navbar"><a class="pre" href="Theory.Sigma.html" title="Theory.Sigma">Previous</a>
+&nbsp;<a class="up" href="Theory.html" title="Theory">Up</a>
+&nbsp;<a class="post" href="Theory.Stubs.html" title="Theory.Stubs">Next</a>
+</div>
+<h1>Module <a href="type_Theory.Sym.html">Theory.Sym</a></h1>
+
+<pre><span id="MODULESym"><span class="keyword">module</span> Sym</span>: <code class="code">sig</code> <a href="Theory.Sym.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<div class="info-desc">
+<p>Dynamically typed morphisms</p>
+</div>
+</div>
+<hr width="100%">
+
+<pre><code><span id="TYPEpack"><span class="keyword">type</span> <code class="type"></code>pack</span> = {</code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTpack.ar">ar</span>&nbsp;: <code class="type">Constr.t</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTpack.value">value</span>&nbsp;: <code class="type">Constr.t</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTpack.morph">morph</span>&nbsp;: <code class="type">Constr.t</code>;</code></td>
+
+</tr></table>
+<code>}</code>
+
+<div class="info ">
+<div class="info-desc">
+<p>mimics the Coq record <code class="code">Sym.pack</code></p>
+</div>
+</div>
+
+
+<pre><span id="VALtyp"><span class="keyword">val</span> typ</span> : <code class="type"><a href="Coq.html#TYPElazy_ref">Coq.lazy_ref</a></code></pre>
+<pre><span id="VALmk_pack"><span class="keyword">val</span> mk_pack</span> : <code class="type"><a href="Coq.Relation.html#TYPEt">Coq.Relation.t</a> -&gt; <a href="Theory.Sym.html#TYPEpack">pack</a> -&gt; EConstr.constr</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">mk_pack rlt (ar,value,morph)</code></p>
+</div>
+</div>
+
+<pre><span id="VALnull"><span class="keyword">val</span> null</span> : <code class="type"><a href="Coq.Relation.html#TYPEt">Coq.Relation.t</a> -&gt; EConstr.constr</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">null</code> builds a dummy (identity) symbol, given an <a href="Coq.Relation.html#TYPEt"><code class="code">Coq.Relation.t</code></a></p>
+</div>
+</div>
+</body></html>

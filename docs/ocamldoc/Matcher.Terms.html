@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="next" href="Matcher.Subst.html">
+<link rel="Up" href="Matcher.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Coq" rel="Chapter" href="Coq.html">
+<link title="Helper" rel="Chapter" href="Helper.html">
+<link title="Search_monad" rel="Chapter" href="Search_monad.html">
+<link title="Matcher" rel="Chapter" href="Matcher.html">
+<link title="Theory" rel="Chapter" href="Theory.html">
+<link title="Print" rel="Chapter" href="Print.html">
+<link title="Aac_rewrite" rel="Chapter" href="Aac_rewrite.html"><link title="Abstract syntax tree of terms and patterns" rel="Section" href="#2_Abstractsyntaxtreeoftermsandpatterns">
+<link title="Normalised terms (canonical representation) " rel="Section" href="#2_Normalisedtermscanonicalrepresentation">
+<link title="Comparisons" rel="Subsection" href="#3_Comparisons">
+<link title="Printing function" rel="Subsection" href="#3_Printingfunction">
+<link title="Conversion functions" rel="Subsection" href="#3_Conversionfunctions">
+<title>Matcher.Terms</title>
+</head>
+<body>
+<div class="navbar">&nbsp;<a class="up" href="Matcher.html" title="Matcher">Up</a>
+&nbsp;<a class="post" href="Matcher.Subst.html" title="Matcher.Subst">Next</a>
+</div>
+<h1>Module <a href="type_Matcher.Terms.html">Matcher.Terms</a></h1>
+
+<pre><span id="MODULETerms"><span class="keyword">module</span> Terms</span>: <code class="code">sig</code> <a href="Matcher.Terms.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<div class="info-desc">
+<p>Representations of expressions</p>
+
+<p>The module <a href="Matcher.Terms.html"><code class="code">Matcher.Terms</code></a> defines  two different types for expressions.</p>
+<ul>
+<li>a public type <a href="Matcher.Terms.html#TYPEt"><code class="code">Matcher.Terms.t</code></a> that represents abstract syntax trees
+    of expressions with binary associative and commutative operators</li>
+<li>a private type <a href="Matcher.Terms.html#TYPEnf_term"><code class="code">Matcher.Terms.nf_term</code></a>, corresponding to a canonical
+    representation for the above terms modulo AACU. The construction
+    functions on this type ensure that these terms are in normal form
+    (that is, no sum can appear as a subterm of the same sum, no
+    trailing units, lists corresponding to multisets are sorted,
+    etc...).</li>
+</ul>
+</div>
+</div>
+<hr width="100%">
+<h3 id="2_Abstractsyntaxtreeoftermsandpatterns">Abstract syntax tree of terms and patterns</h3>
+<p>We represent both terms and patterns using the following datatype.</p>
+
+<p>Values of type <code class="code">symbol</code> are used to index symbols. Typically,
+      given two associative operations <code class="code">(^)</code> and <code class="code">( * )</code>, and two
+      morphisms <code class="code">f</code> and <code class="code">g</code>, the term <code class="code">f (a^b) (a*g b)</code> is represented
+      by the following value
+      <code class="code">Sym(0,[| Dot(1, Sym(2,[||]), Sym(3,[||]));
+                Dot(4, Sym(2,[||]), Sym(5,[|Sym(3,[||])|])) |])</code>
+      where the implicit symbol environment associates
+      <code class="code">f</code> to <code class="code">0</code>, <code class="code">(^)</code> to <code class="code">1</code>, <code class="code">a</code> to <code class="code">2</code>, <code class="code">b</code> to <code class="code">3</code>, <code class="code">( * )</code> to <code class="code">4</code>, and <code class="code">g</code> to <code class="code">5</code>,</p>
+
+<p>Accordingly, the following value, that contains "variables"
+      <code class="code">Sym(0,[| Dot(1, Var x, Unit (1); Dot(4, Var x,
+      Sym(5,[|Sym(3,[||])|])) |])</code> represents the pattern <code class="code">forall x, f
+      (x^1) (x*g b)</code>. The relationship between <code class="code">1</code> and <code class="code">( * )</code> is only
+      mentionned in the units table.</p>
+
+<pre><code><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.Dot"><span class="constructor">Dot</span></span> <span class="keyword">of</span> <code class="type">(<a href="Matcher.html#TYPEsymbol">Matcher.symbol</a> * <a href="Matcher.Terms.html#TYPEt">t</a> * <a href="Matcher.Terms.html#TYPEt">t</a>)</code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.Plus"><span class="constructor">Plus</span></span> <span class="keyword">of</span> <code class="type">(<a href="Matcher.html#TYPEsymbol">Matcher.symbol</a> * <a href="Matcher.Terms.html#TYPEt">t</a> * <a href="Matcher.Terms.html#TYPEt">t</a>)</code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.Sym"><span class="constructor">Sym</span></span> <span class="keyword">of</span> <code class="type">(<a href="Matcher.html#TYPEsymbol">Matcher.symbol</a> * <a href="Matcher.Terms.html#TYPEt">t</a> array)</code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.Var"><span class="constructor">Var</span></span> <span class="keyword">of</span> <code class="type"><a href="Matcher.html#TYPEvar">Matcher.var</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.Unit"><span class="constructor">Unit</span></span> <span class="keyword">of</span> <code class="type"><a href="Matcher.html#TYPEsymbol">Matcher.symbol</a></code></code></td>
+
+</tr></table>
+
+
+
+<pre><span id="VALequal_aac"><span class="keyword">val</span> equal_aac</span> : <code class="type"><a href="Matcher.html#TYPEunits">Matcher.units</a> -&gt; <a href="Matcher.Terms.html#TYPEt">t</a> -&gt; <a href="Matcher.Terms.html#TYPEt">t</a> -&gt; bool</code></pre><div class="info ">
+<div class="info-desc">
+<p>Test for equality of terms modulo AACU (relies on the following
+      canonical representation of terms).  Note than two different
+      units of a same operator are not considered equal.</p>
+</div>
+</div>
+
+<pre><span id="VALmap_syms"><span class="keyword">val</span> map_syms</span> : <code class="type">(<a href="Matcher.html#TYPEsymbol">Matcher.symbol</a> -&gt; <a href="Matcher.html#TYPEsymbol">Matcher.symbol</a>) -&gt; <a href="Matcher.Terms.html#TYPEt">t</a> -&gt; <a href="Matcher.Terms.html#TYPEt">t</a></code></pre><h3 id="2_Normalisedtermscanonicalrepresentation">Normalised terms (canonical representation) </h3>
+<p>A term in normal form is the canonical representative of the
+      equivalence class of all the terms that are equal modulo AACU.
+      This representation is only used internally; it is exported here
+      for the sake of completeness</p>
+
+<pre><span id="TYPEnf_term"><span class="keyword">type</span> <code class="type"></code>nf_term</span> </pre>
+
+<h4 id="3_Comparisons">Comparisons</h4>
+<pre><span id="VALnf_term_compare"><span class="keyword">val</span> nf_term_compare</span> : <code class="type"><a href="Matcher.Terms.html#TYPEnf_term">nf_term</a> -&gt; <a href="Matcher.Terms.html#TYPEnf_term">nf_term</a> -&gt; int</code></pre>
+<pre><span id="VALnf_equal"><span class="keyword">val</span> nf_equal</span> : <code class="type"><a href="Matcher.Terms.html#TYPEnf_term">nf_term</a> -&gt; <a href="Matcher.Terms.html#TYPEnf_term">nf_term</a> -&gt; bool</code></pre><h4 id="3_Printingfunction">Printing function</h4>
+<pre><span id="VALsprint_nf_term"><span class="keyword">val</span> sprint_nf_term</span> : <code class="type"><a href="Matcher.Terms.html#TYPEnf_term">nf_term</a> -&gt; string</code></pre><h4 id="3_Conversionfunctions">Conversion functions</h4>
+<pre><span id="VALterm_of_t"><span class="keyword">val</span> term_of_t</span> : <code class="type"><a href="Matcher.html#TYPEunits">Matcher.units</a> -&gt; <a href="Matcher.Terms.html#TYPEt">t</a> -&gt; <a href="Matcher.Terms.html#TYPEnf_term">nf_term</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>we have the following property: <code class="code">a</code> and <code class="code">b</code> are equal modulo AACU
+      iif <code class="code">nf_equal (term_of_t a) (term_of_t b) = true</code></p>
+</div>
+</div>
+
+<pre><span id="VALt_of_term"><span class="keyword">val</span> t_of_term</span> : <code class="type"><a href="Matcher.Terms.html#TYPEnf_term">nf_term</a> -&gt; <a href="Matcher.Terms.html#TYPEt">t</a></code></pre></body></html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<link href="coqdocjs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="config.js"></script>
+<script type="text/javascript" src="coqdocjs.js"></script>
+</head>
+
+<body onload="document.getElementById('content').focus()">
+  <div id="header">
+    <span class="left">
+      <span class="modulename"> <script> document.write(document.title) </script> </span>
+    </span>
+
+    <span class="button" id="toggle-proofs"></span>
+
+    <span class="right">
+      <a href="./../..">Project Website</a>
+      <a href="./indexpage.html">Index</a>
+      <a href="./toc.html">Table of Contents</a>
+    </span>
+</div>
+    <div id="content" tabindex="-1" onblur="document.getElementById('content').focus()">
+    <div id="main">
+<div class="code">
+<span class="comment">(*&nbsp;***********************************************************************&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;&nbsp;This&nbsp;is&nbsp;part&nbsp;of&nbsp;aac_tactics,&nbsp;it&nbsp;is&nbsp;distributed&nbsp;under&nbsp;the&nbsp;terms&nbsp;of&nbsp;the&nbsp;&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GNU&nbsp;Lesser&nbsp;General&nbsp;Public&nbsp;License&nbsp;version&nbsp;3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(see&nbsp;file&nbsp;LICENSE&nbsp;for&nbsp;more&nbsp;details)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Copyright&nbsp;2009-2010:&nbsp;Thomas&nbsp;Braibant,&nbsp;Damien&nbsp;Pous.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;***********************************************************************&nbsp;*)</span><br/>
+
+<br/>
+<span class="id" title="keyword">Register</span> <span class="id" title="var">Init.Datatypes.O</span> <span class="id" title="keyword">as</span> <span class="id" title="var">aac_tactics.nat.O</span>.<br/>
+<span class="id" title="keyword">Register</span> <span class="id" title="var">Init.Datatypes.S</span> <span class="id" title="keyword">as</span> <span class="id" title="var">aac_tactics.nat.S</span>.<br/>
+<span class="id" title="keyword">Register</span> <span class="id" title="var">Init.Datatypes.nat</span> <span class="id" title="keyword">as</span> <span class="id" title="var">aac_tactics.nat.type</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Register</span> <span class="id" title="var">Init.Datatypes.pair</span> <span class="id" title="keyword">as</span> <span class="id" title="var">aac_tactics.pair.pair</span>.<br/>
+<span class="id" title="keyword">Register</span> <span class="id" title="var">Init.Datatypes.prod</span> <span class="id" title="keyword">as</span> <span class="id" title="var">aac_tactics.pair.prod</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Register</span> <span class="id" title="var">Init.Datatypes.option</span> <span class="id" title="keyword">as</span> <span class="id" title="var">aac_tactics.option.typ</span>.<br/>
+<span class="id" title="keyword">Register</span> <span class="id" title="var">Init.Datatypes.Some</span> <span class="id" title="keyword">as</span> <span class="id" title="var">aac_tactics.option.Some</span>.<br/>
+<span class="id" title="keyword">Register</span> <span class="id" title="var">Init.Datatypes.None</span> <span class="id" title="keyword">as</span> <span class="id" title="var">aac_tactics.option.None</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Register</span> <span class="id" title="var">Init.Datatypes.list</span> <span class="id" title="keyword">as</span> <span class="id" title="var">aac_tactics.list.typ</span>.<br/>
+<span class="id" title="keyword">Register</span> <span class="id" title="var">Init.Datatypes.nil</span> <span class="id" title="keyword">as</span> <span class="id" title="var">aac_tactics.list.nil</span>.<br/>
+<span class="id" title="keyword">Register</span> <span class="id" title="var">Init.Datatypes.cons</span> <span class="id" title="keyword">as</span> <span class="id" title="var">aac_tactics.list.cons</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">Stdlib</span> <span class="id" title="keyword">Require</span> <span class="id" title="library">BinNums</span>.<br/>
+<span class="id" title="keyword">Register</span> <span class="id" title="var">BinNums.positive</span> <span class="id" title="keyword">as</span> <span class="id" title="var">aac_tactics.pos.typ</span>.<br/>
+<span class="id" title="keyword">Register</span> <span class="id" title="var">BinNums.xI</span> <span class="id" title="keyword">as</span> <span class="id" title="var">aac_tactics.pos.xI</span>.<br/>
+<span class="id" title="keyword">Register</span> <span class="id" title="var">BinNums.xO</span> <span class="id" title="keyword">as</span> <span class="id" title="var">aac_tactics.pos.xO</span>.<br/>
+<span class="id" title="keyword">Register</span> <span class="id" title="var">BinNums.xH</span> <span class="id" title="keyword">as</span> <span class="id" title="var">aac_tactics.pos.xH</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">Stdlib</span> <span class="id" title="keyword">Require</span> <span class="id" title="library">Classes.Morphisms</span>.<br/>
+<span class="id" title="keyword">Register</span> <span class="id" title="var">Morphisms.Proper</span> <span class="id" title="keyword">as</span> <span class="id" title="var">aac_tactics.coq.classes.morphisms.Proper</span>.<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">Stdlib</span> <span class="id" title="keyword">Require</span> <span class="id" title="library">Classes.RelationClasses</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Register</span> <span class="id" title="var">RelationClasses.Equivalence</span> <span class="id" title="keyword">as</span> <span class="id" title="var">aac_tactics.coq.RelationClasses.Equivalence</span>.<br/>
+<span class="id" title="keyword">Register</span> <span class="id" title="var">RelationClasses.Reflexive</span> <span class="id" title="keyword">as</span> <span class="id" title="var">aac_tactics.coq.RelationClasses.Reflexive</span>.<br/>
+<span class="id" title="keyword">Register</span> <span class="id" title="var">RelationClasses.Transitive</span> <span class="id" title="keyword">as</span> <span class="id" title="var">aac_tactics.coq.RelationClasses.Transitive</span>.<br/>
+</div>
+</div>
+<div id="footer">
+  Generated by <a href="http://coq.inria.fr">coqdoc</a> and improved with <a href="https://github.com/palmskog/coqdocjs">CoqdocJS</a> as adapted for <a href="https://github.com/coq-community">coq-community</a>
+</div>
+</div>
+</body>
+
+</html>

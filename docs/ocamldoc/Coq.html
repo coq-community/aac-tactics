@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="next" href="Helper.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Coq" rel="Chapter" href="Coq.html">
+<link title="Helper" rel="Chapter" href="Helper.html">
+<link title="Search_monad" rel="Chapter" href="Search_monad.html">
+<link title="Matcher" rel="Chapter" href="Matcher.html">
+<link title="Theory" rel="Chapter" href="Theory.html">
+<link title="Print" rel="Chapter" href="Print.html">
+<link title="Aac_rewrite" rel="Chapter" href="Aac_rewrite.html"><link title="General purpose functions" rel="Section" href="#2_Generalpurposefunctions">
+<link title="Bindings with Coq' Standard Library" rel="Section" href="#2_BindingswithCoqStandardLibrary">
+<link title="Some tacticials" rel="Section" href="#2_Sometacticials">
+<link title="Error related mechanisms" rel="Section" href="#2_Errorrelatedmechanisms">
+<link title="Helpers" rel="Section" href="#2_Helpers">
+<link title="Rewriting tactics used in aac_rewrite" rel="Section" href="#2_Rewritingtacticsusedinaacrewrite">
+<title>Coq</title>
+</head>
+<body>
+<div class="navbar">&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="Helper.html" title="Helper">Next</a>
+</div>
+<h1>Module <a href="type_Coq.html">Coq</a></h1>
+
+<pre><span id="MODULECoq"><span class="keyword">module</span> Coq</span>: <code class="code">sig</code> <a href="Coq.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<div class="info-desc">
+<p>Interface with Coq where we define some handlers for Coq's API,
+    and we import several definitions from Coq's standard library.</p>
+
+<p>This general purpose library could be reused by other plugins.</p>
+
+<p>Some salient points:</p>
+<ul>
+<li>we use Caml's module system to mimic Coq's one, and avoid cluttering
+    the namespace;</li>
+<li>we also provide several handlers for standard coq tactics, in
+    order to provide a unified setting (we replace functions that
+    modify the evar_map by functions that operate on the whole
+    goal, and repack the modified evar_map with it).</li>
+</ul>
+</div>
+</div>
+<hr width="100%">
+
+<pre><span id="TYPEtactic"><span class="keyword">type</span> <code class="type"></code>tactic</span> = <code class="type">unit Proofview.tactic</code> </pre>
+
+
+<pre><span id="TYPElazy_ref"><span class="keyword">type</span> <code class="type"></code>lazy_ref</span> = <code class="type">Names.GlobRef.t Stdlib.Lazy.t</code> </pre>
+<div class="info ">
+<div class="info-desc">
+<h3 id="2_GettingCoqtermsfromtheenvironment">Getting Coq terms from the environment</h3></div>
+</div>
+
+
+<pre><span id="VALget_fresh"><span class="keyword">val</span> get_fresh</span> : <code class="type"><a href="Coq.html#TYPElazy_ref">lazy_ref</a> -&gt; Constr.constr</code></pre>
+<pre><span id="VALget_efresh"><span class="keyword">val</span> get_efresh</span> : <code class="type"><a href="Coq.html#TYPElazy_ref">lazy_ref</a> -&gt; EConstr.constr</code></pre>
+<pre><span id="VALfind_global"><span class="keyword">val</span> find_global</span> : <code class="type">string -&gt; <a href="Coq.html#TYPElazy_ref">lazy_ref</a></code></pre><h3 id="2_Generalpurposefunctions">General purpose functions</h3>
+<pre><span id="VALcps_resolve_one_typeclass"><span class="keyword">val</span> cps_resolve_one_typeclass</span> : <code class="type">?error:Pp.t -&gt; EConstr.types -&gt; (EConstr.constr -&gt; <a href="Coq.html#TYPEtactic">tactic</a>) -&gt; <a href="Coq.html#TYPEtactic">tactic</a></code></pre>
+<pre><span id="VALevar_binary"><span class="keyword">val</span> evar_binary</span> : <code class="type">Environ.env -&gt;<br>       Evd.evar_map -&gt; EConstr.constr -&gt; Evd.evar_map * EConstr.constr</code></pre>
+<pre><span id="VALevar_relation"><span class="keyword">val</span> evar_relation</span> : <code class="type">Environ.env -&gt;<br>       Evd.evar_map -&gt; EConstr.constr -&gt; Evd.evar_map * EConstr.constr</code></pre>
+<pre><span id="VALmk_letin"><span class="keyword">val</span> mk_letin</span> : <code class="type">string -&gt; EConstr.constr -&gt; EConstr.constr Proofview.tactic</code></pre>
+<pre><span id="VALtclRETYPE"><span class="keyword">val</span> tclRETYPE</span> : <code class="type">EConstr.constr -&gt; unit Proofview.tactic</code></pre>
+<pre><span id="VALdecomp_term"><span class="keyword">val</span> decomp_term</span> : <code class="type">Evd.evar_map -&gt;<br>       EConstr.constr -&gt;<br>       (EConstr.constr, EConstr.types, EConstr.ESorts.t, EConstr.EInstance.t,<br>        EConstr.ERelevance.t)<br>       Constr.kind_of_term</code></pre><h3 id="2_BindingswithCoqStandardLibrary">Bindings with Coq' Standard Library</h3>
+<pre><span id="MODULEList"><span class="keyword">module</span> <a href="Coq.List.html">List</a></span>: <code class="code">sig</code> <a href="Coq.List.html">..</a> <code class="code">end</code></pre><div class="info">
+<p>Coq lists</p>
+
+</div>
+
+<pre><span id="MODULEPair"><span class="keyword">module</span> <a href="Coq.Pair.html">Pair</a></span>: <code class="code">sig</code> <a href="Coq.Pair.html">..</a> <code class="code">end</code></pre><div class="info">
+<p>Coq pairs</p>
+
+</div>
+
+<pre><span id="MODULEOption"><span class="keyword">module</span> <a href="Coq.Option.html">Option</a></span>: <code class="code">sig</code> <a href="Coq.Option.html">..</a> <code class="code">end</code></pre>
+<pre><span id="MODULEPos"><span class="keyword">module</span> <a href="Coq.Pos.html">Pos</a></span>: <code class="code">sig</code> <a href="Coq.Pos.html">..</a> <code class="code">end</code></pre><div class="info">
+<p>Coq positive numbers (pos)</p>
+
+</div>
+
+<pre><span id="MODULENat"><span class="keyword">module</span> <a href="Coq.Nat.html">Nat</a></span>: <code class="code">sig</code> <a href="Coq.Nat.html">..</a> <code class="code">end</code></pre><div class="info">
+<p>Coq unary numbers (peano)</p>
+
+</div>
+
+<pre><span id="MODULEClasses"><span class="keyword">module</span> <a href="Coq.Classes.html">Classes</a></span>: <code class="code">sig</code> <a href="Coq.Classes.html">..</a> <code class="code">end</code></pre><div class="info">
+<p>Coq typeclasses</p>
+
+</div>
+
+<pre><span id="MODULERelation"><span class="keyword">module</span> <a href="Coq.Relation.html">Relation</a></span>: <code class="code">sig</code> <a href="Coq.Relation.html">..</a> <code class="code">end</code></pre>
+<pre><span id="MODULEEquivalence"><span class="keyword">module</span> <a href="Coq.Equivalence.html">Equivalence</a></span>: <code class="code">sig</code> <a href="Coq.Equivalence.html">..</a> <code class="code">end</code></pre>
+<pre><span id="VALmatch_as_equation"><span class="keyword">val</span> match_as_equation</span> : <code class="type">?context:EConstr.rel_context -&gt;<br>       Environ.env -&gt;<br>       Evd.evar_map -&gt;<br>       EConstr.constr -&gt; (EConstr.constr * EConstr.constr * <a href="Coq.Relation.html#TYPEt">Relation.t</a>) option</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">match_as_equation ?context env sigma c</code> try to decompose c as a
+    relation applied to two terms.</p>
+</div>
+</div>
+<h3 id="2_Sometacticials">Some tacticials</h3>
+<pre><span id="VALtclTIME"><span class="keyword">val</span> tclTIME</span> : <code class="type">string -&gt; <a href="Coq.html#TYPEtactic">tactic</a> -&gt; <a href="Coq.html#TYPEtactic">tactic</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>time the execution of a tactic</p>
+</div>
+</div>
+
+<pre><span id="VALtclDEBUG"><span class="keyword">val</span> tclDEBUG</span> : <code class="type">string -&gt; unit Proofview.tactic</code></pre><div class="info ">
+<div class="info-desc">
+<p>emit debug messages to see which tactics are failing</p>
+</div>
+</div>
+
+<pre><span id="VALtclPRINT"><span class="keyword">val</span> tclPRINT</span> : <code class="type">unit Proofview.tactic</code></pre><div class="info ">
+<div class="info-desc">
+<p>print the current goal</p>
+</div>
+</div>
+<h3 id="2_Errorrelatedmechanisms">Error related mechanisms</h3>
+<pre><span id="VALanomaly"><span class="keyword">val</span> anomaly</span> : <code class="type">string -&gt; 'a</code></pre>
+<pre><span id="VALuser_error"><span class="keyword">val</span> user_error</span> : <code class="type">Pp.t -&gt; 'a</code></pre>
+<pre><span id="VALwarning"><span class="keyword">val</span> warning</span> : <code class="type">string -&gt; unit</code></pre><h3 id="2_Helpers">Helpers</h3>
+<pre><span id="VALshow_proof"><span class="keyword">val</span> show_proof</span> : <code class="type">Declare.Proof.t -&gt; unit</code></pre><div class="info ">
+<div class="info-desc">
+<p>print the current proof term</p>
+</div>
+</div>
+<h3 id="2_Rewritingtacticsusedinaacrewrite">Rewriting tactics used in aac_rewrite</h3>
+<pre><span id="MODULERewrite"><span class="keyword">module</span> <a href="Coq.Rewrite.html">Rewrite</a></span>: <code class="code">sig</code> <a href="Coq.Rewrite.html">..</a> <code class="code">end</code></pre></body></html>

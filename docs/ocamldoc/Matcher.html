@@ -1,0 +1,158 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Search_monad.html">
+<link rel="next" href="Theory.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Coq" rel="Chapter" href="Coq.html">
+<link title="Helper" rel="Chapter" href="Helper.html">
+<link title="Search_monad" rel="Chapter" href="Search_monad.html">
+<link title="Matcher" rel="Chapter" href="Matcher.html">
+<link title="Theory" rel="Chapter" href="Theory.html">
+<link title="Print" rel="Chapter" href="Print.html">
+<link title="Aac_rewrite" rel="Chapter" href="Aac_rewrite.html"><link title="Utility functions" rel="Section" href="#2_Utilityfunctions">
+<link title="Main functions exported by this module" rel="Section" href="#2_Mainfunctionsexportedbythismodule">
+<title>Matcher</title>
+</head>
+<body>
+<div class="navbar"><a class="pre" href="Search_monad.html" title="Search_monad">Previous</a>
+&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="Theory.html" title="Theory">Next</a>
+</div>
+<h1>Module <a href="type_Matcher.html">Matcher</a></h1>
+
+<pre><span id="MODULEMatcher"><span class="keyword">module</span> Matcher</span>: <code class="code">sig</code> <a href="Matcher.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<div class="info-desc">
+<p>Standalone module containing the algorithm for matching modulo
+    associativity and associativity and commutativity
+    (AAC). Additionnaly, some A or AC operators can have units (U).</p>
+
+<p>This module could be reused outside of the Coq plugin.</p>
+
+<p>Matching a pattern <code class="code">p</code> against a term <code class="code">t</code> modulo AACU boils down
+    to finding a substitution <code class="code">env</code> such that the pattern <code class="code">p</code>
+    instantiated with <code class="code">env</code> is equal to <code class="code">t</code> modulo AACU.</p>
+
+<p>We proceed by structural decomposition of the pattern, trying all
+    possible non-deterministic splittings of the subject, when needed. The
+    function <a href="Matcher.html#VALmatcher"><code class="code">Matcher.matcher</code></a> is limited to top-level matching, that is, the
+    subject must make a perfect match against the pattern (<code class="code">x+x</code> does
+    not match <code class="code">a+a+b</code> ).</p>
+
+<p>We use a search monad <a href="Search_monad.html"><code class="code">Search_monad</code></a> to perform non-deterministic
+    choices in an almost transparent way.</p>
+
+<p>We also provide a function <a href="Matcher.html#VALsubterm"><code class="code">Matcher.subterm</code></a> for finding a match that is
+    a subterm of the subject modulo AACU. In particular, this function
+    gives a solution to the aforementioned case (<code class="code">x+x</code> against
+    <code class="code">a+b+a</code>).</p>
+
+<p>On a slightly more involved level :</p>
+<ul>
+<li>it must be noted that we allow several AC/A operators to share
+    the same units, but that a given AC/A operator can have at most
+    one unit.</li>
+</ul>
+<ul>
+<li>if the pattern does not contain "hard" symbols (like constants,
+    function symbols, AC or A symbols without units), there can be
+    infinitely many subterms such that the pattern matches: it is
+    possible to build "subterms" modulo AAC and U that make the size
+    of the term increase (by making neutral elements appear in a
+    layered fashion). Hence, in this case, a warning is issued, and
+    some solutions are omitted.</li>
+</ul>
+</div>
+</div>
+<hr width="100%">
+<h3 id="2_Utilityfunctions">Utility functions</h3>
+<pre><span id="TYPEsymbol"><span class="keyword">type</span> <code class="type"></code>symbol</span> = <code class="type">int</code> </pre>
+
+
+<pre><span id="TYPEvar"><span class="keyword">type</span> <code class="type"></code>var</span> = <code class="type">int</code> </pre>
+
+<p>Relationship between units and operators. This is a sparse
+    representation of a matrix of couples <code class="code">(op,unit)</code> where <code class="code">op</code> is
+    the index of the operation, and <code class="code">unit</code> the index of the relevant
+    unit. We make the assumption that any operation has 0 or 1 unit,
+    and that operations can share a unit).</p>
+
+<pre><span id="TYPEunits"><span class="keyword">type</span> <code class="type"></code>units</span> = <code class="type">(<a href="Matcher.html#TYPEsymbol">symbol</a> * <a href="Matcher.html#TYPEsymbol">symbol</a>) list</code> </pre>
+
+
+<pre><code><span id="TYPEext_units"><span class="keyword">type</span> <code class="type"></code>ext_units</span> = {</code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELText_units.unit_for">unit_for</span>&nbsp;: <code class="type"><a href="Matcher.html#TYPEunits">units</a></code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELText_units.is_ac">is_ac</span>&nbsp;: <code class="type">(<a href="Matcher.html#TYPEsymbol">symbol</a> * bool) list</code>;</code></td>
+
+</tr></table>
+<code>}</code>
+
+
+
+<pre><span id="TYPEmset"><span class="keyword">type</span> <code class="type">'a</code> mset</span> = <code class="type">('a * int) list</code> </pre>
+<div class="info ">
+<div class="info-desc">
+<p>The arguments of sums (or AC operators) are represented using finite multisets.
+    (Typically, <code class="code">a+b+a</code> corresponds to <code class="code">2.a+b</code>, i.e. <code class="code">Sum[a,2;b,1]</code>)</p>
+</div>
+</div>
+
+
+<pre><span id="VALlinear"><span class="keyword">val</span> linear</span> : <code class="type">'a <a href="Matcher.html#TYPEmset">mset</a> -&gt; 'a list</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">linear</code> expands a multiset into a simple list</p>
+</div>
+</div>
+
+<pre><span id="MODULETerms"><span class="keyword">module</span> <a href="Matcher.Terms.html">Terms</a></span>: <code class="code">sig</code> <a href="Matcher.Terms.html">..</a> <code class="code">end</code></pre><div class="info">
+<p>Representations of expressions</p>
+
+</div>
+
+<pre><span id="MODULESubst"><span class="keyword">module</span> <a href="Matcher.Subst.html">Subst</a></span>: <code class="code">sig</code> <a href="Matcher.Subst.html">..</a> <code class="code">end</code></pre><div class="info">
+<p>Substitutions (or environments)</p>
+
+</div>
+<h3 id="2_Mainfunctionsexportedbythismodule">Main functions exported by this module</h3>
+<pre><span id="VALmatcher"><span class="keyword">val</span> matcher</span> : <code class="type">?strict:bool -&gt;<br>       <a href="Matcher.html#TYPEext_units">ext_units</a> -&gt;<br>       <a href="Matcher.Terms.html#TYPEt">Terms.t</a> -&gt; <a href="Matcher.Terms.html#TYPEt">Terms.t</a> -&gt; <a href="Matcher.Subst.html#TYPEt">Subst.t</a> <a href="Search_monad.html#TYPEm">Search_monad.m</a></code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">matcher p t</code> computes the set of solutions to the given top-level
+    matching problem (<code class="code">p</code> is the pattern, <code class="code">t</code> is the term).  If the
+    <code class="code">strict</code> flag is set, solutions where units are used to
+    instantiate some variables are excluded, unless this unit appears
+    directly under a function symbol (e.g., f(x) still matches f(1),
+    while x+x+y does not match a+b+c, since this would require to
+    assign 1 to x).</p>
+</div>
+</div>
+
+<pre><span id="VALsubterm"><span class="keyword">val</span> subterm</span> : <code class="type">?strict:bool -&gt;<br>       <a href="Matcher.html#TYPEext_units">ext_units</a> -&gt;<br>       <a href="Matcher.Terms.html#TYPEt">Terms.t</a> -&gt;<br>       <a href="Matcher.Terms.html#TYPEt">Terms.t</a> -&gt;<br>       (int * <a href="Matcher.Terms.html#TYPEt">Terms.t</a> * <a href="Matcher.Subst.html#TYPEt">Subst.t</a> <a href="Search_monad.html#TYPEm">Search_monad.m</a>) <a href="Search_monad.html#TYPEm">Search_monad.m</a></code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">subterm p t</code> computes a set of solutions to the given
+    subterm-matching problem.</p>
+
+<p>Return a collection of possible solutions (each with the
+    associated depth, the context, and the solutions of the matching
+    problem). The context is actually a <a href="Matcher.Terms.html#TYPEt"><code class="code">Matcher.Terms.t</code></a> where the variables
+    are yet to be instantiated by one of the associated substitutions</p>
+</div>
+</div>
+</body></html>

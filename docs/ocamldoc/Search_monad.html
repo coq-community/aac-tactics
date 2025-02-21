@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Helper.html">
+<link rel="next" href="Matcher.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Coq" rel="Chapter" href="Coq.html">
+<link title="Helper" rel="Chapter" href="Helper.html">
+<link title="Search_monad" rel="Chapter" href="Search_monad.html">
+<link title="Matcher" rel="Chapter" href="Matcher.html">
+<link title="Theory" rel="Chapter" href="Theory.html">
+<link title="Print" rel="Chapter" href="Print.html">
+<link title="Aac_rewrite" rel="Chapter" href="Aac_rewrite.html"><link title="Monadic operations" rel="Section" href="#2_Monadicoperations">
+<link title="Derived facilities " rel="Section" href="#2_Derivedfacilities">
+<title>Search_monad</title>
+</head>
+<body>
+<div class="navbar"><a class="pre" href="Helper.html" title="Helper">Previous</a>
+&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="Matcher.html" title="Matcher">Next</a>
+</div>
+<h1>Module <a href="type_Search_monad.html">Search_monad</a></h1>
+
+<pre><span id="MODULESearch_monad"><span class="keyword">module</span> Search_monad</span>: <code class="code">sig</code> <a href="Search_monad.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<div class="info-desc">
+<p>Search monad that allows to express non-deterministic algorithms
+    in a legible maner, or programs that solve combinatorial problems.</p>
+</div>
+<ul class="info-attributes">
+<li><b>See also</b> <a href="http://spivey.oriel.ox.ac.uk/mike/search-jfp.pdf">the
+    inspiration of this module</a></li>
+</ul>
+</div>
+<hr width="100%">
+
+<pre><span id="TYPEm"><span class="keyword">type</span> <code class="type">'a</code> m</span> </pre>
+<div class="info ">
+<div class="info-desc">
+<p>A data type that represent a collection of <code class="code">'a</code></p>
+</div>
+</div>
+
+<h3 id="2_Monadicoperations">Monadic operations</h3>
+<pre><span id="VAL(>>)"><span class="keyword">val</span> (&gt;&gt;)</span> : <code class="type">'a <a href="Search_monad.html#TYPEm">m</a> -&gt; ('a -&gt; 'b <a href="Search_monad.html#TYPEm">m</a>) -&gt; 'b <a href="Search_monad.html#TYPEm">m</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>bind and return</p>
+</div>
+</div>
+
+<pre><span id="VALreturn"><span class="keyword">val</span> return</span> : <code class="type">'a -&gt; 'a <a href="Search_monad.html#TYPEm">m</a></code></pre>
+<pre><span id="VAL(>>|)"><span class="keyword">val</span> (&gt;&gt;|)</span> : <code class="type">'a <a href="Search_monad.html#TYPEm">m</a> -&gt; 'a <a href="Search_monad.html#TYPEm">m</a> -&gt; 'a <a href="Search_monad.html#TYPEm">m</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>non-deterministic choice</p>
+</div>
+</div>
+
+<pre><span id="VALfail"><span class="keyword">val</span> fail</span> : <code class="type">unit -&gt; 'a <a href="Search_monad.html#TYPEm">m</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>failure</p>
+</div>
+</div>
+
+<pre><span id="VALfold"><span class="keyword">val</span> fold</span> : <code class="type">('a -&gt; 'b -&gt; 'b) -&gt; 'a <a href="Search_monad.html#TYPEm">m</a> -&gt; 'b -&gt; 'b</code></pre><div class="info ">
+<div class="info-desc">
+<p>folding through the collection</p>
+</div>
+</div>
+<h3 id="2_Derivedfacilities">Derived facilities </h3>
+<pre><span id="VALsprint"><span class="keyword">val</span> sprint</span> : <code class="type">('a -&gt; string) -&gt; 'a <a href="Search_monad.html#TYPEm">m</a> -&gt; string</code></pre>
+<pre><span id="VALcount"><span class="keyword">val</span> count</span> : <code class="type">'a <a href="Search_monad.html#TYPEm">m</a> -&gt; int</code></pre>
+<pre><span id="VALchoose"><span class="keyword">val</span> choose</span> : <code class="type">'a <a href="Search_monad.html#TYPEm">m</a> -&gt; 'a option</code></pre>
+<pre><span id="VALto_list"><span class="keyword">val</span> to_list</span> : <code class="type">'a <a href="Search_monad.html#TYPEm">m</a> -&gt; 'a list</code></pre>
+<pre><span id="VALsort"><span class="keyword">val</span> sort</span> : <code class="type">('a -&gt; 'a -&gt; int) -&gt; 'a <a href="Search_monad.html#TYPEm">m</a> -&gt; 'a <a href="Search_monad.html#TYPEm">m</a></code></pre>
+<pre><span id="VALis_empty"><span class="keyword">val</span> is_empty</span> : <code class="type">'a <a href="Search_monad.html#TYPEm">m</a> -&gt; bool</code></pre>
+<pre><span id="VALfilter"><span class="keyword">val</span> filter</span> : <code class="type">('a -&gt; bool) -&gt; 'a <a href="Search_monad.html#TYPEm">m</a> -&gt; 'a <a href="Search_monad.html#TYPEm">m</a></code></pre></body></html>

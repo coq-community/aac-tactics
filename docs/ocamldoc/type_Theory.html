@@ -1,0 +1,91 @@
+<html><head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Coq" rel="Chapter" href="Coq.html">
+<link title="Helper" rel="Chapter" href="Helper.html">
+<link title="Search_monad" rel="Chapter" href="Search_monad.html">
+<link title="Matcher" rel="Chapter" href="Matcher.html">
+<link title="Theory" rel="Chapter" href="Theory.html">
+<link title="Print" rel="Chapter" href="Print.html">
+<link title="Aac_rewrite" rel="Chapter" href="Aac_rewrite.html"><title>Theory</title>
+</head>
+<body>
+<code class="code"><span class="keyword">sig</span><br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;mk_mset&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;(<span class="constructor">EConstr</span>.constr&nbsp;*&nbsp;int)&nbsp;list&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr<br>
+&nbsp;&nbsp;<span class="keyword">module</span>&nbsp;<span class="constructor">Sigma</span>&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">sig</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;add&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;empty&nbsp;:&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;of_list&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;(int&nbsp;*&nbsp;<span class="constructor">EConstr</span>.constr)&nbsp;list&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;to_fun&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">end</span><br>
+&nbsp;&nbsp;<span class="keyword">module</span>&nbsp;<span class="constructor">Sym</span>&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">sig</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;pack&nbsp;=&nbsp;{&nbsp;ar&nbsp;:&nbsp;<span class="constructor">Constr</span>.t;&nbsp;value&nbsp;:&nbsp;<span class="constructor">Constr</span>.t;&nbsp;morph&nbsp;:&nbsp;<span class="constructor">Constr</span>.t;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;typ&nbsp;:&nbsp;<span class="constructor">Coq</span>.lazy_ref<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;mk_pack&nbsp;:&nbsp;<span class="constructor">Coq</span>.<span class="constructor">Relation</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Theory</span>.<span class="constructor">Sym</span>.pack&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;null&nbsp;:&nbsp;<span class="constructor">Coq</span>.<span class="constructor">Relation</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">end</span><br>
+&nbsp;&nbsp;<span class="keyword">module</span>&nbsp;<span class="constructor">Stubs</span>&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">sig</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;lift&nbsp;:&nbsp;<span class="constructor">Coq</span>.lazy_ref<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;lift_proj_equivalence&nbsp;:&nbsp;<span class="constructor">Coq</span>.lazy_ref<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;lift_transitivity_left&nbsp;:&nbsp;<span class="constructor">Coq</span>.lazy_ref<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;lift_transitivity_right&nbsp;:&nbsp;<span class="constructor">Coq</span>.lazy_ref<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;lift_reflexivity&nbsp;:&nbsp;<span class="constructor">Coq</span>.lazy_ref<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;eval&nbsp;:&nbsp;<span class="constructor">Coq</span>.lazy_ref<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;decide_thm&nbsp;:&nbsp;<span class="constructor">Coq</span>.lazy_ref<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;lift_normalise_thm&nbsp;:&nbsp;<span class="constructor">Coq</span>.lazy_ref<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">end</span><br>
+&nbsp;&nbsp;<span class="keyword">module</span>&nbsp;<span class="constructor">Trans</span>&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">sig</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;envs<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;empty_envs&nbsp;:&nbsp;unit&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Theory</span>.<span class="constructor">Trans</span>.envs<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;t_of_constr&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Environ</span>.env&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Evd</span>.evar_map&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Coq</span>.<span class="constructor">Relation</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Theory</span>.<span class="constructor">Trans</span>.envs&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;*&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Matcher</span>.<span class="constructor">Terms</span>.t&nbsp;*&nbsp;<span class="constructor">Matcher</span>.<span class="constructor">Terms</span>.t&nbsp;*&nbsp;<span class="constructor">Evd</span>.evar_map<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;add_symbol&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Environ</span>.env&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Evd</span>.evar_map&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Coq</span>.<span class="constructor">Relation</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Theory</span>.<span class="constructor">Trans</span>.envs&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Constr</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Evd</span>.evar_map<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;ir<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;ir_of_envs&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Environ</span>.env&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Evd</span>.evar_map&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Coq</span>.<span class="constructor">Relation</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Theory</span>.<span class="constructor">Trans</span>.envs&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Evd</span>.evar_map&nbsp;*&nbsp;<span class="constructor">Theory</span>.<span class="constructor">Trans</span>.ir<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;ir_to_units&nbsp;:&nbsp;<span class="constructor">Theory</span>.<span class="constructor">Trans</span>.ir&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Matcher</span>.ext_units<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;raw_constr_of_t&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Theory</span>.<span class="constructor">Trans</span>.ir&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Coq</span>.<span class="constructor">Relation</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">EConstr</span>.rel_context&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Matcher</span>.<span class="constructor">Terms</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;sigmas&nbsp;=&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;env_sym&nbsp;:&nbsp;<span class="constructor">EConstr</span>.constr;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;env_bin&nbsp;:&nbsp;<span class="constructor">EConstr</span>.constr;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;env_units&nbsp;:&nbsp;<span class="constructor">EConstr</span>.constr;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;reifier<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;mk_reifier&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Coq</span>.<span class="constructor">Relation</span>.t&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">EConstr</span>.constr&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Theory</span>.<span class="constructor">Trans</span>.ir&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="constructor">Theory</span>.<span class="constructor">Trans</span>.sigmas&nbsp;*&nbsp;<span class="constructor">Theory</span>.<span class="constructor">Trans</span>.reifier)&nbsp;<span class="constructor">Proofview</span>.tactic<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;reif_constr_of_t&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Theory</span>.<span class="constructor">Trans</span>.reifier&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Matcher</span>.<span class="constructor">Terms</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">EConstr</span>.constr<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">end</span><br>
+<span class="keyword">end</span></code></body></html>

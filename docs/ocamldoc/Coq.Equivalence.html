@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Coq.Relation.html">
+<link rel="next" href="Coq.Rewrite.html">
+<link rel="Up" href="Coq.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Coq" rel="Chapter" href="Coq.html">
+<link title="Helper" rel="Chapter" href="Helper.html">
+<link title="Search_monad" rel="Chapter" href="Search_monad.html">
+<link title="Matcher" rel="Chapter" href="Matcher.html">
+<link title="Theory" rel="Chapter" href="Theory.html">
+<link title="Print" rel="Chapter" href="Print.html">
+<link title="Aac_rewrite" rel="Chapter" href="Aac_rewrite.html"><title>Coq.Equivalence</title>
+</head>
+<body>
+<div class="navbar"><a class="pre" href="Coq.Relation.html" title="Coq.Relation">Previous</a>
+&nbsp;<a class="up" href="Coq.html" title="Coq">Up</a>
+&nbsp;<a class="post" href="Coq.Rewrite.html" title="Coq.Rewrite">Next</a>
+</div>
+<h1>Module <a href="type_Coq.Equivalence.html">Coq.Equivalence</a></h1>
+
+<pre><span id="MODULEEquivalence"><span class="keyword">module</span> Equivalence</span>: <code class="code">sig</code> <a href="Coq.Equivalence.html">..</a> <code class="code">end</code></pre><hr width="100%">
+
+<pre><code><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = {</code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.carrier">carrier</span>&nbsp;: <code class="type">EConstr.constr</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.eq">eq</span>&nbsp;: <code class="type">EConstr.constr</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.equivalence">equivalence</span>&nbsp;: <code class="type">EConstr.constr</code>;</code></td>
+
+</tr></table>
+<code>}</code>
+
+
+
+<pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type">EConstr.constr -&gt; EConstr.constr -&gt; EConstr.constr -&gt; <a href="Coq.Equivalence.html#TYPEt">t</a></code></pre>
+<pre><span id="VALinfer"><span class="keyword">val</span> infer</span> : <code class="type">Environ.env -&gt;<br>       Evd.evar_map -&gt;<br>       EConstr.constr -&gt; EConstr.constr -&gt; <a href="Coq.Equivalence.html#TYPEt">t</a> * Evd.evar_map</code></pre>
+<pre><span id="VALfrom_relation"><span class="keyword">val</span> from_relation</span> : <code class="type">Environ.env -&gt;<br>       Evd.evar_map -&gt; <a href="Coq.Relation.html#TYPEt">Coq.Relation.t</a> -&gt; <a href="Coq.Equivalence.html#TYPEt">t</a> * Evd.evar_map</code></pre>
+<pre><span id="VALto_relation"><span class="keyword">val</span> to_relation</span> : <code class="type"><a href="Coq.Equivalence.html#TYPEt">t</a> -&gt; <a href="Coq.Relation.html#TYPEt">Coq.Relation.t</a></code></pre>
+<pre><span id="VALsplit"><span class="keyword">val</span> split</span> : <code class="type"><a href="Coq.Equivalence.html#TYPEt">t</a> -&gt; EConstr.constr * EConstr.constr * EConstr.constr</code></pre></body></html>
