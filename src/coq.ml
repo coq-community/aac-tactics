@@ -116,11 +116,11 @@ let cps_resolve_one_typeclass ?error : types -> (constr -> tactic) -> tactic = f
  
 let evar_binary env (sigma: Evd.evar_map) (x : constr) =
   let ty = mkArrow x (mkArrow x x) in
-  Evarutil.new_evar env sigma ty
+  Evarutil.new_evar ~typeclass_candidate:true env sigma ty
 
 let evar_relation env (sigma: Evd.evar_map) (x: constr) =
   let ty = mkArrow x (mkArrow x (mkSort (ESorts.make Sorts.prop))) in
-  Evarutil.new_evar env sigma ty
+  Evarutil.new_evar ~typeclass_candidate:false  env sigma ty
 
 let decomp_term sigma c = kind sigma (Termops.strip_outer_cast sigma c)
    

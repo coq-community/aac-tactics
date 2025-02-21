@@ -449,7 +449,7 @@ module Trans = struct
       let get_unit (rlt : Coq.Relation.t) op env sigma :
 	    (Evd.evar_map * constr * constr ) option=
 	let x = (rlt.Coq.Relation.carrier)  in
-	let sigma,unit = Evarutil.new_evar env sigma x in
+	let sigma,unit = Evarutil.new_evar ~typeclass_candidate:true env sigma x in
 	let ty =Classes.Unit.ty rlt  op  unit in
 	let result =
 	  try
@@ -968,7 +968,7 @@ module Trans = struct
     let sigma,zero =
       try
         let sigma, evar_op = Coq.evar_binary env sigma carrier in
-	let sigma,evar_unit = Evarutil.new_evar env sigma carrier in
+	let sigma,evar_unit = Evarutil.new_evar ~typeclass_candidate:true env sigma carrier in
 	let query = Classes.Unit.ty rlt evar_op evar_unit in
 	let sigma, _ = Typeclasses.resolve_one_typeclass env sigma query in
 	sigma,Evarutil.nf_evar sigma evar_unit
